@@ -1,0 +1,34 @@
+&DATA_EXTRACT-----------------------------------------------------------------
+%%Extract_On-Off%%              = 0
+WRF_Variable_NAME               = U10, T
+Location_NAME                   = Ahvaz, Dezful, Shadegan, Mahshahr, Shooshtar
+Location_LATITUDE               = 31.345, 32.400, 30.657, 30.546, 32.050,
+Location_LONGITUDE              = 48.744, 48.383, 48.642, 49.159, 48.833,
+
+
+&CONTOUR_MAP------------------------------------------------------------------
+%%Contour_On-Off%%              = 1
+Contour_Variables (on levels)   = 
+Contour_Levels (hpa)            = 700
+Contour_Variables (on surface)  = pvo
+shapefile_On-Off                = 1
+shapefile_path                  = /home/ah/ncl-codes/PostWRF13/newprovince/Province.shp
+
+
+&CROSS-SECTION_MAP------------------------------------------------------------
+%%CrossSection_On-Off%%         = 0
+CrossSection_Variables          = tc
+
+
+&DOMAIN_MAP-------------------------------------------------------------------
+%%Domain_On-Off%%               = 0
+namelist.wps_path               = /home/ah/ncl-codes/PostWRF13/namelist.wps.pbl
+Lables_On-Off                   = 0
+
+
+&WIND-ROSE_DIAGRAM-------------------------------------------------------------
+%%windrose_On-Off%%             = 0
+
+
+&SKEWT_DIAGRAM----------------------------------------------------------------
+%%skewT_On-Off%%                = 0
