@@ -21,6 +21,7 @@ The first section in namelist.wrf corresponds to the data extraction:
 
 +-------------------------------------------------------------------------------------------------------------------------------+
 | \==================== DATA EXTRACTION \======================= :raw-html:`<br />`                                             |
+| \============================================================= :raw-html:`<br />`                                             |
 | Extract_On-Off |s| |s| |s| |s| |s| |s| |s| |s| |s| |s| |s| |s| |s| |s| = 1 :raw-html:`<br />`                                 |
 | WRF_variable_name |s| |s| |s| |s| |s| |s| |s| |s| |s| = pvo :raw-html:`<br />`                                                |
 | Location_names |s| |s| |s| |s| |s| |s| |s| |s| |s| |s| |s| |s| |s| = Berlin, London :raw-html:`<br />`                        |
