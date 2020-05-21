@@ -9,6 +9,8 @@ The very first step in running PostWRF is modifying namelist.wrf:
 
     vi namelist.wrf
 
+Time-series of the WRF variables
+================================
 
 The first section in namelist.wrf corresponds to the data extraction:
 
@@ -21,7 +23,7 @@ The first section in namelist.wrf corresponds to the data extraction:
 
 +-------------------------------------------------------------------------------------------------------------------------------+
 | \==================== DATA EXTRACTION \======================= :raw-html:`<br />`                                             |
-| \============================================================ :raw-html:`<br />`                                              |
+| \=========================================================== :raw-html:`<br />`                                              |
 | Extract_On-Off |s| |s| |s| |s| |s| |s| |s| |s| |s| |s| |s| |s| |s| |s| = 1 :raw-html:`<br />`                                 |
 | WRF_variable_name |s| |s| |s| |s| |s| |s| |s| |s| |s| = pvo :raw-html:`<br />`                                                |
 | Location_names |s| |s| |s| |s| |s| |s| |s| |s| |s| |s| |s| |s| |s| = Berlin, London :raw-html:`<br />`                        |
@@ -50,6 +52,9 @@ After modifying namelist.wrf, run the software by:
 .. csv-table:: WRF output variable: pvo (Potential Vorticity) - unit_scale: PVU
    :file: values-pvo-Bilinear
 ..    :widths: 40, 20, 20
+
+Plotting Vertical profiles
+==========================
 
 If +Vertical_profile_plot_on_off is set to 1, the vertical profiles of the locations (Berlin and London) 
 will be plotted:
