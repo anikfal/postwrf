@@ -1255,7 +1255,11 @@ if (dimsizes(NCLPLEV2).eq.1) then
   end if
 else
   if (oneP2) then
-    tc_plane2@PlotLevelID = tointeger(getenv("CNLEV20"))
+    if (tointeger(getenv("CNLEV20")).eq.0) then
+      tc_plane2@PlotLevelID = "surface"
+      else
+      tc_plane2@PlotLevelID = tointeger(getenv("CNLEV20"))
+    end if
   else
     tc_plane2@PlotLevelID = "multi atmospheric levels"
   end if
