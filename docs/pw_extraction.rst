@@ -53,7 +53,7 @@ After modifying namelist.wrf, run the software by:
    :file: values-pvo-Bilinear
 ..    :widths: 40, 20, 20
 
-Plotting Vertical profiles
+Plotting vertical profiles
 ==========================
 
 If +Vertical_profile_plot_on_off is set to 1, the vertical profiles of the locations (Berlin and London) 
