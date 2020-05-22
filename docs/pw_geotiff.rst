@@ -34,7 +34,7 @@ The generated GeoTIFF files could be processed and visualized by a GIS software:
 
 +-----------------------------------------------------------------------------+
 | .. figure:: images/geo_post_germany.png                                     |
-|   :scale: 20 %                                                              |
+|   :scale: 90 %                                                              |
 |   :alt: map to buried treasure                                              |
 |                                                                             |
 | Relative humidity from WRF output at 700 hpa                                |
