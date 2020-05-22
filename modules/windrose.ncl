@@ -85,7 +85,7 @@ end if
 
 if (NCLaverage_onoff.ne.1) then ;code average122
   if (NCLtitle .eq. 1) then
-      res@tiMainString  = "WindRose from " + times(0) + " to " + times(dimtime-1) + "~C~" \
+      res@tiMainString  = "WindRose from " + times(start_timestep) + " to " + times(dimtime-1) + "~C~" \
   + "~Z75~          Location on the nearest grid point: " + stat + " (" + lon1 + ", " + lat1 + ")"
   end if
   wspd1= ndtooned( sqrt(u10(start_timestep:,ny,mx)^2 + v10(start_timestep:,ny,mx)^2) )
