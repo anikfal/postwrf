@@ -384,7 +384,11 @@ if (dimsizes(NCLPLEV3).eq.1) then
     tc_plane3@PlotLevelID = NCLPLEV3
   end if
 else
-  tc_plane3@PlotLevelID = "multi atmospheric levels"
+  if (oneP1) then
+    tc_plane3@PlotLevelID = tointeger(getenv("CNLEV30"))
+  else
+    tc_plane3@PlotLevelID = "multi atmospheric levels"
+  end if
 end if
 
 system("cd $postwrf_dir/modules && ./contourlvl_getinput3.sh")
