@@ -5,7 +5,7 @@ Contour plots
 A combination of three variables, as well as wind vectors and location markers,
 could be plotted by PostWRF.
 
-Example 1:
+Example 1
 ==========
 
 **Two line contours plus the locations of some points
@@ -63,7 +63,7 @@ Output image at a specific time-slot in the WRF output is as bellow:
    :scale: 70 %
    :alt: map to buried treasure
 
-Example 2:
+Example 2
 ==========
 
 **Shaded contour of a polynomial (tk * (rh/100)^2)**
@@ -125,7 +125,7 @@ Output image at a specific time-slot in the WRF output is as bellow:
    :scale: 70 %
    :alt: map to buried treasure
 
-Example 3:
+Example 3
 ==========
 
 **Panel plot of a shaded and a line contour**
