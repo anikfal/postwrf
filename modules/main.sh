@@ -234,7 +234,7 @@ fi
 if [[ $contour_onoff == 1 ]]; then                                                  #For the fifth line (Contour Variables)
   myvar="3rd_Variable_name"                                                         #nclcontourvars11
   CNVAR3=$(sed -n "/$myvar/p" namelist.wrf | awk -F"=" '{print $NF}' | cut -d, -f1) #only one var is read
-  export CNVAR3=$(echo $CNVAR3)                                                     #Remove spaces
+  export CNVAR3=$(echo "${CNVAR3// /}") #Remove spaces
   unset myvar
 
   #------------------------------------------------------------------------------------------------
@@ -353,7 +353,7 @@ if [[ $contour_onoff == 1 ]]; then                                              
     ##------------------------------------------------------------------------------------------------
     myvar="2nd_Variable_name"                                                         #nclcontourvars33
     CNVAR2=$(sed -n "/$myvar/p" namelist.wrf | awk -F"=" '{print $NF}' | cut -d, -f1) #only one var is read
-    export CNVAR2=$(echo $CNVAR2)                                                     #Remove spaces
+    export CNVAR2=$(echo "${CNVAR2// /}") #Remove spaces
     unset myvar
 
     ##------------------------------------------------------------------------------------------------
@@ -494,7 +494,7 @@ fi
 if [[ $crossonoff == 1 ]]; then                                                      #For the fifth line (Contour Variables)
   myvar="3rd_var_name"                                                               #nclcontourvars11
   xCNVAR3=$(sed -n "/$myvar/p" namelist.wrf | awk -F"=" '{print $NF}' | cut -d, -f1) #only one var is read
-  export xCNVAR3=$(echo $xCNVAR3)                                                    #Remove spaces
+  export xCNVAR3=$(echo "${xCNVAR3// /}") #Remove spaces
   unset myvar
 
   ##------------------------------------------------------------------------------------------------
@@ -558,7 +558,7 @@ if [[ $crossonoff == 1 ]]; then                                                 
     ##------------------------------------------------------------------------------------------------
     myvar="2nd_var_name"                                                               #nclcontourvars33
     xCNVAR2=$(sed -n "/$myvar/p" namelist.wrf | awk -F"=" '{print $NF}' | cut -d, -f1) #only one var is read
-    export xCNVAR2=$(echo $xCNVAR2)                                                    #Remove spaces
+    export xCNVAR2=$(echo "${xCNVAR2// /}") #Remove spaces
     unset myvar
     ##------------------------------------------------------------------------------------------------
     myvar="2nd_var_intervals"
