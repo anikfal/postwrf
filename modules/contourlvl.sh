@@ -126,7 +126,7 @@ else
   read -p "$(echo -e "\n ")Name of the Output File? (Press Enter for the default name): " outname2
   cnpostname=$(echo $wrfout2 | cut -d "_" -f2-3)
   if [ -z "$outname2" ]; then
-    outname=$(echo "contour-level-"$CNVAR3"-"$cnpostname)
+    outname=$(echo "contour-level-"$cnpostname)
     echo "  Contour file will be named $outname"
   else
     outname=$(echo $outname2"-"$cnpostname)
