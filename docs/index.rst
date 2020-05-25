@@ -38,8 +38,7 @@ PostWRF is publically available for download at:
     pw_contour
     pw_cross
     pw_domain
-    pw_skew
-    pw_extra
+    pw_diagram
 .. Indices and tables
 .. ==================
 
