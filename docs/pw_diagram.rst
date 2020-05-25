@@ -16,7 +16,7 @@ Wind-rose
 | wind_location_name              = Berlin
 | wind_location_latitude          = 52.52
 | wind_location_longitude         = 13.40
-| -----------------------------------------------------------------------------------
+| ---------------------------------------------------------------------------------------------------------
 
 Output image at a specific time-slot in the WRF output is as bellow:
 
@@ -33,7 +33,7 @@ SkewT
 | skewt_location_name              = Berlin
 | skewt_location_latitude          = 52.52
 | skewt_location_longitude         = 13.40
-| -----------------------------------------------------------------------------------
+| ---------------------------------------------------------------------------------------------------------
 
 Output image at a specific time-slot in the WRF output is as bellow:
 
