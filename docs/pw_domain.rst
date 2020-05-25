@@ -30,7 +30,7 @@ In this method a schematic map of the simulation domain will be plotted.
 Output image at a specific time-slot in the WRF output is as bellow:
 
 .. figure:: images/domain1.png
-   :scale: 100 %
+   :scale: 90 %
    :alt: map to buried treasure
 
 Method 2
