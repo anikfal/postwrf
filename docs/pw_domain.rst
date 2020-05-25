@@ -1,6 +1,6 @@
-=====================
-Plotting WRF's domain
-=====================
+====================
+Plotting WRF domains
+====================
 
 Two methods are available in PostWRF to plot the WRF's simulation domain:
 
