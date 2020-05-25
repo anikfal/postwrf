@@ -25,7 +25,7 @@ In this method a schematic map of the simulation domain will be plotted.
 | +Domain_on_off (topography)      = 0
 | +number_of_domains (topography)  = 2
 | +box_color                       = white
-| ---------------------------------------------
+| -------------------------------------------------------------------------------------
 
 Output image at a specific time-slot in the WRF output is as bellow:
 
@@ -52,7 +52,7 @@ as a topography map.
 | +Domain_on_off (topography)      = 1
 | +number_of_domains (topography)  = 2
 | +box_color                       = white
-| ---------------------------------------------
+| -------------------------------------------------------------------------------------
 
 Output image at a specific time-slot in the WRF output is as bellow:
 
