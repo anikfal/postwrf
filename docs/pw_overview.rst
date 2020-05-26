@@ -15,3 +15,24 @@ The processing steps through PostWRF is depicted below as a flowchart diagram:
 .. figure:: images/flowchart.png
    :scale: 50 %
    :alt: map to buried treasure
+
+Run PostWRF
+===========
+
+Modify namelist.wrf and enable the section associated with the desired post-processing task:
+
+.. code-block:: bash
+
+    vi namelist.wrf
+
+Run the tool:
+
+.. code-block:: bash
+
+    ./postwrf.sh
+
+The user can Run postwrf.sh with some special switches. Each switch is described by the command bellow:
+
+.. code-block:: bash
+
+    ./postwrf.sh -h
