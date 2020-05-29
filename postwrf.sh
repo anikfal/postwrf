@@ -12,18 +12,16 @@ my_exit() {
   cd $postwrf_dir
   rm variablesCN1.txt variablesCN2.txt variablesCN3.txt eqname equnit totalequation.txt variables.txt 2>/dev/null
 }
-while getopts hdpf:i option; do
+while getopts hdf:i option; do
   case $option in
   h)
     echo -e "  Some options are as follows:"
     echo "    -d,  print the choosable diagnostic variables which are not inside the WRF file"
     echo "    -f,  print the choosable variables inside the WRF file (need WRF file as argument)"
-    echo "    -p,  print the names of Iran provinces"
     echo "    -h,  display this help"
     echo "    -i,  PostWRF version and basic informations"
     ;;
   d) cat modules/readme ;;
-  p) cat modules/iran_provinces/provinces_list ;;
   f) if [[ $(echo $2 | rev | cut -c -3 | rev) == ".nc" ]]; then
     ncl_filedump $2 | grep "( Time, bottom_top, south_north, west_east" | awk '{print $2}' >.wrfvars
     ncl_filedump $2 | grep "( Time, bottom_top, south_north_stag, west_east )" | awk '{print $2}' >>.wrfvars
