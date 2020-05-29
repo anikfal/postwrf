@@ -9,6 +9,7 @@ PostWRF is a combination of NCAR Command Language (NCL) and Linux shell scripts 
    Before using the program, untar the 'iran_provinces_shapefiles.tar' file:
    
    cd modules/iran_provinces
+   
    tar xf iran_provinces_shapefiles.tar
 
 ---
