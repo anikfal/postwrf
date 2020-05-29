@@ -2,12 +2,12 @@
 =============================================================================
 Extract_On-Off                  = 0
 
-WRF_variable_name               = rh, T2, dust_pm10
-Location_names                  = tehran, ghom,
-Location_latitudes              = 33, 28,
-Location_longitudes             = 50, 42,
+WRF_variable_name               = dust_pm10
+Location_names                  = Berlin, London, Milan, Paris, Warsaw, Barcelona, Stockholm, Budapest
+Location_latitudes              = 52.52, 51.51, 45.46, 48.86, 52.23, 41.39, 59.32, 47.49
+Location_longitudes             = 13.40, 00.10, 09.19, 02.35, 21.01, 02.17, 18.07, 19.04
 
-+Vertical_profile_plot_on_off   = 1
++Vertical_profile_plot_on_off   = 0
 +Vprofile_X_axis_decimals       = 3
 -----------------------------------------------------------------------------
 
@@ -26,41 +26,43 @@ CONTOUR_ON_OFF                 = 0
 
 !!! Variable_1 by line contours !!!
 1st_Variable_on_off            = 1
-1st_Variable_name              = tk-273
-1st_Variable_pressure_level    = 700
-1st_Variable_intervals         = 5
-1st_Variable_line_color        = blue
-1st_Variable_line_thickness    = 0.5
-1st_Variable_label_size        = 0.5
+1st_Variable_name              = tc
+1st_Variable_pressure_level    = 500
+1st_Variable_intervals         = 4
+1st_Variable_line_color        = red
+1st_Variable_line_thickness    = 0.7
+1st_Variable_label_size        = 0.7
 
 !!! Variable_2 by (broken) line contours !!!
-2nd_Variable_on_off            = 1
-2nd_Variable_name              = tk+rh
-2nd_Variable_pressure_level    = 700
+2nd_Variable_on_off            = 0
+2nd_Variable_name              = T2
+2nd_Variable_pressure_level    = 0
 2nd_Variable_intervals         = 0
-2nd_Variable_line_color        = red
-2nd_Variable_line_thickness    = 0.5
-2nd_Variable_label_size        = 0.4
+2nd_Variable_line_color        = brown
+2nd_Variable_line_thickness    = 0.7
+2nd_Variable_label_size        = 0.7
 2nd_Variable_brokenline_on_off = 1
 
 !!! Variable_3 by filled (colored) contours !!!
 3rd_Variable_on_off            = 1
-3rd_Variable_name              = pvo
-3rd_Variable_pressure_level    = 0,
+3rd_Variable_name              = dust_pm10
+3rd_Variable_pressure_level    = 0
 
-Wind_Vectors_on_off            = 1
+Wind_Vectors_on_off            = 0
 Wind_Vectors_pressure_level    = 700
-Wind_Vectors_speed (m/s)       = 4
+Wind_Vectors_speed (m/s)       = 5
 Wind_Vectors_density           = 0.5
-Wind_Vectors_color             = black
-Wind_Vectors_thickness         = 0.5
+Wind_Vectors_color             = yellow
+Wind_Vectors_thickness         = 0.7
 
-Location_point_mark_on_off     = 1
+Location_point_mark_on_off     = 0
 Location_labels_on_off         = 1
-Location_labels_size           = 0.1
+Location_labels_size           = 0.2
 Location_labels_color          = black
 Shapefile_on-off               = 0
 Shapefile_path                 = /home/ah/postwrf/modules/iran_provinces/all.shp
+Province_on-off                = 0
+Province_name                  = tehran, kermanshah, kerman
 -----------------------------------------------------------------------------
 
 
@@ -68,29 +70,29 @@ Shapefile_path                 = /home/ah/postwrf/modules/iran_provinces/all.shp
 =============================================================================
 CROSSSECTION_ON-OFF            = 0
 
-CrossSection_path_on_off       = 1
-Topographic_map_on_off         = 1
+CrossSection_path_on_off       = 0
+Topographic_map_on_off         = 0
 
 !!! 3D Variable_1 by line contours !!!
 1st_var_on_off                 = 1
-1st_var_name                   = tk
-1st_var_intervals              = 10
-1st_var_line_color             = red
+1st_var_name                   = rh
+1st_var_intervals              = 20
+1st_var_line_color             = blue
 1st_var_line_thickness         = 0.5
-1st_var_label_size             = 0.5
+1st_var_label_size             = 0.4
 
 !!! 3D Variable_2 by (broken) line contours !!!
-2nd_var_on_off                 = 0
-2nd_var_name                   = (rh*td/10) ^ 2
-2nd_var_intervals              = 0
-2nd_var_line_color             = blue
+2nd_var_on_off                 = 1
+2nd_var_name                   = tv
+2nd_var_intervals              = 10
+2nd_var_line_color             = red
 2nd_var_line_thickness         = 0.5
 2nd_var_label_size             = 0.5
-2nd_var_brokenline_on_off      = 1
+2nd_var_brokenline_on_off      = 0
 
 !!! 3D Variable_3 by filled (colored) contours !!!
 3rd_var_on_off                 = 0
-3rd_var_name                   = dust_pm10
+3rd_var_name                   = tc
 -----------------------------------------------------------------------------
 
 
@@ -98,7 +100,7 @@ Topographic_map_on_off         = 1
 =============================================================================
 Domain_On-Off                    = 0
 
-namelist.wps_path (schematic)    = /home/ah/wrf4.1/WPS-master/namelist.wps
+namelist.wps_path (schematic)    = /home/ah/wrf/WPS/namelist.wps
 background_color (schematic)     = forestgreen
 lables_On-Off (schematic)        = 0
 
@@ -111,33 +113,33 @@ lables_On-Off (schematic)        = 0
 ============================= WIND ROSE DIAGRAM =============================
 =============================================================================
 windrose_On-Off                 = 0
-wind_location_name              = tehran
-wind_location_latitude          = 33
-wind_location_longitude         = 50
+wind_location_name              = Berlin
+wind_location_latitude          = 52.52
+wind_location_longitude         = 13.40
 -----------------------------------------------------------------------------
 
 
 =============================== SKEWT DIAGRAM ===============================
 =============================================================================
-skewT_On-Off                    = 0
-skewt_location_name             = Tehran_Station
-skewt_location_latitude         = 33
-skewt_location_longitude        = 50
+skewT_On-Off                    = 1
+skewt_location_name             = Berlin
+skewt_location_latitude         = 52.52
+skewt_location_longitude        = 13.40
 -----------------------------------------------------------------------------
 
 
 ============================= GENERAL SETTINGS ==============================
 =============================================================================
 spin-up_time (hours)            = 6
-averaging_on_off                = 1
+averaging_on_off                = 0
 average_time (hours)            = 12
-panel_plot__on_off              = 1
-panel_plot__rows_number         = 2
-panel_plot__columns_number      = 3
+panel_plot__on_off              = 0
+panel_plot__rows_number         = 1
+panel_plot__columns_number      = 2
 smooth_maps_on_off              = 1
 map_borderline_color            = black
-map_borderline_thickness        = 0.5
+map_borderline_thickness        = 0.7
 map_filled_ocean_on_off         = 1
 map_gridlines_on_off            = 1
-plot_titles_on_off              = 0
+plot_titles_on_off              = 1
 -----------------------------------------------------------------------------
