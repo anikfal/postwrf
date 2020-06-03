@@ -8,7 +8,7 @@ model outputs. PostWRF as an integrated system based on the `NCAR Command Langua
 and Linux shell scripts, acts as a bridge between atmospheric modeling and environmental science, and makes it possible for many environmental scientists to directly
 visualize the WRF model outputs, without any advanced knowledge in NCL scripting and WRF modeling system.
 
-PostWRF is publically available for download at:
+PostWRF is publically available for download:
  https://github.com/anikfal/PostWRF
 
 .. Go to the Satpy project_ page for source code and downloads.
