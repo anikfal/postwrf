@@ -3,7 +3,7 @@
 
 PostWRF is a combination of NCAR Command Language (NCL) and Linux shell scripts which makes it possible to visualize the WRF model outputs, without the need to be familiar with the NCL programming.
 
-Documentation: https://postwrf.readthedocs.io/en/master
+Documentations and user guide: https://postwrf.readthedocs.io/en/master
 
 ## Main capabilities:
 - Data extraction
