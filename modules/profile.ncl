@@ -121,16 +121,19 @@ if ( any(yy.eq.myvar) ) then ;abcdif
      profilevar  = f->DUST_1+f->DUST_2+f->DUST_3+f->DUST_4+f->DUST_5
      profilevar@description = "Total dust concentration"
      profilevar@units = "Micro_gram/kg_dry_air"
+     copy_VarCoords(f->DUST_4,profilevar)
 
  else if (myvar .eq. "dust_pm2.5") then
      profilevar  = f->DUST_1+0.3125*f->DUST_2
      profilevar@description = "Dust equal to PM2.5 concentration"
      profilevar@units = "Micro_gram/kg_dry_air"
+     copy_VarCoords(f->DUST_4,profilevar)
 
  else if (myvar .eq. "dust_pm10") then
      profilevar  = f->DUST_1+f->DUST_2+f->DUST_3+0.87*f->DUST_4
      profilevar@description = "Dust equal to PM10 concentration"
      profilevar@units = "Micro_gram/kg_dry_air"
+     copy_VarCoords(f->DUST_4,profilevar)
 
 else if (myvar .eq. "wind_s") then
      uu10  = wrf_user_getvar(f,"U10",-1)
