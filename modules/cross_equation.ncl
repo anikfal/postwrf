@@ -877,9 +877,14 @@ end if ;;code ifpoly1
     lower_bound1 = min1
   end if
   intv_range2 = upper_bound1 - lower_bound1
+  if (intv_range2 .eq. 0) then
+    intv_range2 = max1 - min1
+    upper_bound1 = max1
+    lower_bound1 = min1
+  end if
   opt11@cnLevelSelectionMode = "ManualLevels"
   if (NCLINTV1.eq.0 .or. NCLINTV1.gt.intv_range2) then
-    opt11@cnLevelSpacingF = intv_range2/10
+    opt11@cnLevelSpacingF = intv_range2/20
   else
     opt11@cnLevelSpacingF = NCLINTV1
   end if
@@ -1187,10 +1192,14 @@ tc_plane2 = (rh*td/10)^2  ;;;added_new_line_by_sed222
         lower_bound2 = min2
       end if
       intv_range3 = upper_bound2 - lower_bound2
+      if (intv_range3 .eq. 0) then
+        intv_range3 = max2 - min2
+        upper_bound2 = max2
+        lower_bound2 = min2
+      end if
       opt22@cnLevelSelectionMode = "ManualLevels"
-
       if (NCLINTV2.eq.0 .or. NCLINTV2.gt.intv_range3) then
-        opt22@cnLevelSpacingF = intv_range3/10
+        opt22@cnLevelSpacingF = intv_range3/20
       else
         opt22@cnLevelSpacingF = NCLINTV2
       end if
