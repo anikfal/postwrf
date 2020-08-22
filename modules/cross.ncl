@@ -737,7 +737,7 @@ if (NCL1VARONOFF.eq.1) then  ;processing VAR2
   end if
   opt11@cnLevelSelectionMode = "ManualLevels"
   if (NCLINTV1.eq.0 .or. NCLINTV1.gt.intv_range2) then
-    opt11@cnLevelSpacingF = intv_range2/10
+    opt11@cnLevelSpacingF = intv_range2/20
   else
     opt11@cnLevelSpacingF = NCLINTV1
   end if
@@ -906,7 +906,7 @@ if (mydim3.eq.3) then
   end if
   opt22@cnLevelSelectionMode = "ManualLevels"
   if (NCLINTV2.eq.0 .or. NCLINTV2.gt.intv_range3) then
-    opt22@cnLevelSpacingF = intv_range3/10
+    opt22@cnLevelSpacingF = intv_range3/20
   else
     opt22@cnLevelSpacingF = NCLINTV2
   end if
