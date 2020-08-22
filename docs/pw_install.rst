@@ -22,5 +22,5 @@ In case of more information, please see: `Installing NCL <https://www.ncl.ucar.e
 
 .. code-block:: bash
 
-    chmode +x postwrf.sh
-    chmode +x modules/*.sh
+    chmod +x postwrf.sh
+    chmod +x modules/*.sh
