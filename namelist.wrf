@@ -22,11 +22,11 @@ Geotiff_pressure_level       	= 500
 
 =============================== CONTOUR PLOT ================================
 =============================================================================
-CONTOUR_ON_OFF                 = 0
+CONTOUR_ON_OFF                 = 1
 
 !!! Variable_1 by line contours !!!
 1st_Variable_on_off            = 1
-1st_Variable_name              = tk-273
+1st_Variable_name              = tc
 1st_Variable_pressure_level    = 700
 1st_Variable_intervals         = 5
 1st_Variable_line_color        = blue
@@ -34,7 +34,7 @@ CONTOUR_ON_OFF                 = 0
 1st_Variable_label_size        = 0.5
 
 !!! Variable_2 by (broken) line contours !!!
-2nd_Variable_on_off            = 1
+2nd_Variable_on_off            = 0
 2nd_Variable_name              = tk+rh
 2nd_Variable_pressure_level    = 700
 2nd_Variable_intervals         = 0
@@ -44,19 +44,19 @@ CONTOUR_ON_OFF                 = 0
 2nd_Variable_brokenline_on_off = 1
 
 !!! Variable_3 by filled (colored) contours !!!
-3rd_Variable_on_off            = 1
+3rd_Variable_on_off            = 0
 3rd_Variable_name              = pvo
 3rd_Variable_pressure_level    = 0,
 
 Wind_Vectors_on_off            = 1
-Wind_Vectors_pressure_level    = 700
+Wind_Vectors_pressure_level    = 500
 Wind_Vectors_speed (m/s)       = 4
 Wind_Vectors_density           = 0.5
 Wind_Vectors_color             = black
 Wind_Vectors_thickness         = 0.5
 
-Location_point_mark_on_off     = 1
-Location_labels_on_off         = 1
+Location_point_mark_on_off     = 0
+Location_labels_on_off         = 0
 Location_labels_size           = 0.1
 Location_labels_color          = black
 Shapefile_on-off               = 0
@@ -73,8 +73,8 @@ Topographic_map_on_off         = 1
 
 !!! 3D Variable_1 by line contours !!!
 1st_var_on_off                 = 1
-1st_var_name                   = tk
-1st_var_intervals              = 10
+1st_var_name                   = QRAIN
+1st_var_intervals              = 0
 1st_var_line_color             = red
 1st_var_line_thickness         = 0.5
 1st_var_label_size             = 0.5
@@ -129,9 +129,9 @@ skewt_location_longitude        = 50
 ============================= GENERAL SETTINGS ==============================
 =============================================================================
 spin-up_time (hours)            = 6
-averaging_on_off                = 1
+averaging_on_off                = 0
 average_time (hours)            = 12
-panel_plot__on_off              = 1
+panel_plot__on_off              = 0
 panel_plot__rows_number         = 2
 panel_plot__columns_number      = 3
 smooth_maps_on_off              = 1
@@ -139,5 +139,5 @@ map_borderline_color            = black
 map_borderline_thickness        = 0.5
 map_filled_ocean_on_off         = 1
 map_gridlines_on_off            = 1
-plot_titles_on_off              = 0
+plot_titles_on_off              = 1
 -----------------------------------------------------------------------------
