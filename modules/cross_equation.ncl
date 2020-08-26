@@ -130,7 +130,7 @@ if (NCL3VARONOFF .eq. 1) then ; code pprggvar1 var333
         cnmode = getenv("contvar")
         cnmin = getenv("Min")
         cnmax = getenv("Max")
-        cnintv = getenv("Intv")
+        ; cnintv = getenv("Intv")
         contourcolorpal = getenv("colpal")
         
       if_polynom3 = polynoms_status(2)
@@ -360,11 +360,11 @@ if (NCL3VARONOFF .eq. 1) then ; code pprggvar1 var333
 
 
               ;;shell script333
-pvo = varlist[0]  ;;;added_new_line_by_sed333
+QCLOUD = varlist[0]  ;;;added_new_line_by_sed333
 
 
                   ;equation from namelist.wrf333
-tc_plane3 = pvo*1  ;;;added_new_line_by_sed333
+tc_plane3 = QCLOUD*1000  ;;;added_new_line_by_sed333
 
 
             copy_VarCoords(varlist[0],tc_plane3)
@@ -462,7 +462,8 @@ tc_plane3 = pvo*1  ;;;added_new_line_by_sed333
             if(cnmode .eq. "Manual") then  ; code abc123
             Nullcnmin = new(1,"logical")
             Nullcnmax = new(1,"logical")
-            if ((cnmin .eq. "NULL") .or. (cnmax .eq. "NULL") .or. (cnintv .eq. "NULL")) then
+            ; if ((cnmin .eq. "NULL") .or. (cnmax .eq. "NULL") .or. (cnintv .eq. "NULL")) then
+            if ((cnmin .eq. "NULL") .or. (cnmax .eq. "NULL")) then
             stats = new(2,"float")
             perc_limit = (/0.0833,0.9166/)
 
@@ -487,7 +488,12 @@ tc_plane3 = pvo*1  ;;;added_new_line_by_sed333
             MANcnmax = stats(1)
             end if
 
-            if (cnintv .eq. "NULL") then ; code abcnull
+            if ( (MANcnmax-MANcnmin) .eq. 0) then
+              MANcnmax = max(tc_plane3)
+              MANcnmin = min(tc_plane3)
+            end if
+
+            ; if (cnintv .eq. "NULL") then ; code abcnull
               if ((.not. ismissing(Nullcnmin)) .and. ismissing(Nullcnmax))
               cnmax2  = stringtofloat(cnmax)
               MANcnintv = (cnmax2-MANcnmin/10)
@@ -511,7 +517,7 @@ tc_plane3 = pvo*1  ;;;added_new_line_by_sed333
               end if
               end if
               end if
-            end if ; code abcnull
+            ; end if ; code abcnull
 
             end if ; if for code abc123
 
@@ -562,12 +568,12 @@ tc_plane3 = pvo*1  ;;;added_new_line_by_sed333
                     cnmax3  = stringtofloat(cnmax)
                     opt33@cnMaxLevelValF = cnmax3
                     end if
-                    if (cnintv .eq. "NULL") then
+                    ; if (cnintv .eq. "NULL") then
                     opt33@cnLevelSpacingF = MANcnintv
-                    else
-                    cnintv3  = stringtofloat(cnintv)
-                    opt33@cnLevelSpacingF = cnintv3
-                    end if
+                    ; else
+                    ; cnintv3  = stringtofloat(cnintv)
+                    ; opt33@cnLevelSpacingF = cnintv3
+                    ; end if
                   end if
 
                     opt33@cnLineLabelDensityF = 1
@@ -836,11 +842,11 @@ if (NCL1VARONOFF.eq.1) then  ;processing var111
       end do ;;code docheck22
 
               ;;shell script111
-tk = varlist[0]  ;;;added_new_line_by_sed111
+QRAIN = varlist[0]  ;;;added_new_line_by_sed111
 
 
         ;equation from namelist.wrf111
-tc_plane1 = tk*1  ;;;added_new_line_by_sed111
+tc_plane1 = QRAIN*1000  ;;;added_new_line_by_sed111
 
 copy_VarCoords(varlist[0],tc_plane1)
 copy_VarAtts(varlist[0],tc_plane1)

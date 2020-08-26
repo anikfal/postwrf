@@ -277,7 +277,7 @@ end if
   cnmode = getenv("contvar")
   cnmin = getenv("Min")
   cnmax = getenv("Max")
-  cnintv = getenv("Intv")
+  ; cnintv = getenv("Intv")
   contourcolorpal = getenv("colpal")
 
   if (NCLCNVAR3 .eq. "cape_surface") then
@@ -461,7 +461,8 @@ BandW2 = (/"(/0, 0, 0/)","(/0.1, 0.1, 0.1/)","(/0.2, 0.2, 0.2/)","(/0.3, 0.3, 0.
  if(cnmode .eq. "Manual") then  ; code abc123
 Nullcnmin = new(1,"logical")
 Nullcnmax = new(1,"logical")
-if ((cnmin .eq. "NULL") .or. (cnmax .eq. "NULL") .or. (cnintv .eq. "NULL")) then
+; if ((cnmin .eq. "NULL") .or. (cnmax .eq. "NULL") .or. (cnintv .eq. "NULL")) then
+if ((cnmin .eq. "NULL") .or. (cnmax .eq. "NULL")) then
 stats = new(2,"float")
 perc_limit = (/0.0833,0.9166/)
 
@@ -486,7 +487,12 @@ Nullcnmax = True
 MANcnmax = stats(1)
 end if
 
-if (cnintv .eq. "NULL") then ; code abcnull
+if ( (MANcnmax-MANcnmin) .eq. 0) then
+  MANcnmax = max(tc_plane33)
+  MANcnmin = min(tc_plane33)
+end if
+
+; if (cnintv .eq. "NULL") then ; code abcnull
   if ((.not. ismissing(Nullcnmin)) .and. ismissing(Nullcnmax))
    cnmax2  = stringtofloat(cnmax)
    MANcnintv = (cnmax2-MANcnmin/10)
@@ -510,7 +516,7 @@ if (cnintv .eq. "NULL") then ; code abcnull
    end if
    end if
    end if
-end if ; code abcnull
+; end if ; code abcnull
 
 end if ; if for code abc123
 
@@ -548,7 +554,7 @@ end if ; if for code abc123
 end if
   
        if(cnmode .eq. "Manual") then
-       opt33@cnLevelSelectionMode = "ManualLevels"
+        opt33@cnLevelSelectionMode = "ManualLevels"
         if (cnmin .eq. "NULL") then
         opt33@cnMinLevelValF = MANcnmin
         else
@@ -561,12 +567,12 @@ end if
         cnmax3  = stringtofloat(cnmax)
         opt33@cnMaxLevelValF = cnmax3
         end if
-        if (cnintv .eq. "NULL") then
+        ; if (cnintv .eq. "NULL") then
         opt33@cnLevelSpacingF = MANcnintv
-        else
-        cnintv3  = stringtofloat(cnintv)
-        opt33@cnLevelSpacingF = cnintv3
-        end if
+        ; else
+        ; cnintv3  = stringtofloat(cnintv)
+        ; opt33@cnLevelSpacingF = cnintv3
+        ; end if
        end if
 
         opt33@cnLineLabelDensityF = 1
@@ -930,7 +936,7 @@ if (panel_onoff.ne.1 .or. (NCLpanelrows.eq.1 .and. NCLpanelcolumns.eq.1)) then
 end if
 
 over_plot = new (totstepsminus+1, graphic)
-dum1 = new (totstepsminus+1, graphic)
+; dum1 = new (totstepsminus+1, graphic)
 
 wks = gsn_open_wks(type,crossname)
   kk = 0 

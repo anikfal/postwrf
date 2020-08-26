@@ -131,7 +131,7 @@ if [[ ${xTHIRDVAR_ONOFF} == "1" ]]; then #code aaah
         Max="NULL"
       fi
       echo ""
-      Intv="NULL"
+      # Intv="NULL"
       ;;
     *) echo -e "\nContours Will Be Plotted Automatically." ;;
     esac
@@ -140,7 +140,7 @@ if [[ ${xTHIRDVAR_ONOFF} == "1" ]]; then #code aaah
   export contvar
   export Min
   export Max
-  export Intv
+  # export Intv
 
   echo -e "\nSelect a color pattern from the list below (a number from 1 to 10):"
   select colpal in "Rainbow-start_from_blue" "Rainbow-start_from_red" "Rainbow+white-start_from_white" "Blue..Red" "Blue" "Red" "Green" "White..Yellow..Orange..Red" "White..Black" "Black..White"; do
