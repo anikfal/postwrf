@@ -10,6 +10,7 @@ my_exit() {
   rm .listfile 2>/dev/null
   rm .AllWRFVariables 2>/dev/null
   cd $postwrf_dir
+  rm modules/wrfout_d0*
   rm variablesCN1.txt variablesCN2.txt variablesCN3.txt eqname equnit totalequation.txt variables.txt 2>/dev/null
 }
 while getopts hdf:i option; do
