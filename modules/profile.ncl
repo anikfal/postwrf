@@ -234,7 +234,7 @@ end if
   end if
   kk = 0
   if (NCLaverage_onoff .ne. 1) then ;code average467
-    do it = start_timestep, ntimes-1,ncltstep
+    do it = start_timestep, ntimes,ncltstep
       if (NCLtitle .eq. 1) then
         res@tiMainString      = times(it)
       end if
