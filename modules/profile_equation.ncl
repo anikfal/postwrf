@@ -187,15 +187,14 @@ end do ;;code docheck22
 if (validvar) then ;validvar 5003
 
 ;;;shell script
-tc = varlist[1]  ;;;added_new_line_by_sed
 rh = varlist[0]  ;;;added_new_line_by_sed
 
 ;;;equation from namelist.wrf
-tc2 = (rh+tc/10)^2  ;;;added_new_line_by_sed
+tc2 = rh*100  ;;;added_new_line_by_sed
 system("cd $postwrf_dir/modules && ./extract_getinput.sh")
-system("ln -sf ../modules/eqname .")
+system("ln -sf $postwrf_dir/modules/eqname .")
  eqname = asciiread("eqname", -1, "string")
- system("ln -sf ../modules/equnit .")
+ system("ln -sf $postwrf_dir/modules/equnit .")
  equnit = asciiread("equnit", -1, "string")
 
   profilevar = tc2
@@ -270,7 +269,7 @@ system("ln -sf ../modules/eqname .")
   end if
   kk = 0
   if (NCLaverage_onoff .ne. 1) then ;code average467
-    do it = start_timestep, ntimes-1,ncltstep
+    do it = start_timestep, ntimes,ncltstep
       if (NCLtitle .eq. 1) then
         res@tiMainString      = times(it)
       end if

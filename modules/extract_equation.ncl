@@ -224,12 +224,11 @@ end do ;;code docheck22
 if (validvar) then
 
 ;;;shell script
-tc = varlist[1]  ;;;added_new_line_by_sed
 rh = varlist[0]  ;;;added_new_line_by_sed
 
 
 ;;;equation from namelist.wrf
-tc2 = (rh+tc/10)^2  ;;;added_new_line_by_sed
+tc2 = rh*100  ;;;added_new_line_by_sed
 system("cd $postwrf_dir/modules && ./extract_getinput.sh")
 system("ln -sf ../modules/eqname .")
  eqname = asciiread("eqname", -1, "string")

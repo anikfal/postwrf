@@ -23,10 +23,11 @@ my_exit() {
               done
               unset rmcounter
        fi
+       cd $postwrf_dir && rm extract*.ncl profile*.ncl 2>/dev/null
 }
 wrfout2=$(echo $wrfout | awk -F/ '{print $NF}') #For naming, NCL must be run by wrfout, not wrfout2
 
-if [[ $verticalplotonoff != 1 ]]; then
+if [[ $verticalplotonoff != 1 ]]; then #if not profile (if extraction)
        echo -e "\n---------------------------------------------------------------"
        echo -e "Method of grid interpolation: 1, 2, or 3?\n"
        select interpolvar in "NearestPoint" "Bilinear" "IDW"; do
@@ -65,7 +66,7 @@ if [[ $verticalplotonoff != 1 ]]; then
        rm -f variables.txt 2>/dev/null
        unlink extract_equation.ncl 2>/dev/null
        echo -e "\nPostWRF: Extracting variables finished.\n"
-else
+else #profile
        myvar="Vprofile_X_axis_decimals"
        verticaldecimal=$(sed -n "/$myvar/p" namelist.wrf | awk -F"=" '{print $NF}' | cut -d, -f1) #only one var is read
        export verticaldecimal=$(echo $verticaldecimal)                                            #Remove spaces
@@ -128,17 +129,18 @@ else
 
        if [[ ${imgfmt} == "x11" ]]; then
               ncl -Q $postwrf_dir/modules/profile.ncl
+              rm extrac*ncl profile*ncl *.txt 2>/dev/null
        else
               mkdir -p outputs_$wrfout2
               ln -sf $postwrf_dir/.AllWRFVariables $postwrf_dir/modules
               cd outputs_$wrfout2
-              ln -s ../wrfout* .
-              ln -s ../.AllWRFVariables .
+              ln -sf ../wrfout* .
+              ln -sf ../.AllWRFVariables .
               echo -e "\nPostWRF: Extracting variables by vertical plots ...\n"
-              ln -s ../modules/profile.ncl .
+              ln -sf ../modules/profile.ncl .
               ncl -Q profile.ncl
               rm wrfout* 2>/dev/null
-              unlink profile.ncl 2>/dev/null
+              rm *.ncl eqname equnit *.txt  2>/dev/null
               mv ../modules/*.pdf . 2>/dev/null
               mv ../modules/*.png . 2>/dev/null
               unlink contourlvl.ncl 2>/dev/null
