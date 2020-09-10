@@ -8,14 +8,49 @@ begin
   NCLpanelrows = tointeger(getenv("panelrows"))
   NCLpanelcolumns = tointeger(getenv("panelcolumns"))
   NCLspinup = tointeger(getenv("spinup"))
-  myfile = getenv("wrfout")
-  if (ismissing(str_match(myfile,"/"))) then
+
+myfile = systemfunc("ls postwrf_wrfout*")
+var = str_match(myfile,"/" )
+multiwrf_num = dimsizes(myfile)
+if (multiwrf_num .eq. 1) then
+  if (ismissing(var)) then
     dir = systemfunc("pwd")
-    f = addfile(dir + "/" + myfile,"r")
-  else
+    f = addfile(dir + "/" + myfile, "r")
+    else
     f = addfile(myfile,"r")
   end if
-  all_steps=f->XTIME
+  else ;if not equal to 1 (multiple files are selected)
+  if (ismissing(var)) then
+    dir = systemfunc("pwd")
+    f = addfiles(dir + "/" + myfile,"r")
+    else
+    f = addfiles(myfile,"r")
+  end if
+
+  ;Checking for correct file selection
+  attnum = (/1,3,4,5,6,7/)
+  atts = new( (/multiwrf_num, 6/), "string")
+  do ii = 0, multiwrf_num-1
+    fileatts := getvaratts(f[ii])
+    atts(ii,0) = f[ii]@$fileatts(2)$
+    atts(ii,1) = f[ii]@$fileatts(3)$
+    atts(ii,2) = f[ii]@$fileatts(4)$
+    atts(ii,3) = f[ii]@$fileatts(5)$
+    atts(ii,4) = f[ii]@$fileatts(6)$
+    atts(ii,5) = f[ii]@$fileatts(7)$
+  end do
+  atts_transpose = transpose(atts)
+  do ii = 0, 5
+    if ( any( atts_transpose(ii,:).ne.atts_transpose(ii,0) ) ) then
+     print("")
+     print("Error: Selected files are not for the same WRF run")
+     print("Try again with correct file numbers")
+     exit()
+    end if
+  end do
+end if
+
+  all_steps = wrf_user_getvar(f, "XTIME", -1)
   hourstep = (all_steps(1) - all_steps(0))/60
   if (NCLspinup.ge.hourstep) then
   start_timestep = tointeger(NCLspinup/hourstep)
@@ -118,22 +153,24 @@ if ( any(yy.eq.myvar) ) then ;abcdif
      profilevar = profilevar2(2,:,:,:)
 
  else if (myvar .eq. "dust_total") then
-     profilevar  = f->DUST_1+f->DUST_2+f->DUST_3+f->DUST_4+f->DUST_5
+     profilevar = wrf_user_getvar(f, "DUST_1", -1) + wrf_user_getvar(f, "DUST_2", -1) + wrf_user_getvar(f, "DUST_3", -1) \
+     + wrf_user_getvar(f, "DUST_4", -1) + wrf_user_getvar(f, "DUST_5", -1)
      profilevar@description = "Total dust concentration"
      profilevar@units = "Micro_gram/kg_dry_air"
-     copy_VarCoords(f->DUST_4,profilevar)
+     copy_VarCoords(wrf_user_getvar(f, "DUST_4", -1),profilevar)
 
  else if (myvar .eq. "dust_pm2.5") then
-     profilevar  = f->DUST_1+0.3125*f->DUST_2
+     profilevar = wrf_user_getvar(f, "DUST_1", -1) + 0.3125*wrf_user_getvar(f, "DUST_2", -1)
      profilevar@description = "Dust equal to PM2.5 concentration"
      profilevar@units = "Micro_gram/kg_dry_air"
-     copy_VarCoords(f->DUST_4,profilevar)
+     copy_VarCoords(wrf_user_getvar(f, "DUST_4", -1),profilevar)
 
  else if (myvar .eq. "dust_pm10") then
-     profilevar  = f->DUST_1+f->DUST_2+f->DUST_3+0.87*f->DUST_4
+     profilevar = wrf_user_getvar(f, "DUST_1", -1) + wrf_user_getvar(f, "DUST_2", -1) + wrf_user_getvar(f, "DUST_3", -1) \
+     + 0.87*wrf_user_getvar(f, "DUST_4", -1)
      profilevar@description = "Dust equal to PM10 concentration"
      profilevar@units = "Micro_gram/kg_dry_air"
-     copy_VarCoords(f->DUST_4,profilevar)
+     copy_VarCoords(wrf_user_getvar(f, "DUST_4", -1),profilevar)
 
 else if (myvar .eq. "wind_s") then
      uu10  = wrf_user_getvar(f,"U10",-1)
@@ -274,7 +311,7 @@ end if
 
   else ;code average467
 
-    do it = start_timestep, ntimes-1,ncltstep
+    do it = start_timestep, ntimes,ncltstep
       if (NCLtitle .eq. 1) then
         tstart = str_split(times(it), ":")
         tend = str_split(times(it+ncltstep), ":")

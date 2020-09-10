@@ -9,18 +9,49 @@ begin
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;Import from shell
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
- myfile = getenv("wrfout")
- var = str_match(myfile,"/" )
-if (ismissing(var)) then
-  dir = systemfunc("pwd")
-  f = addfile(dir + "/" + myfile,"r")
-else
-  f = addfile(myfile,"r")
+myfile = systemfunc("ls postwrf_wrfout*")
+var = str_match(myfile,"/" )
+multiwrf_num = dimsizes(myfile)
+if (multiwrf_num .eq. 1) then
+  if (ismissing(var)) then
+    dir = systemfunc("pwd")
+    f = addfile(dir + "/" + myfile, "r")
+    else
+    f = addfile(myfile,"r")
+  end if
+  else ;if not equal to 1 (multiple files are selected)
+  if (ismissing(var)) then
+    dir = systemfunc("pwd")
+    f = addfiles(dir + "/" + myfile,"r")
+    else
+    f = addfiles(myfile,"r")
+  end if
+
+  ;Checking for correct file selection
+  atts = new( (/multiwrf_num, 6/), "string")
+  do ii = 0, multiwrf_num-1
+    fileatts := getvaratts(f[ii])
+    atts(ii,0) = f[ii]@$fileatts(2)$
+    atts(ii,1) = f[ii]@$fileatts(3)$
+    atts(ii,2) = f[ii]@$fileatts(4)$
+    atts(ii,3) = f[ii]@$fileatts(5)$
+    atts(ii,4) = f[ii]@$fileatts(6)$
+    atts(ii,5) = f[ii]@$fileatts(7)$
+  end do
+  atts_transpose = transpose(atts)
+  do ii = 0, 5
+    if ( any( atts_transpose(ii,:).ne.atts_transpose(ii,0) ) ) then
+     print("")
+     print("Error: Selected files are not for the same WRF run")
+     print("Try again with correct file numbers")
+     exit()
+    end if
+  end do
 end if
 
 NCLspinup = tointeger(getenv("spinup"))
 NCLaverage_onoff = tointeger(getenv("average_onoff"))
-all_steps=f->XTIME
+all_steps = wrf_user_getvar(f, "XTIME", -1)
 hourstep = (all_steps(1) - all_steps(0))/60
 if (NCLspinup.ge.hourstep) then
  start_timestep = tointeger(NCLspinup/hourstep)
@@ -76,10 +107,10 @@ delete(i)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;; Continue
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-  lat2d = f->XLAT(0,:,:)
-  lon2d = f->XLONG(0,:,:)
+lat2d = wrf_user_getvar(f, "XLAT", 0)
+lon2d = wrf_user_getvar(f, "XLONG", 0)
   cr = inttochar(10)
-  mdims = getfilevardimsizes(f,"U") ; get some dimension sizes for the file
+  mdims = dimsizes(wrf_user_getvar(f, "U", -1)) ; get some dimension sizes for the file
   nd = dimsizes(mdims)
 loc1=new(2,"float")
 loc2=loc1
@@ -162,17 +193,19 @@ if ( any(yy.eq.NCLvarnames(ii)) ) then ;abcdif
      tc2 = tc3(2,:,:,:)
 
  else if (NCLvarnames(ii) .eq. "dust_total") then
-     tc2  = f->DUST_1+f->DUST_2+f->DUST_3+f->DUST_4+f->DUST_5
+     tc2 = wrf_user_getvar(f, "DUST_1", -1) + wrf_user_getvar(f, "DUST_2", -1) + wrf_user_getvar(f, "DUST_3", -1) \
+     + wrf_user_getvar(f, "DUST_4", -1) + wrf_user_getvar(f, "DUST_5", -1)
      tc2@description = "Total dust concentration"
      tc2@units = "Micro_gram/kg_dry_air"
 
  else if (NCLvarnames(ii) .eq. "dust_pm2.5") then
-     tc2  = f->DUST_1+0.3125*f->DUST_2
+     tc2 = wrf_user_getvar(f, "DUST_1", -1) + 0.3125*wrf_user_getvar(f, "DUST_2", -1)
      tc2@description = "Dust equal to PM2.5 concentration"
      tc2@units = "Micro_gram/kg_dry_air"
 
  else if (NCLvarnames(ii) .eq. "dust_pm10") then
-     tc2  = f->DUST_1+f->DUST_2+f->DUST_3+0.87*f->DUST_4
+     tc2 = wrf_user_getvar(f, "DUST_1", -1) + wrf_user_getvar(f, "DUST_2", -1) + wrf_user_getvar(f, "DUST_3", -1) \
+     + 0.87*wrf_user_getvar(f, "DUST_4", -1)
      tc2@description = "Dust equal to PM10 concentration"
      tc2@units = "Micro_gram/kg_dry_air"
 

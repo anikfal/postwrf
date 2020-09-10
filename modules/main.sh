@@ -13,7 +13,7 @@ count=0
 my_exit() {
   curdir2=$(pwd)
   rm timestep_file 2>/dev/null
-  rm .AllWRFVariables 2>/dev/null
+  rm .AllWRFVariables postwrf_wrfout* 2>/dev/null
   if [[ $curdir != $curdir2 ]]; then
 
     wrflist2=$(ls wrfout*)
@@ -455,35 +455,8 @@ if [[ $contour_onoff == 1 ]]; then                                              
   shape_path=$(echo ${shape_path}) #Remove spaces
   export shape_path
   unset myvar
-
-  ##------------------------------------------------------------------------------------------------
- # myvar="Province_on-off"
- # province_onoff=$(sed -n "/$myvar/p" namelist.wrf | awk -F"=" '{print $NF}')
- # province_onoff=$(echo ${province_onoff}) #Remove spaces
- # export province_onoff
- # unset myvar
- export province_onoff=0
-
-  ##------------------------------------------------------------------------------------------------
-  # myvar="Province_name"
-  # countline
-  # export province_num=$numlinevars #Zero (0) is included in the line numbers
-  # varcount=0
-  # while [[ $varcount -lt $numlinevars ]]; do
-  #   province_names[$varcount]=$(sed -n "/$myvar/p" namelist.wrf | awk -F"=" '{print $NF}' | cut -d, -f$((varcount + 1)))
-  #   province_names[$varcount]=$(echo ${province_names[$varcount]}) #Remove spaces
-  #   varcount=$((varcount + 1))
-  # done
-  # unset varcount
+  export province_onoff=0
   export province_num=1
-
-  # varcount=0
-  # while [[ $varcount -lt $numlinevars ]]; do
-  #   declare ncl_province_names$varcount=${province_names[$varcount]}
-  #   export ncl_province_names$varcount
-  #   varcount=$((varcount + 1))
-  # done
-  # unset myvar
   export ncl_province_names0="Anzali"
 fi
 
@@ -679,63 +652,82 @@ if [[ $extractonoff == 1 || $GEOTIFF_ONOFF == 1 || $contour_onoff == 1 || $cross
     echo ""
   fi
 
-  if [ -z "$wrfout" ]; then #code abc
-    wrflist=$(ls wrfout_d* 2>/dev/null)
-    wrflistvar=$(echo $wrflist | wc -w)
-    if [ -z "$wrflist" ]; then
-      echo "      No WRF output files in the current directory."
-      echo "      You can link or copy one or more files to the current directory."
-      nofile=True
-    elif [ $wrflistvar == 1 ]; then
-      wrfout=$wrflist
-      echo -e "\n"$wrfout" has been selected in the current directory.\n"
-    else
-      echo -e "There are multiple wrf-files in the current directory:\n"
-      COUNTER=0
-      ls wrfout* >.listfile
-      while [ $COUNTER -lt $wrflistvar ]; do
-        wrffile[$COUNTER]=$(sed -n "$((COUNTER + 1)) p" .listfile)
-        COUNTER=$((COUNTER + 1))
-      done
-      COUNTER=0
-      while [ $COUNTER -lt $wrflistvar ]; do
-        echo -e "   $((COUNTER + 1))) ${wrffile[$COUNTER]}"
-        COUNTER=$((COUNTER + 1))
-      done
-      echo ""
-      unset COUNTER
-      varrr=True
-      while [ $varrr == True ]; do
-        read -p "Enter the number of the favored file: " filenum
-        if [[ $filenum -le $wrflistvar && $filenum -ge 1 ]] 2>/dev/null; then
-          wrfout=${wrffile[$((filenum - 1))]}
-          break
-        fi
-        echo " Not valid. Select an integer between 1 to" $wrflistvar "..."
-      done
-      echo -e "\n"$wrfout" has been selected\n"
-      unset filenum
-      rm -f .listfile
+if [ -z "$wrfout" ]; then #code abc
+  wrflist=$(ls wrfout_d* 2>/dev/null)
+  wrflistvar=$(echo $wrflist | wc -w)
+  if [ -z "$wrflist" ]; then
+    echo "      No WRF output files in the current directory."
+    echo "      You can link or copy one or more files to the current directory."
+    nofile=True
+  elif [ $wrflistvar == 1 ]; then
+    wrfout=$wrflist
+    echo -e "\n"$wrfout" has been selected in the current directory.\n"
+  else
+    echo -e "There are multiple wrf-files in the current directory:\n"
+    COUNTER=0
+    ls wrfout* >.listfile
+    while [ $COUNTER -lt $wrflistvar ]; do
+      wrffile[$COUNTER]=$(sed -n "$((COUNTER + 1)) p" .listfile)
+      COUNTER=$((COUNTER + 1))
+    done
+    COUNTER=0
+    while [ $COUNTER -lt $wrflistvar ]; do
+      echo -e "   $((COUNTER + 1))) ${wrffile[$COUNTER]}"
+      COUNTER=$((COUNTER + 1))
+    done
+    echo ""
+    unset COUNTER
+
+    read -p "Enter the number of the favored file: " filenum
+    wrfcount=$(echo $filenum | awk -F',' '{ print NF }')
+    wrflastcomma=$(echo $filenum | rev | cut -c1)
+    if [[ $wrflastcomma == "," ]]; then
+      wrfcount=$((wrfcount - 1))
     fi
-  fi #code abc
+
+    varcount=0
+    echo ""
+    while [ $varcount -lt $wrfcount ]; do
+      wrfnum[$varcount]=$(echo $filenum | awk -F"=" '{print $NF}' | cut -d, -f$((varcount + 1))) #separating wrf number
+      wrfnum[$varcount]=$(echo ${wrfnum[$varcount]})                                             #Remove spaces
+      # selectedwrf=${wrffile[${wrfnum[$varcount]}]}
+      if [[ ${wrfnum[$varcount]} -gt $wrflistvar || ${wrfnum[$varcount]} -lt 1 ]] 2>/dev/null; then
+        echo -e "\nError in file number:"
+        echo ${wrfnum[$varcount]} is out of the range 1 to $wrflistvar
+        echo Run again with correct file numbers.
+        break
+      fi
+      wrfnum_minus=$((wrfnum[$varcount] - 1))
+      selectedwrf=${wrffile[$wrfnum_minus]}
+      # ln -f $postwrf_dir/$selectedwrf $postwrf_dir/modules
+      ln $postwrf_dir/$selectedwrf $postwrf_dir/postwrf_$selectedwrf
+      echo $selectedwrf has been selected
+      varcount=$((varcount + 1))
+    done
+    echo ""
+    unset varcount
+    unset filenum
+    rm -f .listfile
+  fi
+fi #code abc
 
   if [[ $nofile == False ]]; then
     diagvars=("ua" "va" "wa" "tc" "tk" "td" "td2" "th" "theta" "tv" "twb" "eth" "slp" "p" "pres" "pressure" "geopotential" "geopt" "rh"
       "rh2" "z" "height" "ter" "pvo" "pw" "avo" "cape_surface" "cin_surface" "cape_3d" "cin_3d" "ctt" "dbz" "mdbz" "helicity"
       "omg" "updraft_helicity" "dust_total" "dust_pm10" "dust_pm2.5" "wind_s" "wind_d" "lcl" "lfc")
 
-    if [ $(echo $wrfout | rev | cut -c -3 | rev) == ".nc" ]; then
-      ncl_filedump $wrfout | grep "( Time, bottom_top, south_north, west_east" | awk '{print $2}' >.wrfvars
-      ncl_filedump $wrfout | grep "( Time, bottom_top, south_north_stag, west_east )" | awk '{print $2}' >>.wrfvars
-      ncl_filedump $wrfout | grep "( Time, south_north, west_east" | awk '{print $2}' >>.wrfvars
-      ncl_filedump $wrfout | grep float | awk '{print $2}' >.AllWRFVariables
-      ncl_filedump $wrfout | grep "Variable" | grep -v "f" | awk '{print $2}' >>.AllWRFVariables
+    if [ $(echo $selectedwrf | rev | cut -c -3 | rev) == ".nc" ]; then
+      ncl_filedump $selectedwrf | grep "( Time, bottom_top, south_north, west_east" | awk '{print $2}' >.wrfvars
+      ncl_filedump $selectedwrf | grep "( Time, bottom_top, south_north_stag, west_east )" | awk '{print $2}' >>.wrfvars
+      ncl_filedump $selectedwrf | grep "( Time, south_north, west_east" | awk '{print $2}' >>.wrfvars
+      ncl_filedump $selectedwrf | grep float | awk '{print $2}' >.AllWRFVariables
+      ncl_filedump $selectedwrf | grep "Variable" | grep -v "f" | awk '{print $2}' >>.AllWRFVariables
     else
-      ncl_filedump "$wrfout.nc" | grep "( Time, bottom_top, south_north, west_east" | awk '{print $2}' >.wrfvars
-      ncl_filedump "$wrfout.nc" | grep "( Time, bottom_top, south_north_stag, west_east )" | awk '{print $2}' >>.wrfvars
-      ncl_filedump "$wrfout.nc" | grep "( Time, south_north, west_east" | awk '{print $2}' >>.wrfvars
-      ncl_filedump "$wrfout.nc" | grep float | awk '{print $2}' >.AllWRFVariables
-      ncl_filedump "$wrfout.nc" | grep "Variable" | grep -v "f" | awk '{print $2}' >>.AllWRFVariables
+      ncl_filedump "$selectedwrf.nc" | grep "( Time, bottom_top, south_north, west_east" | awk '{print $2}' >.wrfvars
+      ncl_filedump "$selectedwrf.nc" | grep "( Time, bottom_top, south_north_stag, west_east )" | awk '{print $2}' >>.wrfvars
+      ncl_filedump "$selectedwrf.nc" | grep "( Time, south_north, west_east" | awk '{print $2}' >>.wrfvars
+      ncl_filedump "$selectedwrf.nc" | grep float | awk '{print $2}' >.AllWRFVariables
+      ncl_filedump "$selectedwrf.nc" | grep "Variable" | grep -v "f" | awk '{print $2}' >>.AllWRFVariables
     fi
     varcount=0
     diagcount=${#diagvars[@]}
@@ -744,9 +736,6 @@ if [[ $extractonoff == 1 || $GEOTIFF_ONOFF == 1 || $contour_onoff == 1 || $cross
       varcount=$((varcount + 1))
     done
     unset varcount
-    export wrfout
-    wrfout2=$(echo $wrfout | awk -F/ '{print $NF}') #Just for naming. NCL uses wrfout, not wrfout2
-    ln -sf $postwrf_dir/$wrfout $postwrf_dir/modules
     ###################################################################################
     ####################                 NCL            ###############################
     ###################################################################################
@@ -851,3 +840,4 @@ if [[ $extractonoff == 1 || $GEOTIFF_ONOFF == 1 || $contour_onoff == 1 || $cross
 fi #if nofile is false
 rm -f .wrfvars 2>/dev/null
 rm -f .AllWRFVariables 2>/dev/null
+rm -f postwrf_wrfout* 2>/dev/null
