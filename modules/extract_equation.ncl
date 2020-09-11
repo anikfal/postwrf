@@ -255,12 +255,12 @@ end do ;;code docheck22
 if (validvar) then
 
 ;;;shell script
-T2 = varlist[1]  ;;;added_new_line_by_sed
+tk = varlist[1]  ;;;added_new_line_by_sed
 rh = varlist[0]  ;;;added_new_line_by_sed
 
 
 ;;;equation from namelist.wrf
-tc2 = rh*(T2^0.5)  ;;;added_new_line_by_sed
+tc2 = rh*(tk^0.5)  ;;;added_new_line_by_sed
 system("cd $postwrf_dir/modules && ./extract_getinput.sh")
 system("ln -sf ../modules/eqname .")
  eqname = asciiread("eqname", -1, "string")
@@ -277,9 +277,9 @@ tc2@units = equnit
 if (NCLaverage_onoff.ne.1) then  ;average_OFF code qwe
 
  if (dimsizes(dimsizes(tc2)) .eq. 3) then
-  xTemp = new((/LocNum,dimsizes(tc2(:,0,0))/),typeof(tc2))
+  xTemp = new((/LocNum,dimsizes(tc2(start_timestep:,0,0))/),typeof(tc2))
  else if (dimsizes(dimsizes(tc2)) .eq. 4) then
-  xTemp = new((/LocNum,dimsizes(tc2(:,0,0,0))/),typeof(tc2))
+  xTemp = new((/LocNum,dimsizes(tc2(start_timestep:,0,0,0))/),typeof(tc2))
  end if
  end if 
 
@@ -291,9 +291,9 @@ if (interpolvar .eq. "NearestPoint")
  nm = getind_latlon2d (lat2d,lon2d, lat, lon)
  do while(n.le.(LocNum-1))
   if (dimsizes(dimsizes(tc2)) .eq. 3) then
-   xTemp(n,:) = xTemp(n,:) + tc2(:,nm(n,0),nm(n,1))
+   xTemp(n,:) = xTemp(n,:) + tc2(start_timestep:,nm(n,0),nm(n,1))
   else if (dimsizes(dimsizes(tc2)) .eq. 4) then
-   xTemp(n,:) = xTemp(n,:) + tc2(:,0,nm(n,0),nm(n,1))
+   xTemp(n,:) = xTemp(n,:) + tc2(start_timestep:,0,nm(n,0),nm(n,1))
   end if
   end if
  n=n+1
@@ -302,10 +302,10 @@ else if (interpolvar .eq. "Bilinear")
 do while(n.le.(LocNum-1))
  if (dimsizes(dimsizes(tc2)) .eq. 3) then
    interp =  rcm2points (lat2d, lon2d, tc2, lat, lon, 2)
-   xTemp(n,:) = xTemp(n,:) + interp(:,n)
+   xTemp(n,:) = xTemp(n,:) + interp(start_timestep:,n)
  else if (dimsizes(dimsizes(tc2)) .eq. 4) then
   interp =  rcm2points (lat2d, lon2d, tc2(:,0,:,:), lat, lon, 2)
-  xTemp(n,:) = xTemp(n,:) + interp(:,n)
+  xTemp(n,:) = xTemp(n,:) + interp(start_timestep:,n)
  end if
  end if
  n=n+1
@@ -314,10 +314,10 @@ else if (interpolvar .eq. "IDW")
 do while(n.le.(LocNum-1))
  if (dimsizes(dimsizes(tc2)) .eq. 3) then
    interp =  rcm2points (lat2d, lon2d, tc2, lat, lon, 0)
-   xTemp(n,:) = xTemp(n,:) + interp(:,n)
+   xTemp(n,:) = xTemp(n,:) + interp(start_timestep:,n)
  else if (dimsizes(dimsizes(tc2)) .eq. 4) then
   interp =  rcm2points (lat2d, lon2d, tc2(:,0,:,:), lat, lon, 0)
-  xTemp(n,:) = xTemp(n,:) + interp(:,n)
+  xTemp(n,:) = xTemp(n,:) + interp(start_timestep:,n)
  end if
  end if
  n=n+1
@@ -335,7 +335,7 @@ end if
   tablename="values-"+tc2@description+"-"+interpolvar
   write_table( tablename, "w", hlist, "%s" ) ; Write header on the table
 
-timecap=times
+timecap=times(start_timestep:)
 nameformat="%19s"
 
 else ;average_ON code qwe
