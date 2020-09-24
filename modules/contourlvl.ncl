@@ -28,14 +28,36 @@ begin
 end
 
 begin
- myfile = getenv("wrfout")
- var = str_match(myfile,"/" )
-if (ismissing(var)) then
-  dir = systemfunc("pwd")
-  a = addfile(dir + "/" + myfile,"r")
-else
-  a = addfile(myfile,"r")
-end if
+
+myfile = systemfunc("ls postwrf_wrfout*")
+var = str_match(myfile,"/" )
+multiwrf_num = dimsizes(myfile)
+  if (ismissing(var)) then
+    dir = systemfunc("pwd")
+    a = addfiles(dir + "/" + myfile,"r")
+    else
+    a = addfiles(myfile,"r")
+  end if
+  ;Checking for correct file selection
+  atts = new( (/multiwrf_num, 6/), "string")
+  do ii = 0, multiwrf_num-1
+    fileatts := getvaratts(a[ii])
+    atts(ii,0) = a[ii]@$fileatts(2)$
+    atts(ii,1) = a[ii]@$fileatts(3)$
+    atts(ii,2) = a[ii]@$fileatts(4)$
+    atts(ii,3) = a[ii]@$fileatts(5)$
+    atts(ii,4) = a[ii]@$fileatts(6)$
+    atts(ii,5) = a[ii]@$fileatts(7)$
+  end do
+  atts_transpose = transpose(atts)
+  do ii = 0, 5
+    if ( any( atts_transpose(ii,:).ne.atts_transpose(ii,0) ) ) then
+     print("")
+     print("Error: Selected files are not for the same WRF run")
+     print("Try again with correct file numbers")
+     exit()
+    end if
+  end do
 
  print("Please wait. NCL is processing ...")
  print("")
@@ -75,7 +97,7 @@ end if
  NCLpanelrows = tointeger(getenv("panelrows"))
  NCLpanelcolumns = tointeger(getenv("panelcolumns"))
 
-all_steps=a->XTIME
+all_steps=wrf_user_getvar(a, "XTIME", -1)
 hourstep = (all_steps(1) - all_steps(0))/60
 if (NCLspinup.ge.hourstep) then
  start_timestep = tointeger(NCLspinup/hourstep)
@@ -310,15 +332,17 @@ else if (NCLCNVAR3 .eq. "lfc") then
      tc = slp1(2,:,:,:)
 
 else if (NCLCNVAR3 .eq. "dust_total") then
-     tc  = a->DUST_1+a->DUST_2+a->DUST_3+a->DUST_4+a->DUST_5
+     tc = wrf_user_getvar(a, "DUST_1", -1) + wrf_user_getvar(a, "DUST_2", -1) + wrf_user_getvar(a, "DUST_3", -1) \
+     + wrf_user_getvar(a, "DUST_4", -1) + wrf_user_getvar(a, "DUST_5", -1)
      tc@description = "Total dust concentration"
      tc@units = "Microgram/kg_dry_air"
  else if (NCLCNVAR3 .eq. "dust_pm2.5") then
-     tc  = a->DUST_1+0.3125*a->DUST_2
+     tc = wrf_user_getvar(a, "DUST_1", -1) + 0.3125*wrf_user_getvar(a, "DUST_2", -1)
      tc@description = "Dust_PM2.5 concentration"
      tc@units = "Microgram/kg_dry_air"
  else if (NCLCNVAR3 .eq. "dust_pm10") then
-     tc  = a->DUST_1+a->DUST_2+a->DUST_3+0.87*a->DUST_4
+     tc = wrf_user_getvar(a, "DUST_1", -1) + wrf_user_getvar(a, "DUST_2", -1) + wrf_user_getvar(a, "DUST_3", -1) \
+     + 0.87*wrf_user_getvar(a, "DUST_4", -1)
      tc@description = "Dust_PM10 concentration"
      tc@units = "Microgram/kg_dry_air"
  else if (NCLCNVAR3 .eq. "wind_s") then
@@ -642,17 +666,19 @@ if (NCL1VARONOFF.eq.1) then  ;processing VAR2
      tc2 = slp2(2,:,:,:)
 
   else if (cnvar .eq. "dust_total") then
-     tc2  = a->DUST_1+a->DUST_2+a->DUST_3+a->DUST_4+a->DUST_5
+     tc2 = wrf_user_getvar(a, "DUST_1", -1) + wrf_user_getvar(a, "DUST_2", -1) + wrf_user_getvar(a, "DUST_3", -1) \
+     + wrf_user_getvar(a, "DUST_4", -1) + wrf_user_getvar(a, "DUST_5", -1)
      tc2@description = "Total dust concentration"
      tc2@units = "Microgram/kg_dry_air"
 
   else if (cnvar .eq. "dust_pm2.5") then
-     tc2  = a->DUST_1+0.3125*a->DUST_2
+     tc2 = wrf_user_getvar(a, "DUST_1", -1) + 0.3125*wrf_user_getvar(a, "DUST_2", -1)
      tc2@description = "Dust_PM2.5 concentration"
      tc2@units = "Microgram/kg_dry_air"
 
   else if (cnvar .eq. "dust_pm10") then
-     tc2  = a->DUST_1+a->DUST_2+a->DUST_3+0.87*a->DUST_4
+     tc2 = wrf_user_getvar(a, "DUST_1", -1) + wrf_user_getvar(a, "DUST_2", -1) + wrf_user_getvar(a, "DUST_3", -1) \
+     + 0.87*wrf_user_getvar(a, "DUST_4", -1)
      tc2@description = "Dust_PM10 concentration"
      tc2@units = "Microgram/kg_dry_air"
 
@@ -809,17 +835,19 @@ if (NCL2VARONOFF.eq.1) then  ;processing VAR3
      tc3 = slp3(2,:,:,:)
 
   else if (cnvar .eq. "dust_total") then
-     tc3  = a->DUST_1+a->DUST_2+a->DUST_3+a->DUST_4+a->DUST_5
+     tc3 = wrf_user_getvar(a, "DUST_1", -1) + wrf_user_getvar(a, "DUST_2", -1) + wrf_user_getvar(a, "DUST_3", -1) \
+     + wrf_user_getvar(a, "DUST_4", -1) + wrf_user_getvar(a, "DUST_5", -1)
      tc3@description = "Total dust concentration"
      tc3@units = "Microgram/kg_dry_air"
 
   else if (cnvar .eq. "dust_pm2.5") then
-     tc3  = a->DUST_1+0.3125*a->DUST_2
+     tc3 = wrf_user_getvar(a, "DUST_1", -1) + 0.3125*wrf_user_getvar(a, "DUST_2", -1)
      tc3@description = "Dust_PM2.5 concentration"
      tc3@units = "Microgram/kg_dry_air"
 
   else if (cnvar .eq. "dust_pm10") then
-     tc3  = a->DUST_1+a->DUST_2+a->DUST_3+0.87*a->DUST_4
+     tc3 = wrf_user_getvar(a, "DUST_1", -1) + wrf_user_getvar(a, "DUST_2", -1) + wrf_user_getvar(a, "DUST_3", -1) \
+     + 0.87*wrf_user_getvar(a, "DUST_4", -1)
      tc3@description = "Dust_PM10 concentration"
      tc3@units = "Microgram/kg_dry_air"
 
@@ -1087,54 +1115,54 @@ end if
 
           if (NCL3VARONOFF.eq.1) then
             opt1@TimeLabel = times(it)
-            contour_tc = wrf_contour(a,wks,tc_plane33(it,:,:),opt1)
+            contour_tc = wrf_contour(a[0],wks,tc_plane33(it,:,:),opt1)
           end if
           
           if (NCL1VARONOFF.eq.1) then
             opt2@TimeLabel = times(it)
-            contour_tc2 = wrf_contour(a,wks,tc_plane11(it,:,:),opt2)
+            contour_tc2 = wrf_contour(a[0],wks,tc_plane11(it,:,:),opt2)
           end if
 
           if (NCL2VARONOFF.eq.1) then
             opt3@TimeLabel = times(it)
-            contour_tc3 = wrf_contour(a,wks,tc_plane22(it,:,:),opt3)
+            contour_tc3 = wrf_contour(a[0],wks,tc_plane22(it,:,:),opt3)
           end if
 
           if (NCLwindonoff .eq. 1)
             opts@FieldTitle = "Wind Velocity"
-            vector = wrf_vector(a,wks,u_plane(it,:,:),v_plane(it,:,:),opts)
+            vector = wrf_vector(a[0],wks,u_plane(it,:,:),v_plane(it,:,:),opts)
           end if
 
           if (NCL3VARONOFF.eq.1 .and. NCL1VARONOFF.eq.1 .and. NCL2VARONOFF.eq.1 .and. NCLwindonoff.eq.1) then
-            plot = wrf_map_overlays(a,wks,(/contour_tc,contour_tc2,contour_tc3,vector/),pltres,mpres)
+            plot = wrf_map_overlays(a[0],wks,(/contour_tc,contour_tc2,contour_tc3,vector/),pltres,mpres)
           else if (NCL3VARONOFF.eq.1 .and. NCL1VARONOFF.eq.1 .and. NCL2VARONOFF.eq.1 .and. NCLwindonoff.ne.1) then
-            plot = wrf_map_overlays(a,wks,(/contour_tc,contour_tc2,contour_tc3/),pltres,mpres)
+            plot = wrf_map_overlays(a[0],wks,(/contour_tc,contour_tc2,contour_tc3/),pltres,mpres)
           else if (NCL3VARONOFF.eq.1 .and. NCL1VARONOFF.eq.1 .and. NCL2VARONOFF.ne.1 .and. NCLwindonoff.eq.1) then
-            plot = wrf_map_overlays(a,wks,(/contour_tc,contour_tc2,vector/),pltres,mpres)
+            plot = wrf_map_overlays(a[0],wks,(/contour_tc,contour_tc2,vector/),pltres,mpres)
           else if (NCL3VARONOFF.eq.1 .and. NCL1VARONOFF.eq.1 .and. NCL2VARONOFF.ne.1 .and. NCLwindonoff.ne.1) then
-            plot = wrf_map_overlays(a,wks,(/contour_tc,contour_tc2/),pltres,mpres)
+            plot = wrf_map_overlays(a[0],wks,(/contour_tc,contour_tc2/),pltres,mpres)
           else if (NCL3VARONOFF.eq.1 .and. NCL1VARONOFF.ne.1 .and. NCL2VARONOFF.eq.1 .and. NCLwindonoff.eq.1) then
-            plot = wrf_map_overlays(a,wks,(/contour_tc,contour_tc3,vector/),pltres,mpres)
+            plot = wrf_map_overlays(a[0],wks,(/contour_tc,contour_tc3,vector/),pltres,mpres)
           else if (NCL3VARONOFF.eq.1 .and. NCL1VARONOFF.ne.1 .and. NCL2VARONOFF.eq.1 .and. NCLwindonoff.ne.1) then
-            plot = wrf_map_overlays(a,wks,(/contour_tc,contour_tc3/),pltres,mpres)
+            plot = wrf_map_overlays(a[0],wks,(/contour_tc,contour_tc3/),pltres,mpres)
           else if (NCL3VARONOFF.eq.1 .and. NCL1VARONOFF.ne.1 .and. NCL2VARONOFF.ne.1 .and. NCLwindonoff.eq.1) then
-            plot = wrf_map_overlays(a,wks,(/contour_tc,vector/),pltres,mpres)
+            plot = wrf_map_overlays(a[0],wks,(/contour_tc,vector/),pltres,mpres)
           else if (NCL3VARONOFF.eq.1 .and. NCL1VARONOFF.ne.1 .and. NCL2VARONOFF.ne.1 .and. NCLwindonoff.ne.1) then
-            plot = wrf_map_overlays(a,wks,(/contour_tc/),pltres,mpres)
+            plot = wrf_map_overlays(a[0],wks,(/contour_tc/),pltres,mpres)
           else if (NCL3VARONOFF.ne.1 .and. NCL1VARONOFF.eq.1 .and. NCL2VARONOFF.eq.1 .and. NCLwindonoff.eq.1) then
-            plot = wrf_map_overlays(a,wks,(/contour_tc2,contour_tc3,vector/),pltres,mpres)
+            plot = wrf_map_overlays(a[0],wks,(/contour_tc2,contour_tc3,vector/),pltres,mpres)
           else if (NCL3VARONOFF.ne.1 .and. NCL1VARONOFF.eq.1 .and. NCL2VARONOFF.eq.1 .and. NCLwindonoff.ne.1) then
-            plot = wrf_map_overlays(a,wks,(/contour_tc2,contour_tc3/),pltres,mpres)
+            plot = wrf_map_overlays(a[0],wks,(/contour_tc2,contour_tc3/),pltres,mpres)
           else if (NCL3VARONOFF.ne.1 .and. NCL1VARONOFF.eq.1 .and. NCL2VARONOFF.ne.1 .and. NCLwindonoff.eq.1) then
-            plot = wrf_map_overlays(a,wks,(/contour_tc2,vector/),pltres,mpres)
+            plot = wrf_map_overlays(a[0],wks,(/contour_tc2,vector/),pltres,mpres)
           else if (NCL3VARONOFF.ne.1 .and. NCL1VARONOFF.eq.1 .and. NCL2VARONOFF.ne.1 .and. NCLwindonoff.ne.1) then
-            plot = wrf_map_overlays(a,wks,(/contour_tc2/),pltres,mpres)
+            plot = wrf_map_overlays(a[0],wks,(/contour_tc2/),pltres,mpres)
           else if (NCL3VARONOFF.ne.1 .and. NCL1VARONOFF.ne.1 .and. NCL2VARONOFF.eq.1 .and. NCLwindonoff.eq.1) then
-            plot = wrf_map_overlays(a,wks,(/contour_tc3,vector/),pltres,mpres)
+            plot = wrf_map_overlays(a[0],wks,(/contour_tc3,vector/),pltres,mpres)
           else if (NCL3VARONOFF.ne.1 .and. NCL1VARONOFF.ne.1 .and. NCL2VARONOFF.eq.1 .and. NCLwindonoff.ne.1) then
-            plot = wrf_map_overlays(a,wks,(/contour_tc3/),pltres,mpres)
+            plot = wrf_map_overlays(a[0],wks,(/contour_tc3/),pltres,mpres)
           else if (NCL3VARONOFF.ne.1 .and. NCL1VARONOFF.ne.1 .and. NCL2VARONOFF.ne.1 .and. NCLwindonoff.eq.1) then
-            plot = wrf_map_overlays(a,wks,(/vector/),pltres,mpres)
+            plot = wrf_map_overlays(a[0],wks,(/vector/),pltres,mpres)
           end if
           end if
           end if
@@ -1216,54 +1244,54 @@ end if
      
       if (NCL3VARONOFF.eq.1) then
         opt1@TimeLabel = times(it) + " to " + times(it+ncltstep)
-        contour_tc = wrf_contour(a,wks,dim_avg_n_Wrap(tc_plane33(it:(it+ncltstep),:,:),0),opt1)
+        contour_tc = wrf_contour(a[0],wks,dim_avg_n_Wrap(tc_plane33(it:(it+ncltstep),:,:),0),opt1)
       end if
       
       if (NCL1VARONOFF.eq.1) then
         opt2@TimeLabel = times(it) + " to " + times(it+ncltstep)
-        contour_tc2 = wrf_contour(a,wks,dim_avg_n_Wrap(tc_plane11(it:(it+ncltstep),:,:),0),opt2)
+        contour_tc2 = wrf_contour(a[0],wks,dim_avg_n_Wrap(tc_plane11(it:(it+ncltstep),:,:),0),opt2)
       end if
 
       if (NCL2VARONOFF.eq.1) then
         opt3@TimeLabel = times(it) + " to " + times(it+ncltstep)
-        contour_tc3 = wrf_contour(a,wks,dim_avg_n_Wrap(tc_plane22(it:(it+ncltstep),:,:),0),opt3)
+        contour_tc3 = wrf_contour(a[0],wks,dim_avg_n_Wrap(tc_plane22(it:(it+ncltstep),:,:),0),opt3)
       end if
 
       if (NCLwindonoff .eq. 1)
         opts@FieldTitle = "Wind Velocity"
-        vector = wrf_vector(a,wks,dim_avg_n_Wrap(u_plane(it:(it+ncltstep),:,:),0),dim_avg_n_Wrap(v_plane(it:(it+ncltstep),:,:),0),opts)
+        vector = wrf_vector(a[0],wks,dim_avg_n_Wrap(u_plane(it:(it+ncltstep),:,:),0),dim_avg_n_Wrap(v_plane(it:(it+ncltstep),:,:),0),opts)
       end if
 
       if (NCL3VARONOFF.eq.1 .and. NCL1VARONOFF.eq.1 .and. NCL2VARONOFF.eq.1 .and. NCLwindonoff.eq.1) then
-        plot = wrf_map_overlays(a,wks,(/contour_tc,contour_tc2,contour_tc3,vector/),pltres,mpres)
+        plot = wrf_map_overlays(a[0],wks,(/contour_tc,contour_tc2,contour_tc3,vector/),pltres,mpres)
       else if (NCL3VARONOFF.eq.1 .and. NCL1VARONOFF.eq.1 .and. NCL2VARONOFF.eq.1 .and. NCLwindonoff.ne.1) then
-        plot = wrf_map_overlays(a,wks,(/contour_tc,contour_tc2,contour_tc3/),pltres,mpres)
+        plot = wrf_map_overlays(a[0],wks,(/contour_tc,contour_tc2,contour_tc3/),pltres,mpres)
       else if (NCL3VARONOFF.eq.1 .and. NCL1VARONOFF.eq.1 .and. NCL2VARONOFF.ne.1 .and. NCLwindonoff.eq.1) then
-        plot = wrf_map_overlays(a,wks,(/contour_tc,contour_tc2,vector/),pltres,mpres)
+        plot = wrf_map_overlays(a[0],wks,(/contour_tc,contour_tc2,vector/),pltres,mpres)
       else if (NCL3VARONOFF.eq.1 .and. NCL1VARONOFF.eq.1 .and. NCL2VARONOFF.ne.1 .and. NCLwindonoff.ne.1) then
-        plot = wrf_map_overlays(a,wks,(/contour_tc,contour_tc2/),pltres,mpres)
+        plot = wrf_map_overlays(a[0],wks,(/contour_tc,contour_tc2/),pltres,mpres)
       else if (NCL3VARONOFF.eq.1 .and. NCL1VARONOFF.ne.1 .and. NCL2VARONOFF.eq.1 .and. NCLwindonoff.eq.1) then
-        plot = wrf_map_overlays(a,wks,(/contour_tc,contour_tc3,vector/),pltres,mpres)
+        plot = wrf_map_overlays(a[0],wks,(/contour_tc,contour_tc3,vector/),pltres,mpres)
       else if (NCL3VARONOFF.eq.1 .and. NCL1VARONOFF.ne.1 .and. NCL2VARONOFF.eq.1 .and. NCLwindonoff.ne.1) then
-        plot = wrf_map_overlays(a,wks,(/contour_tc,contour_tc3/),pltres,mpres)
+        plot = wrf_map_overlays(a[0],wks,(/contour_tc,contour_tc3/),pltres,mpres)
       else if (NCL3VARONOFF.eq.1 .and. NCL1VARONOFF.ne.1 .and. NCL2VARONOFF.ne.1 .and. NCLwindonoff.eq.1) then
-        plot = wrf_map_overlays(a,wks,(/contour_tc,vector/),pltres,mpres)
+        plot = wrf_map_overlays(a[0],wks,(/contour_tc,vector/),pltres,mpres)
       else if (NCL3VARONOFF.eq.1 .and. NCL1VARONOFF.ne.1 .and. NCL2VARONOFF.ne.1 .and. NCLwindonoff.ne.1) then
-        plot = wrf_map_overlays(a,wks,(/contour_tc/),pltres,mpres)
+        plot = wrf_map_overlays(a[0],wks,(/contour_tc/),pltres,mpres)
       else if (NCL3VARONOFF.ne.1 .and. NCL1VARONOFF.eq.1 .and. NCL2VARONOFF.eq.1 .and. NCLwindonoff.eq.1) then
-        plot = wrf_map_overlays(a,wks,(/contour_tc2,contour_tc3,vector/),pltres,mpres)
+        plot = wrf_map_overlays(a[0],wks,(/contour_tc2,contour_tc3,vector/),pltres,mpres)
       else if (NCL3VARONOFF.ne.1 .and. NCL1VARONOFF.eq.1 .and. NCL2VARONOFF.eq.1 .and. NCLwindonoff.ne.1) then
-        plot = wrf_map_overlays(a,wks,(/contour_tc2,contour_tc3/),pltres,mpres)
+        plot = wrf_map_overlays(a[0],wks,(/contour_tc2,contour_tc3/),pltres,mpres)
       else if (NCL3VARONOFF.ne.1 .and. NCL1VARONOFF.eq.1 .and. NCL2VARONOFF.ne.1 .and. NCLwindonoff.eq.1) then
-        plot = wrf_map_overlays(a,wks,(/contour_tc2,vector/),pltres,mpres)
+        plot = wrf_map_overlays(a[0],wks,(/contour_tc2,vector/),pltres,mpres)
       else if (NCL3VARONOFF.ne.1 .and. NCL1VARONOFF.eq.1 .and. NCL2VARONOFF.ne.1 .and. NCLwindonoff.ne.1) then
-        plot = wrf_map_overlays(a,wks,(/contour_tc2/),pltres,mpres)
+        plot = wrf_map_overlays(a[0],wks,(/contour_tc2/),pltres,mpres)
       else if (NCL3VARONOFF.ne.1 .and. NCL1VARONOFF.ne.1 .and. NCL2VARONOFF.eq.1 .and. NCLwindonoff.eq.1) then
-        plot = wrf_map_overlays(a,wks,(/contour_tc3,vector/),pltres,mpres)
+        plot = wrf_map_overlays(a[0],wks,(/contour_tc3,vector/),pltres,mpres)
       else if (NCL3VARONOFF.ne.1 .and. NCL1VARONOFF.ne.1 .and. NCL2VARONOFF.eq.1 .and. NCLwindonoff.ne.1) then
-        plot = wrf_map_overlays(a,wks,(/contour_tc3/),pltres,mpres)
+        plot = wrf_map_overlays(a[0],wks,(/contour_tc3/),pltres,mpres)
       else if (NCL3VARONOFF.ne.1 .and. NCL1VARONOFF.ne.1 .and. NCL2VARONOFF.ne.1 .and. NCLwindonoff.eq.1) then
-        plot = wrf_map_overlays(a,wks,(/vector/),pltres,mpres)
+        plot = wrf_map_overlays(a[0],wks,(/vector/),pltres,mpres)
       end if
       end if
       end if
