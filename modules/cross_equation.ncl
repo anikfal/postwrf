@@ -29,16 +29,35 @@ end
 
 begin
 
- myfile = getenv("wrfout")
- nullchar = inttochar(0)
- var = str_match(myfile,"/" )
-
-if (ismissing(var)) then
-  dir = systemfunc("pwd")
-  a = addfile(dir + "/" + myfile,"r")
-else
-  a = addfile(myfile,"r")
-end if
+myfile = systemfunc("ls postwrf_wrfout*")
+var = str_match(myfile,"/" )
+multiwrf_num = dimsizes(myfile)
+  if (ismissing(var)) then
+    dir = systemfunc("pwd")
+    a = addfiles(dir + "/" + myfile,"r")
+    else
+    a = addfiles(myfile,"r")
+  end if
+  ;Checking for correct file selection
+  atts = new( (/multiwrf_num, 6/), "string")
+  do ii = 0, multiwrf_num-1
+    fileatts := getvaratts(a[ii])
+    atts(ii,0) = a[ii]@$fileatts(2)$
+    atts(ii,1) = a[ii]@$fileatts(3)$
+    atts(ii,2) = a[ii]@$fileatts(4)$
+    atts(ii,3) = a[ii]@$fileatts(5)$
+    atts(ii,4) = a[ii]@$fileatts(6)$
+    atts(ii,5) = a[ii]@$fileatts(7)$
+  end do
+  atts_transpose = transpose(atts)
+  do ii = 0, 5
+    if ( any( atts_transpose(ii,:).ne.atts_transpose(ii,0) ) ) then
+     print("")
+     print("Error: Selected files are not for the same WRF run")
+     print("Try again with correct file numbers")
+     exit()
+    end if
+  end do
 
  NCLCNVAR3 = getenv("xCNVAR3") ;NCLcontours11
  NCLCNVAR1 = getenv("xCNVAR1") ;NCLcontours22
@@ -92,7 +111,7 @@ end if
   nclcrosshght = stringtofloat(getenv("nclcrosshgt"))
   crossname = getenv("outname")
 
-  all_steps=a->XTIME
+  all_steps = wrf_user_getvar(a, "XTIME", -1)
   hourstep = (all_steps(1) - all_steps(0))/60
   if (NCLspinup.ge.hourstep) then
     start_timestep = tointeger(NCLspinup/hourstep)
@@ -173,20 +192,22 @@ if (NCL3VARONOFF .eq. 1) then ; code pprggvar1 var333
           tc = slp1(2,:,:,:)
 
       else if (NCLCNVAR3 .eq. "dust_total") then
-          tc  = a->DUST_1+a->DUST_2+a->DUST_3+a->DUST_4+a->DUST_5
-          copy_VarCoords(a->DUST_1,tc)
+          tc  = wrf_user_getvar(a, "DUST_1", -1) + wrf_user_getvar(a, "DUST_2", -1) + wrf_user_getvar(a, "DUST_3", -1) \
+     + wrf_user_getvar(a, "DUST_4", -1) + wrf_user_getvar(a, "DUST_5", -1)
+          copy_VarCoords(wrf_user_getvar(a, "DUST_1", -1),tc)
           tc@description = "Total dust concentration"
           tc@units = "Microgram/kg_dry_air"
 
       else if (NCLCNVAR3 .eq. "dust_pm2.5") then
-          tc  = a->DUST_1+0.3125*a->DUST_2
-          copy_VarCoords(a->DUST_1,tc)
+          tc  = wrf_user_getvar(a, "DUST_1", -1) + 0.3125*wrf_user_getvar(a, "DUST_2", -1)
+          copy_VarCoords(wrf_user_getvar(a, "DUST_1", -1),tc)
           tc@description = "Dust_PM2.5 concentration"
           tc@units = "Microgram/kg_dry_air"
 
       else if (NCLCNVAR3 .eq. "dust_pm10") then
-          tc  = a->DUST_1+a->DUST_2+a->DUST_3+0.87*a->DUST_4
-          copy_VarCoords(a->DUST_1,tc)
+          tc  = wrf_user_getvar(a, "DUST_1", -1) + wrf_user_getvar(a, "DUST_2", -1) + wrf_user_getvar(a, "DUST_3", -1) \
+     + 0.87*wrf_user_getvar(a, "DUST_4", -1)
+          copy_VarCoords(wrf_user_getvar(a, "DUST_1", -1),tc)
           tc@description = "Dust_PM10 concentration"
           tc@units = "Microgram/kg_dry_air"
 
@@ -286,20 +307,23 @@ if (NCL3VARONOFF .eq. 1) then ; code pprggvar1 var333
                     ListAppend(varlist2,tc3(3,:,:,:))
 
                 else if (NCLvarnames(ii) .eq. "dust_total") then
-                    ListAppend(varlist2,a->DUST_1+a->DUST_2+a->DUST_3+a->DUST_4+a->DUST_5)
-                    copy_VarCoords(a->DUST_1,varlist2[ii])
+                    ListAppend(varlist2,wrf_user_getvar(a, "DUST_1", -1) + wrf_user_getvar(a, "DUST_2", -1) + wrf_user_getvar(a, "DUST_3", -1) \
+     + wrf_user_getvar(a, "DUST_4", -1) + wrf_user_getvar(a, "DUST_5", -1))
+                    copy_VarCoords(wrf_user_getvar(a, "DUST_1", -1),varlist2[ii])
                     varlist2[ii]@description = "Total dust concentration"
                     varlist2[ii]@units = "Microgram/kg_dry_air"
 
                 else if (NCLvarnames(ii) .eq. "dust_pm2.5") then
-                    ListAppend(varlist2,a->DUST_1+0.3125*a->DUST_2)
-                    copy_VarCoords(a->DUST_1,varlist2[ii])
+                    ListAppend(varlist2,wrf_user_getvar(a, "DUST_1", -1) + 0.3125*wrf_user_getvar(a, "DUST_2", -1))
+                    copy_VarCoords(wrf_user_getvar(a, "DUST_1", -1),varlist2[ii])
+                    copy_VarCoords(wrf_user_getvar(a, "DUST_1", -1),varlist2[ii])
                     varlist2[ii]@description = "Dust_PM2.5 concentration"
                     varlist2[ii]@units = "Microgram/kg_dry_air"
 
                 else if (NCLvarnames(ii) .eq. "dust_pm10") then
-                    ListAppend(varlist2,a->DUST_1+a->DUST_2+a->DUST_3+0.87*a->DUST_4)
-                    copy_VarCoords(a->DUST_1,varlist2[ii])
+                    ListAppend(varlist2,wrf_user_getvar(a, "DUST_1", -1) + wrf_user_getvar(a, "DUST_2", -1) + wrf_user_getvar(a, "DUST_3", -1) \
+     + 0.87*wrf_user_getvar(a, "DUST_4", -1))
+                    copy_VarCoords(wrf_user_getvar(a, "DUST_1", -1),varlist2[ii])
                     varlist2[ii]@description = "Dust_PM10 concentration"
                     varlist2[ii]@units = "Microgram/kg_dry_air"
 
@@ -360,18 +384,17 @@ if (NCL3VARONOFF .eq. 1) then ; code pprggvar1 var333
 
 
               ;;shell script333
-QCLOUD = varlist[0]  ;;;added_new_line_by_sed333
+rh = varlist[0]  ;;;added_new_line_by_sed333
 
 
                   ;equation from namelist.wrf333
-tc_plane3 = QCLOUD*1000  ;;;added_new_line_by_sed333
+tc_plane3 = (rh/100)  ;;;added_new_line_by_sed333
 
 
             copy_VarCoords(varlist[0],tc_plane3)
             copy_VarAtts(varlist[0],tc_plane3)
             delete(varlist)
             delete(varlist2)
-
             system("cd $postwrf_dir/modules && ./contourlvl_getinput3.sh")
             system("ln -sf $postwrf_dir/modules/eqname $postwrf_dir")
             eqname3 = asciiread("eqname", -1, "string")
@@ -583,6 +606,7 @@ tc_plane3 = QCLOUD*1000  ;;;added_new_line_by_sed333
                     opt33@gsnContourLineThicknessesScale = 3.0
                     opt33@cnLineLabelFontHeightF = 0.025
                     opt33@cnHighLabelFontHeightF   = 0.03
+
 end if ;code pprggvar1 var333
 
 ;;;;;####################################################################
@@ -658,20 +682,22 @@ if (NCL1VARONOFF.eq.1) then  ;processing var111
           tc11 = slp2(2,:,:,:)
 
         else if (cnvar .eq. "dust_total") then
-          tc11  = a->DUST_1+a->DUST_2+a->DUST_3+a->DUST_4+a->DUST_5
-          copy_VarCoords(a->DUST_1,tc11)
+          tc11  = wrf_user_getvar(a, "DUST_1", -1) + wrf_user_getvar(a, "DUST_2", -1) + wrf_user_getvar(a, "DUST_3", -1) \
+     + wrf_user_getvar(a, "DUST_4", -1) + wrf_user_getvar(a, "DUST_5", -1)
+          copy_VarCoords(wrf_user_getvar(a, "DUST_1", -1),tc11)
           tc11@description = "Total dust concentration"
           tc11@units = "Microgram/kg_dry_air"
 
         else if (cnvar .eq. "dust_pm2.5") then
-          tc11  = a->DUST_1+0.3125*a->DUST_2
-          copy_VarCoords(a->DUST_1,tc11)
+          tc11  = wrf_user_getvar(a, "DUST_1", -1) + 0.3125*wrf_user_getvar(a, "DUST_2", -1)
+          copy_VarCoords(wrf_user_getvar(a, "DUST_1", -1),tc11)
           tc11@description = "Dust_PM2.5 concentration"
           tc11@units = "Microgram/kg_dry_air"
 
         else if (cnvar .eq. "dust_pm10") then
-          tc11  = a->DUST_1+a->DUST_2+a->DUST_3+0.87*a->DUST_4
-          copy_VarCoords(a->DUST_1,tc11)
+          tc11  = wrf_user_getvar(a, "DUST_1", -1) + wrf_user_getvar(a, "DUST_2", -1) + wrf_user_getvar(a, "DUST_3", -1) \
+     + 0.87*wrf_user_getvar(a, "DUST_4", -1)
+          copy_VarCoords(wrf_user_getvar(a, "DUST_1", -1),tc11)
           tc11@description = "Dust_PM10 concentration"
           tc11@units = "Microgram/kg_dry_air"
 
@@ -770,20 +796,22 @@ if (NCL1VARONOFF.eq.1) then  ;processing var111
                     ListAppend(varlist2,tc3(3,:,:,:))
 
                 else if (NCLvarnames(ii) .eq. "dust_total") then
-                    ListAppend(varlist2,a->DUST_1+a->DUST_2+a->DUST_3+a->DUST_4+a->DUST_5)
-                    copy_VarCoords(a->DUST_1,varlist2[ii])
+                    ListAppend(varlist2,wrf_user_getvar(a, "DUST_1", -1) + wrf_user_getvar(a, "DUST_2", -1) + wrf_user_getvar(a, "DUST_3", -1) \
+     + wrf_user_getvar(a, "DUST_4", -1) + wrf_user_getvar(a, "DUST_5", -1))
+                    copy_VarCoords(wrf_user_getvar(a, "DUST_1", -1),varlist2[ii])
                     varlist2[ii]@description = "Total dust concentration"
                     varlist2[ii]@units = "Microgram/kg_dry_air"
 
                 else if (NCLvarnames(ii) .eq. "dust_pm2.5") then
-                    ListAppend(varlist2,a->DUST_1+0.3125*a->DUST_2)
-                    copy_VarCoords(a->DUST_1,varlist2[ii])
+                    ListAppend(varlist2,wrf_user_getvar(a, "DUST_1", -1) + 0.3125*wrf_user_getvar(a, "DUST_2", -1))
+                    copy_VarCoords(wrf_user_getvar(a, "DUST_1", -1),varlist2[ii])
                     varlist2[ii]@description = "Dust_PM2.5 concentration"
                     varlist2[ii]@units = "Microgram/kg_dry_air"
 
                 else if (NCLvarnames(ii) .eq. "dust_pm10") then
-                    ListAppend(varlist2,a->DUST_1+a->DUST_2+a->DUST_3+0.87*a->DUST_4)
-                    copy_VarCoords(a->DUST_1,varlist2[ii])
+                    ListAppend(varlist2,wrf_user_getvar(a, "DUST_1", -1) + wrf_user_getvar(a, "DUST_2", -1) + wrf_user_getvar(a, "DUST_3", -1) \
+     + 0.87*wrf_user_getvar(a, "DUST_4", -1))
+                    copy_VarCoords(wrf_user_getvar(a, "DUST_1", -1),varlist2[ii])
                     varlist2[ii]@description = "Dust_PM10 concentration"
                     varlist2[ii]@units = "Microgram/kg_dry_air"
 
@@ -842,11 +870,11 @@ if (NCL1VARONOFF.eq.1) then  ;processing var111
       end do ;;code docheck22
 
               ;;shell script111
-QRAIN = varlist[0]  ;;;added_new_line_by_sed111
+tk = varlist[0]  ;;;added_new_line_by_sed111
 
 
         ;equation from namelist.wrf111
-tc_plane1 = QRAIN*1000  ;;;added_new_line_by_sed111
+tc_plane1 = tk^0.5  ;;;added_new_line_by_sed111
 
 copy_VarCoords(varlist[0],tc_plane1)
 copy_VarAtts(varlist[0],tc_plane1)
@@ -976,20 +1004,22 @@ if (NCL2VARONOFF.eq.1) then  ;processing var222
         tc22 = slp3(2,:,:,:)
 
       else if (cnvar .eq. "dust_total") then
-        tc22  = a->DUST_1+a->DUST_2+a->DUST_3+a->DUST_4+a->DUST_5
-        copy_VarCoords(a->DUST_1,tc22)
+        tc22  = wrf_user_getvar(a, "DUST_1", -1) + wrf_user_getvar(a, "DUST_2", -1) + wrf_user_getvar(a, "DUST_3", -1) \
+     + 0.87*wrf_user_getvar(a, "DUST_4", -1)
+        copy_VarCoords(wrf_user_getvar(a, "DUST_1", -1),tc22)
         tc22@description = "Total dust concentration"
         tc22@units = "Microgram/kg_dry_air"
 
       else if (cnvar .eq. "dust_pm2.5") then
-        tc22  = a->DUST_1+0.3125*a->DUST_2
-        copy_VarCoords(a->DUST_1,tc22)
+        tc22  = wrf_user_getvar(a, "DUST_1", -1) + 0.3125*wrf_user_getvar(a, "DUST_2", -1)
+        copy_VarCoords(wrf_user_getvar(a, "DUST_1", -1),tc22)
         tc22@description = "Dust_PM2.5 concentration"
         tc22@units = "Microgram/kg_dry_air"
 
       else if (cnvar .eq. "dust_pm10") then
-        tc22  = a->DUST_1+a->DUST_2+a->DUST_3+0.87*a->DUST_4
-        copy_VarCoords(a->DUST_1,tc22)
+        tc22  = wrf_user_getvar(a, "DUST_1", -1) + wrf_user_getvar(a, "DUST_2", -1) + wrf_user_getvar(a, "DUST_3", -1) \
+     + 0.87*wrf_user_getvar(a, "DUST_4", -1)
+        copy_VarCoords(wrf_user_getvar(a, "DUST_1", -1),tc22)
         tc22@description = "Dust_PM10 concentration"
         tc22@units = "Microgram/kg_dry_air"
 
@@ -1084,20 +1114,22 @@ if (NCL2VARONOFF.eq.1) then  ;processing var222
                     ListAppend(varlist2,tc3(3,:,:,:))
 
                 else if (NCLvarnames(ii) .eq. "dust_total") then
-                    ListAppend(varlist2,a->DUST_1+a->DUST_2+a->DUST_3+a->DUST_4+a->DUST_5)
-                    copy_VarCoords(a->DUST_1,varlist2[ii])
+                    ListAppend(varlist2,wrf_user_getvar(a, "DUST_1", -1) + wrf_user_getvar(a, "DUST_2", -1) + wrf_user_getvar(a, "DUST_3", -1) \
+     + wrf_user_getvar(a, "DUST_4", -1) + wrf_user_getvar(a, "DUST_5", -1))
+                    copy_VarCoords(wrf_user_getvar(a, "DUST_1", -1),varlist2[ii])
                     varlist2[ii]@description = "Total dust concentration"
                     varlist2[ii]@units = "Microgram/kg_dry_air"
 
                 else if (NCLvarnames(ii) .eq. "dust_pm2.5") then
-                    ListAppend(varlist2,a->DUST_1+0.3125*a->DUST_2)
-                    copy_VarCoords(a->DUST_1,varlist2[ii])
+                    ListAppend(varlist2,wrf_user_getvar(a, "DUST_1", -1) + 0.3125*wrf_user_getvar(a, "DUST_2", -1))
+                    copy_VarCoords(wrf_user_getvar(a, "DUST_1", -1),varlist2[ii])
                     varlist2[ii]@description = "Dust_PM2.5 concentration"
                     varlist2[ii]@units = "Microgram/kg_dry_air"
 
                 else if (NCLvarnames(ii) .eq. "dust_pm10") then
-                    ListAppend(varlist2,a->DUST_1+a->DUST_2+a->DUST_3+0.87*a->DUST_4)
-                    copy_VarCoords(a->DUST_1,varlist2[ii])
+                    ListAppend(varlist2,wrf_user_getvar(a, "DUST_1", -1) + wrf_user_getvar(a, "DUST_2", -1) + wrf_user_getvar(a, "DUST_3", -1) \
+     + 0.87*wrf_user_getvar(a, "DUST_4", -1))
+                    copy_VarCoords(wrf_user_getvar(a, "DUST_1", -1),varlist2[ii])
                     varlist2[ii]@description = "Dust_PM10 concentration"
                     varlist2[ii]@units = "Microgram/kg_dry_air"
 
@@ -1155,12 +1187,11 @@ if (NCL2VARONOFF.eq.1) then  ;processing var222
       end do ;;code docheck22
 
               ;;shell script222
-td = varlist[1]  ;;;added_new_line_by_sed222
 rh = varlist[0]  ;;;added_new_line_by_sed222
 
 
         ;equation from namelist.wrf222
-tc_plane2 = (rh*td/10)^2  ;;;added_new_line_by_sed222
+tc_plane2 = (rh/100)  ;;;added_new_line_by_sed222
 
 
       copy_VarCoords(varlist[0],tc_plane2)
@@ -1285,7 +1316,7 @@ wks = gsn_open_wks(type,crossname)
               mpwrf_res@gsnDraw           = False
               mpwrf_res@gsnFrame          = False
 
-              mpwrf_res = wrf_map_resources(a,mpwrf_res)     ; Use WRF map projection
+              mpwrf_res = wrf_map_resources(a[0],mpwrf_res)     ; Use WRF map projection
               mpwrf_res@pmTickMarkDisplayMode = "Never"     ; turns off map tickmarks and labels
               mpwrf_res@mpPerimLineColor      = "Black"     ; wrf_map_resources sets this to gray
               topovaronoff = stringtofloat(getenv("crosstopo"))
@@ -1294,8 +1325,8 @@ wks = gsn_open_wks(type,crossname)
                 map_plot = gsn_csm_map(wks,mpwrf_res)
                 else
                 ter = wrf_user_getvar(a, "HGT", 0)
-                ter@lat2d = a->XLAT(0,:,:)
-                ter@lon2d = a->XLONG(0,:,:)
+                ter@lat2d = wrf_user_getvar(a, "XLAT", 0)
+                ter@lon2d = wrf_user_getvar(a, "XLONG", 0)
                 mpwrf_res@cnFillOn = True
                 cmap = read_colormap_file("OceanLakeLandSnow")
                 mpwrf_res@cnFillPalette      = cmap(2:,:)
@@ -1359,7 +1390,7 @@ wks = gsn_open_wks(type,crossname)
               mpwrf_res@vpHeightF         = 0.2
               mpwrf_res@gsnDraw           = False
               mpwrf_res@gsnFrame          = False
-              mpwrf_res = wrf_map_resources(a,mpwrf_res)     ; Use WRF map projection
+              mpwrf_res = wrf_map_resources(a[0],mpwrf_res)     ; Use WRF map projection
               mpwrf_res@pmTickMarkDisplayMode = "Never"     ; turns off map tickmarks and labels
               mpwrf_res@mpPerimLineColor      = "Black"     ; wrf_map_resources sets this to gray
               topovaronoff = stringtofloat(getenv("crosstopo"))
@@ -1368,8 +1399,8 @@ wks = gsn_open_wks(type,crossname)
                 map_plot = gsn_csm_map(wks,mpwrf_res)
                 else
                 ter = wrf_user_getvar(a, "HGT", 0)
-                ter@lat2d = a->XLAT(0,:,:)
-                ter@lon2d = a->XLONG(0,:,:)
+                ter@lat2d = wrf_user_getvar(a, "XLAT", 0)
+                ter@lon2d = wrf_user_getvar(a, "XLONG", 0)
                 mpwrf_res@cnFillOn = True
                 cmap = read_colormap_file("OceanLakeLandSnow")
                 mpwrf_res@cnFillPalette      = cmap(2:,:)
@@ -1430,7 +1461,7 @@ wks = gsn_open_wks(type,crossname)
               mpwrf_res@vpHeightF         = 0.2
               mpwrf_res@gsnDraw           = False
               mpwrf_res@gsnFrame          = False
-              mpwrf_res = wrf_map_resources(a,mpwrf_res)     ; Use WRF map projection
+              mpwrf_res = wrf_map_resources(a[0],mpwrf_res)     ; Use WRF map projection
               mpwrf_res@pmTickMarkDisplayMode = "Never"     ; turns off map tickmarks and labels
               mpwrf_res@mpPerimLineColor      = "Black"     ; wrf_map_resources sets this to gray
               topovaronoff = stringtofloat(getenv("crosstopo"))
@@ -1439,8 +1470,8 @@ wks = gsn_open_wks(type,crossname)
                 map_plot = gsn_csm_map(wks,mpwrf_res)
                 else
                 ter = wrf_user_getvar(a, "HGT", 0)
-                ter@lat2d = a->XLAT(0,:,:)
-                ter@lon2d = a->XLONG(0,:,:)
+                ter@lat2d = wrf_user_getvar(a, "XLAT", 0)
+                ter@lon2d = wrf_user_getvar(a, "XLONG", 0)
                 mpwrf_res@cnFillOn = True
                 cmap = read_colormap_file("OceanLakeLandSnow")
                 mpwrf_res@cnFillPalette      = cmap(2:,:)
@@ -1569,7 +1600,7 @@ mpres = True
                       mpwrf_res@gsnDraw           = False
                       mpwrf_res@gsnFrame          = False
 
-                      mpwrf_res = wrf_map_resources(a,mpwrf_res)     ; Use WRF map projection
+                      mpwrf_res = wrf_map_resources(a[0],mpwrf_res)     ; Use WRF map projection
                       mpwrf_res@pmTickMarkDisplayMode = "Never"     ; turns off map tickmarks and labels
                       mpwrf_res@mpPerimLineColor      = "Black"     ; wrf_map_resources sets this to gray
               topovaronoff = stringtofloat(getenv("crosstopo"))
@@ -1578,8 +1609,8 @@ mpres = True
                 map_plot = gsn_csm_map(wks,mpwrf_res)
                 else
                 ter = wrf_user_getvar(a, "HGT", 0)
-                ter@lat2d = a->XLAT(0,:,:)
-                ter@lon2d = a->XLONG(0,:,:)
+                ter@lat2d = wrf_user_getvar(a, "XLAT", 0)
+                ter@lon2d = wrf_user_getvar(a, "XLONG", 0)
                 mpwrf_res@cnFillOn = True
                 cmap = read_colormap_file("OceanLakeLandSnow")
                 mpwrf_res@cnFillPalette      = cmap(2:,:)
@@ -1642,7 +1673,7 @@ mpres = True
                       mpwrf_res@gsnDraw           = False
                       mpwrf_res@gsnFrame          = False
 
-                      mpwrf_res = wrf_map_resources(a,mpwrf_res)     ; Use WRF map projection
+                      mpwrf_res = wrf_map_resources(a[0],mpwrf_res)     ; Use WRF map projection
                       mpwrf_res@pmTickMarkDisplayMode = "Never"     ; turns off map tickmarks and labels
                       mpwrf_res@mpPerimLineColor      = "Black"     ; wrf_map_resources sets this to gray
               topovaronoff = stringtofloat(getenv("crosstopo"))
@@ -1651,8 +1682,8 @@ mpres = True
                 map_plot = gsn_csm_map(wks,mpwrf_res)
                 else
                 ter = wrf_user_getvar(a, "HGT", 0)
-                ter@lat2d = a->XLAT(0,:,:)
-                ter@lon2d = a->XLONG(0,:,:)
+                ter@lat2d = wrf_user_getvar(a, "XLAT", 0)
+                ter@lon2d = wrf_user_getvar(a, "XLONG", 0)
                 mpwrf_res@cnFillOn = True
                 cmap = read_colormap_file("OceanLakeLandSnow")
                 mpwrf_res@cnFillPalette      = cmap(2:,:)
@@ -1714,7 +1745,7 @@ mpres = True
                       mpwrf_res@gsnDraw           = False
                       mpwrf_res@gsnFrame          = False
 
-                      mpwrf_res = wrf_map_resources(a,mpwrf_res)     ; Use WRF map projection
+                      mpwrf_res = wrf_map_resources(a[0],mpwrf_res)     ; Use WRF map projection
                       mpwrf_res@pmTickMarkDisplayMode = "Never"     ; turns off map tickmarks and labels
                       mpwrf_res@mpPerimLineColor      = "Black"     ; wrf_map_resources sets this to gray
               topovaronoff = stringtofloat(getenv("crosstopo"))
@@ -1723,8 +1754,8 @@ mpres = True
                 map_plot = gsn_csm_map(wks,mpwrf_res)
                 else
                 ter = wrf_user_getvar(a, "HGT", 0)
-                ter@lat2d = a->XLAT(0,:,:)
-                ter@lon2d = a->XLONG(0,:,:)
+                ter@lat2d = wrf_user_getvar(a, "XLAT", 0)
+                ter@lon2d = wrf_user_getvar(a, "XLONG", 0)
                 mpwrf_res@cnFillOn = True
                 cmap = read_colormap_file("OceanLakeLandSnow")
                 mpwrf_res@cnFillPalette      = cmap(2:,:)

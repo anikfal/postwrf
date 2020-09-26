@@ -2,34 +2,18 @@
 #PostWRF Version 1.1 (Apr 2020)
 #Coded by "Amirhossein Nikfal" <ah.nikfal@gmail.com>, <anik@ut.ac.ir>
 
-curdir=$(pwd)
 trap 'my_exit; exit' SIGINT SIGQUIT
-count=0
-
 my_exit() {
-  curdir2=$(pwd)
-  rm timestep_file 2>/dev/null
-  rm .AllWRFVariables 2>/dev/null
-  if [[ $curdir != $curdir2 ]]; then
-    wrflist=$(ls wrfout*)
-    totnom=$(echo $wrflist | wc -w)
-    rmcounter=1
-    rm *.png 2>/dev/null
-    while [ $rmcounter -le $totnom ]; do
-      file=$(echo $wrflist | cut -d' ' -f$rmcounter)
-      if [[ -L "$file" ]]; then
-        rm $file 2>/dev/null
-      fi
-      rmcounter=$((rmcounter + 1))
-    done
-    rmdir ../outputs_$wrfout2 2>/dev/null
-    unset rmcounter
-  fi
+rm $outputdir/*.ncl $outputdir/postwrf_wrfout* $outputdir/.AllWRFVariables $outputdir/eqname 2>/dev/null
+rm $outputdir/totalequation.txt $outputdir/variables*.txt $outputdir/equnit $postwrf_dir/modules/postwrf_wrfout* 2>/dev/null
+rm $postwrf_dir/*.ncl $postwrf_dir/postwrf_wrfout* $postwrf_dir/.AllWRFVariables $postwrf_dir/eqname 2>/dev/null
+rm $postwrf_dir/totalequation.txt $postwrf_dir/variables.txt $postwrf_dir/equnit 2>/dev/null
 }
+
 echo -e " \nMethod of Cross-Section: 1, 2, or 3?\n"
 select crossmode in "One-point-and-an-angle" "Two-points"; do
 
-  ncl modules/crossguidance.ncl >ncltemp
+  ncl $postwrf_dir/modules/crossguidance.ncl >ncltemp
   lon1=$(tail -n 4 ncltemp | head -n 1)
   lon1=$(echo $lon1 | cut -d' ' -f2) #remove spaces
   lat1=$(tail -n 3 ncltemp | head -n 1)
@@ -165,7 +149,8 @@ if [[ ${xTHIRDVAR_ONOFF} == "1" ]]; then #code aaah
   export colpal
 fi #code aaah
 
-wrfout2=$(echo $wrfout | awk -F/ '{print $NF}') #For naming, NCL must be run by wrfout, not wrfout2
+wrftemp=( $( ls $postwrf_dir/postwrf_wrfout* ) )
+wrfout2=`basename ${wrftemp[0]}` #In case of mulitfiles, pick the first file for naming
 if [ ${average_onoff} != "1" ]; then
   ncl modules/timestep.ncl >timestep_file
   echo " "$(tail -n 1 timestep_file | cut -d " " -f 2-)
@@ -216,7 +201,7 @@ else
   read -p "$(echo -e "\n ")Specify The Output File Name (Press Enter for automatic naming): " outname2
   cnpostname=$(echo $wrfout2 | cut -d "_" -f2-3)
   if [ -z "$outname2" ]; then
-    outname=$(echo "cross-section-"$xCNVAR3"-"$cnpostname)
+    outname=$(echo "cross-section-"$cnpostname)
     echo "  CrossSection file will be named $outname"
   else
     outname=$(echo $outname2"-"$cnpostname)
@@ -225,13 +210,18 @@ fi
 export outname
 
 if [[ ${imgfmt} == "x11" ]]; then
-  ncl -Q modules/cross.ncl
+  ln -sf $postwrf_dir/.AllWRFVariables $postwrf_dir/modules
+  ln -sf $postwrf_dir/postwrf_wrfout* $postwrf_dir/modules
+  ncl -Q $postwrf_dir/modules/cross.ncl
 else
   mkdir -p outputs_$wrfout2
   cd outputs_$wrfout2
-  ln -s ../wrfout* .
-  ln -s ../.AllWRFVariables .
-  ln -s ../modules/cross.ncl .
+  export outputdir=`pwd`
+  ln -sf $postwrf_dir/.AllWRFVariables $postwrf_dir/modules
+  ln -sf $postwrf_dir/.AllWRFVariables .
+  ln -sf $postwrf_dir/postwrf_wrfout* $postwrf_dir/modules
+  ln -sf $postwrf_dir/postwrf_wrfout* .
+  ln -sf $postwrf_dir/modules/cross.ncl .
   ncl -Q cross.ncl
   mv ../modules/*.pdf . 2>/dev/null
   mv ../modules/*.png . 2>/dev/null
@@ -240,5 +230,8 @@ else
     convert -delay $anim_spd *.png $outname.gif
     rm *.png
   fi
-  rm wrfout* .AllWRFVariables *.txt 2>/dev/null
 fi
+rm $outputdir/*.ncl $outputdir/postwrf_wrfout* $outputdir/.AllWRFVariables $outputdir/eqname 2>/dev/null
+rm $outputdir/totalequation.txt $outputdir/variables*.txt $outputdir/equnit $postwrf_dir/modules/postwrf_wrfout* 2>/dev/null
+rm $postwrf_dir/*.ncl $postwrf_dir/postwrf_wrfout* $postwrf_dir/.AllWRFVariables $postwrf_dir/eqname 2>/dev/null
+rm $postwrf_dir/totalequation.txt $postwrf_dir/variables.txt $postwrf_dir/equnit 2>/dev/null
