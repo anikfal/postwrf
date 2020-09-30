@@ -5,7 +5,7 @@ read eqname
 if [ -z "$eqname" ]
 then
 	touch eqname
-	echo $equation > eqname
+	echo polynomial > eqname
 else
 	echo $eqname > eqname
 fi
