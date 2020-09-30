@@ -5,21 +5,16 @@ load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/skewt_func.ncl"
 load "$NCARG_ROOT/lib/ncarg/nclscripts/wrf/WRFUserARW.ncl"
 
 begin
-myfile = getenv("wrfout")
- var = str_match(myfile,"/" )
-if (ismissing(var)) then
-  dir = systemfunc("pwd")
-  a = addfile(dir + "/" + myfile,"r")
-else
-  a = addfile(myfile,"r")
-end if
+
+load "read_wrfouts.ncl"
+
 wks = gsn_open_wks(getenv("imgfmt"),getenv("outname"))
 gsn_define_colormap(wks,"WhViBlGrYeOrReWh")
 stat = getenv("skewvar")
 lats=stringtofloat(getenv("skewlat"))
 lons=stringtofloat(getenv("skewlon"))
 NCLspinup = tointeger(getenv("spinup"))
-all_steps=a->XTIME
+all_steps = wrf_user_getvar(a,"XTIME",-1)
 hourstep = (all_steps(1) - all_steps(0))/60
 if (NCLspinup.ge.hourstep) then
  start_timestep = tointeger(NCLspinup/hourstep)
@@ -43,7 +38,7 @@ if (NCLaverage_onoff.ne.1) then
   ntimes = totstepsminus - mod(totstepsminus, ncltstep) - ncltstep
 end if
 
-mdims = getfilevardimsizes(a,"P")
+mdims = getfilevardimsizes(a[0],"P")
 nd = dimsizes(mdims)
 dimX = mdims(nd-1)
 dimY = mdims(nd-2)
