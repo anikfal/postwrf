@@ -9,49 +9,12 @@ begin
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;Import from shell
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-myfile = systemfunc("ls postwrf_wrfout*")
-var = str_match(myfile,"/" )
-multiwrf_num = dimsizes(myfile)
-if (multiwrf_num .eq. 1) then
-  if (ismissing(var)) then
-    dir = systemfunc("pwd")
-    f = addfile(dir + "/" + myfile, "r")
-    else
-    f = addfile(myfile,"r")
-  end if
-  else ;if not equal to 1 (multiple files are selected)
-  if (ismissing(var)) then
-    dir = systemfunc("pwd")
-    f = addfiles(dir + "/" + myfile,"r")
-    else
-    f = addfiles(myfile,"r")
-  end if
 
-  ;Checking for correct file selection
-  atts = new( (/multiwrf_num, 6/), "string")
-  do ii = 0, multiwrf_num-1
-    fileatts := getvaratts(f[ii])
-    atts(ii,0) = f[ii]@$fileatts(2)$
-    atts(ii,1) = f[ii]@$fileatts(3)$
-    atts(ii,2) = f[ii]@$fileatts(4)$
-    atts(ii,3) = f[ii]@$fileatts(5)$
-    atts(ii,4) = f[ii]@$fileatts(6)$
-    atts(ii,5) = f[ii]@$fileatts(7)$
-  end do
-  atts_transpose = transpose(atts)
-  do ii = 0, 5
-    if ( any( atts_transpose(ii,:).ne.atts_transpose(ii,0) ) ) then
-     print("")
-     print("Error: Selected files are not for the same WRF run")
-     print("Try again with correct file numbers")
-     exit()
-    end if
-  end do
-end if
+load "read_wrfouts.ncl"
 
 NCLspinup = tointeger(getenv("spinup"))
 NCLaverage_onoff = tointeger(getenv("average_onoff"))
-all_steps = wrf_user_getvar(f, "XTIME", -1)
+all_steps = wrf_user_getvar(a, "XTIME", -1)
 hourstep = (all_steps(1) - all_steps(0))/60
 if (NCLspinup.ge.hourstep) then
  start_timestep = tointeger(NCLspinup/hourstep)
@@ -60,7 +23,7 @@ else
 end if
 
 interpolvar = getenv("interpolvar")
-times = wrf_user_getvar(f,"times",-1)  ; get all times in the file
+times = wrf_user_getvar(a,"times",-1)  ; get all times in the file
 ;First line
 lines = tointeger(getenv("nclvars"))
 NCLvarnames = new(lines,"string")
@@ -107,10 +70,10 @@ delete(i)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;; Continue
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-lat2d = wrf_user_getvar(f, "XLAT", 0)
-lon2d = wrf_user_getvar(f, "XLONG", 0)
+lat2d = wrf_user_getvar(a, "XLAT", 0)
+lon2d = wrf_user_getvar(a, "XLONG", 0)
   cr = inttochar(10)
-  mdims = dimsizes(wrf_user_getvar(f, "U", -1)) ; get some dimension sizes for the file
+  mdims = dimsizes(wrf_user_getvar(a, "U", -1)) ; get some dimension sizes for the file
   nd = dimsizes(mdims)
 loc1=new(2,"float")
 loc2=loc1
@@ -153,73 +116,73 @@ if( ismissing(varplus) .and. ismissing(varminus) .and. ismissing(varmult) .and. 
 if ( any(yy.eq.NCLvarnames(ii)) ) then ;abcdif
 
   if (NCLvarnames(ii) .eq. "cape_surface") then
-     tc3  = wrf_user_getvar(f,"cape_2d",-1)
+     tc3  = wrf_user_getvar(a,"cape_2d",-1)
      tc3@_FillValue=-1
      tc3@description = "CAPE"
      tc3@units = "J/kg"
      tc2 = tc3(0,:,:,:)
 
  else if (NCLvarnames(ii) .eq. "cin_surface") then
-     tc3  = wrf_user_getvar(f,"cape_2d",-1)
+     tc3  = wrf_user_getvar(a,"cape_2d",-1)
      tc3@_FillValue=-1
      tc3@description = "CIN"
      tc3@units = "J/kg"
      tc2 = tc3(1,:,:,:)
 
  else if (NCLvarnames(ii) .eq. "cin_3d") then
-     tc3  = wrf_user_getvar(f,"cape_3d",-1)
+     tc3  = wrf_user_getvar(a,"cape_3d",-1)
      tc3@_FillValue=-1
      tc3@description = "CIN"
      tc3@units = "J/kg"
      tc2 = tc3(1,:,:,:,:)
 
  else if (NCLvarnames(ii) .eq. "cape_3d") then
-     tc3  = wrf_user_getvar(f,"cape_3d",-1)
+     tc3  = wrf_user_getvar(a,"cape_3d",-1)
      tc3@_FillValue=-1
      tc3@description = "CIN"
      tc3@units = "J/kg"
      tc2 = tc3(0,:,:,:,:)
 
  else if (NCLvarnames(ii) .eq. "lcl") then
-     tc3  = wrf_user_getvar(f,"cape_2d",-1)
+     tc3  = wrf_user_getvar(a,"cape_2d",-1)
      tc3@description = "Lifting Condensation Level"
      tc3@units = "m"
      tc2 = tc3(2,:,:,:)
 
  else if (NCLvarnames(ii) .eq. "lfc") then
-     tc3  = wrf_user_getvar(f,"cape_2d",-1)
+     tc3  = wrf_user_getvar(a,"cape_2d",-1)
      tc3@description = "Level of Free Convection"
      tc3@units = "m"
      tc2 = tc3(2,:,:,:)
 
  else if (NCLvarnames(ii) .eq. "dust_total") then
-     tc2 = wrf_user_getvar(f, "DUST_1", -1) + wrf_user_getvar(f, "DUST_2", -1) + wrf_user_getvar(f, "DUST_3", -1) \
-     + wrf_user_getvar(f, "DUST_4", -1) + wrf_user_getvar(f, "DUST_5", -1)
+     tc2 = wrf_user_getvar(a, "DUST_1", -1) + wrf_user_getvar(a, "DUST_2", -1) + wrf_user_getvar(a, "DUST_3", -1) \
+     + wrf_user_getvar(a, "DUST_4", -1) + wrf_user_getvar(a, "DUST_5", -1)
      tc2@description = "Total dust concentration"
      tc2@units = "Micro_gram/kg_dry_air"
 
  else if (NCLvarnames(ii) .eq. "dust_pm2.5") then
-     tc2 = wrf_user_getvar(f, "DUST_1", -1) + 0.3125*wrf_user_getvar(f, "DUST_2", -1)
+     tc2 = wrf_user_getvar(a, "DUST_1", -1) + 0.3125*wrf_user_getvar(a, "DUST_2", -1)
      tc2@description = "Dust equal to PM2.5 concentration"
      tc2@units = "Micro_gram/kg_dry_air"
 
  else if (NCLvarnames(ii) .eq. "dust_pm10") then
-     tc2 = wrf_user_getvar(f, "DUST_1", -1) + wrf_user_getvar(f, "DUST_2", -1) + wrf_user_getvar(f, "DUST_3", -1) \
-     + 0.87*wrf_user_getvar(f, "DUST_4", -1)
+     tc2 = wrf_user_getvar(a, "DUST_1", -1) + wrf_user_getvar(a, "DUST_2", -1) + wrf_user_getvar(a, "DUST_3", -1) \
+     + 0.87*wrf_user_getvar(a, "DUST_4", -1)
      tc2@description = "Dust equal to PM10 concentration"
      tc2@units = "Micro_gram/kg_dry_air"
 
 else if (NCLvarnames(ii) .eq. "wind_s") then
-     uu10  = wrf_user_getvar(f,"U10",-1)
-     vv10  = wrf_user_getvar(f,"V10",-1)
+     uu10  = wrf_user_getvar(a,"U10",-1)
+     vv10  = wrf_user_getvar(a,"V10",-1)
      tc2 = wind_speed(uu10,vv10)
      tc2@description = "10m wind speed"
      tc2@units = "m s-1"
 
  else if (NCLvarnames(ii) .eq. "wind_d") then
   if (.not.isdefined("uu10")) then
-     uu10  = wrf_user_getvar(f,"U10",-1)
-     vv10  = wrf_user_getvar(f,"V10",-1)
+     uu10  = wrf_user_getvar(a,"U10",-1)
+     vv10  = wrf_user_getvar(a,"V10",-1)
   end if
      tc2 = wind_direction(uu10,vv10,0)
      tc2@description = "10m wind direction"
@@ -227,7 +190,7 @@ else if (NCLvarnames(ii) .eq. "wind_s") then
 
   else
 
-  tc2  = wrf_user_getvar(f,NCLvarnames(ii),-1)    ; 3D temperature
+  tc2  = wrf_user_getvar(a,NCLvarnames(ii),-1)    ; 3D temperature
 
 end if
 end if

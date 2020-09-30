@@ -68,7 +68,6 @@ else
   ln -sf $postwrf_dir/postwrf_wrfout* .
   ln -sf $postwrf_dir/modules/windrose.ncl .
   ln -sf $postwrf_dir/modules/read_wrfouts.ncl .
-  # ncl -Q ../modules/windrose.ncl
   ncl -Q windrose.ncl
 fi
 rm $outputdir/*.ncl $outputdir/postwrf_wrfout* $outputdir/.AllWRFVariables $outputdir/eqname 2>/dev/null

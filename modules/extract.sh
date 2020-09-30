@@ -4,14 +4,14 @@
 
 trap 'my_exit; exit' SIGINT SIGQUIT
 my_exit() {
-rm $outputdir/*.ncl $outputdir/postwrf_wrfout* $outputdir/.AllWRFVariables $outputdir/eqname   2>/dev/null
-rm $outputdir/totalequation.txt $outputdir/variables.txt $outputdir/equnit 2>/dev/null
-rm $postwrf_dir/*.ncl $postwrf_dir/postwrf_wrfout* $postwrf_dir/.AllWRFVariables $postwrf_dir/eqname   2>/dev/null
-rm $postwrf_dir/totalequation.txt $postwrf_dir/variables.txt $postwrf_dir/equnit 2>/dev/null
+       rm $outputdir/*.ncl $outputdir/postwrf_wrfout* $outputdir/.AllWRFVariables $outputdir/eqname 2>/dev/null
+       rm $outputdir/totalequation.txt $outputdir/variables.txt $outputdir/equnit 2>/dev/null
+       rm $postwrf_dir/*.ncl $postwrf_dir/postwrf_wrfout* $postwrf_dir/.AllWRFVariables $postwrf_dir/eqname 2>/dev/null
+       rm $postwrf_dir/totalequation.txt $postwrf_dir/variables.txt $postwrf_dir/equnit 2>/dev/null
 }
 
-wrftemp=( $( ls $postwrf_dir/postwrf_wrfout* ) )
-wrfout2=`basename ${wrftemp[0]}` #In case of mulitfiles, pick the first file for naming
+wrftemp=($(ls $postwrf_dir/postwrf_wrfout*))
+wrfout2=$(basename ${wrftemp[0]}) #In case of mulitfiles, pick the first file for naming
 # wrfout2=$(echo $wrfout | awk -F/ '{print $NF}') #For naming, NCL must be run by wrfout, not wrfout2
 
 if [[ $verticalplotonoff != 1 ]]; then
@@ -34,7 +34,7 @@ if [[ $verticalplotonoff != 1 ]]; then
        mkdir -p outputs_$wrfout2
        ln -sf $postwrf_dir/.AllWRFVariables $postwrf_dir/modules
        cd outputs_$wrfout2
-       export outputdir=`pwd`
+       export outputdir=$(pwd)
        ln -sf $postwrf_dir/postwrf_wrfout* .
        # mv $postwrf_dir/modules/wrfout_d* .
        ln -sf ../.AllWRFVariables .
@@ -47,15 +47,8 @@ if [[ $verticalplotonoff != 1 ]]; then
               echo -e "\nInerpolation by the method of NearestPoint ...\n"
        fi
        ln -sf $postwrf_dir/modules/extract.ncl .
+       ln -sf $postwrf_dir/modules/read_wrfouts.ncl .
        ncl -Q extract.ncl
-       # ncl -Q ../modules/extract.ncl
-       # rm postwrf_wrfout* 2>/dev/null
-       # rm -f .AllWRFVariables 2>/dev/null
-       # rm -f eqname 2>/dev/null
-       # rm -f equnit 2>/dev/null
-       # rm -f totalequation.txt 2>/dev/null
-       # rm -f variables.txt 2>/dev/null
-       # unlink *.ncl 2>/dev/null
        echo -e "\nPostWRF: Extracting variables finished.\n"
 else
        myvar="Vprofile_X_axis_decimals"
@@ -119,34 +112,32 @@ else
        export outname
 
        if [[ ${imgfmt} == "x11" ]]; then
+              ln -sf $postwrf_dir/.AllWRFVariables $postwrf_dir/modules
+              ln -sf $postwrf_dir/postwrf_wrfout* $postwrf_dir/modules
+              ln -sf $postwrf_dir/modules/read_wrfouts.ncl .
               ncl -Q $postwrf_dir/modules/profile.ncl
        else
               mkdir -p outputs_$wrfout2
               ln -sf $postwrf_dir/.AllWRFVariables $postwrf_dir/modules
               cd outputs_$wrfout2
-              export outputdir=`pwd`
-              # ln -s ../wrfout* .
+              export outputdir=$(pwd)
               ln -sf $postwrf_dir/postwrf_wrfout* .
-              # mv $postwrf_dir/modules/wrfout_d* .
               ln -s ../.AllWRFVariables .
               echo -e "\nPostWRF: Extracting variables by vertical plots ...\n"
               ln -s ../modules/profile.ncl .
+              ln -sf $postwrf_dir/modules/read_wrfouts.ncl .
               ncl -Q profile.ncl
               rm postwrf_wrfout* 2>/dev/null
-              # unlink profile.ncl 2>/dev/null
               mv ../modules/*.pdf . 2>/dev/null
               mv ../modules/*.png . 2>/dev/null
-              # unlink contourlvl.ncl 2>/dev/null
               if [[ ${imgfmt} == "animated_gif" ]]; then
                      convert -delay $anim_spd *.png $outname.gif
                      rm *.png
               fi
-              # unlink .AllWRFVariables 2>/dev/null
-              # unlink *.ncl 2>/dev/null
        fi
 fi
 
-rm $outputdir/*.ncl $outputdir/postwrf_wrfout* $outputdir/.AllWRFVariables $outputdir/eqname   2>/dev/null
+rm $outputdir/*.ncl $outputdir/postwrf_wrfout* $outputdir/.AllWRFVariables $outputdir/eqname 2>/dev/null
 rm $outputdir/totalequation.txt $outputdir/variables.txt $outputdir/equnit 2>/dev/null
-rm $postwrf_dir/*.ncl $postwrf_dir/postwrf_wrfout* $postwrf_dir/.AllWRFVariables $postwrf_dir/eqname   2>/dev/null
+rm $postwrf_dir/*.ncl $postwrf_dir/postwrf_wrfout* $postwrf_dir/.AllWRFVariables $postwrf_dir/eqname 2>/dev/null
 rm $postwrf_dir/totalequation.txt $postwrf_dir/variables.txt $postwrf_dir/equnit 2>/dev/null

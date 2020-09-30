@@ -212,6 +212,7 @@ export outname
 if [[ ${imgfmt} == "x11" ]]; then
   ln -sf $postwrf_dir/.AllWRFVariables $postwrf_dir/modules
   ln -sf $postwrf_dir/postwrf_wrfout* $postwrf_dir/modules
+  ln -sf $postwrf_dir/modules/read_wrfouts.ncl .
   ncl -Q $postwrf_dir/modules/cross.ncl
 else
   mkdir -p outputs_$wrfout2
@@ -222,6 +223,7 @@ else
   ln -sf $postwrf_dir/postwrf_wrfout* $postwrf_dir/modules
   ln -sf $postwrf_dir/postwrf_wrfout* .
   ln -sf $postwrf_dir/modules/cross.ncl .
+  ln -sf $postwrf_dir/modules/read_wrfouts.ncl .
   ncl -Q cross.ncl
   mv ../modules/*.pdf . 2>/dev/null
   mv ../modules/*.png . 2>/dev/null

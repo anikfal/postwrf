@@ -126,16 +126,18 @@ export Intv
 if [[ ${imgfmt} == "x11" ]]; then
   ln -sf $postwrf_dir/.AllWRFVariables $postwrf_dir/modules
   ln -sf $postwrf_dir/postwrf_wrfout* $postwrf_dir/modules
+  ln -sf $postwrf_dir/modules/read_wrfouts.ncl .
   ncl -Q $postwrf_dir/modules/contourlvl.ncl
 else
   mkdir -p outputs_$wrfout2
   cd outputs_$wrfout2
-    export outputdir=`pwd`
+  export outputdir=`pwd`
   ln -sf $postwrf_dir/.AllWRFVariables $postwrf_dir/modules
   ln -sf $postwrf_dir/.AllWRFVariables .
   ln -sf $postwrf_dir/postwrf_wrfout* $postwrf_dir/modules
   ln -sf $postwrf_dir/postwrf_wrfout* .
   ln -sf $postwrf_dir/modules/contourlvl.ncl .
+  ln -sf $postwrf_dir/modules/read_wrfouts.ncl .
   ncl -Q contourlvl.ncl
   mv ../modules/*.pdf . 2>/dev/null
   mv ../modules/*.png . 2>/dev/null

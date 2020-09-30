@@ -9,48 +9,9 @@ begin
   NCLpanelcolumns = tointeger(getenv("panelcolumns"))
   NCLspinup = tointeger(getenv("spinup"))
 
-myfile = systemfunc("ls postwrf_wrfout*")
-var = str_match(myfile,"/" )
-multiwrf_num = dimsizes(myfile)
-if (multiwrf_num .eq. 1) then
-  if (ismissing(var)) then
-    dir = systemfunc("pwd")
-    f = addfile(dir + "/" + myfile, "r")
-    else
-    f = addfile(myfile,"r")
-  end if
-  else ;if not equal to 1 (multiple files are selected)
-  if (ismissing(var)) then
-    dir = systemfunc("pwd")
-    f = addfiles(dir + "/" + myfile,"r")
-    else
-    f = addfiles(myfile,"r")
-  end if
+load "read_wrfouts.ncl"
 
-  ;Checking for correct file selection
-  attnum = (/1,3,4,5,6,7/)
-  atts = new( (/multiwrf_num, 6/), "string")
-  do ii = 0, multiwrf_num-1
-    fileatts := getvaratts(f[ii])
-    atts(ii,0) = f[ii]@$fileatts(2)$
-    atts(ii,1) = f[ii]@$fileatts(3)$
-    atts(ii,2) = f[ii]@$fileatts(4)$
-    atts(ii,3) = f[ii]@$fileatts(5)$
-    atts(ii,4) = f[ii]@$fileatts(6)$
-    atts(ii,5) = f[ii]@$fileatts(7)$
-  end do
-  atts_transpose = transpose(atts)
-  do ii = 0, 5
-    if ( any( atts_transpose(ii,:).ne.atts_transpose(ii,0) ) ) then
-     print("")
-     print("Error: Selected files are not for the same WRF run")
-     print("Try again with correct file numbers")
-     exit()
-    end if
-  end do
-end if
-
-  all_steps = wrf_user_getvar(f, "XTIME", -1)
+  all_steps = wrf_user_getvar(a, "XTIME", -1)
   hourstep = (all_steps(1) - all_steps(0))/60
   if (NCLspinup.ge.hourstep) then
   start_timestep = tointeger(NCLspinup/hourstep)
@@ -58,7 +19,7 @@ end if
   start_timestep = 0
   end if
   ;;------------------------------------------------------------------
-  times  = wrf_user_getvar(f,"times",-1)
+  times  = wrf_user_getvar(a,"times",-1)
   totstepsminus = dimsizes(times)-1
   if (NCLaverage_onoff.ne.1) then
     ncltstep = tointeger(getenv("tstep"))
@@ -113,83 +74,83 @@ if( ismissing(varplus) .and. ismissing(varminus) .and. ismissing(varmult) .and. 
 
 if ( any(yy.eq.myvar) ) then ;abcdif
   if (myvar .eq. "cape_surface") then
-     profilevar2  = wrf_user_getvar(f,"cape_2d",-1)
+     profilevar2  = wrf_user_getvar(a,"cape_2d",-1)
      profilevar2@_FillValue=-1
      profilevar2@description = "CAPE"
      profilevar2@units = "J/kg"
      profilevar = profilevar2(0,:,:,:)
 
  else if (myvar .eq. "cin_surface") then
-     profilevar2  = wrf_user_getvar(f,"cape_2d",-1)
+     profilevar2  = wrf_user_getvar(a,"cape_2d",-1)
      profilevar2@_FillValue=-1
      profilevar2@description = "CIN"
      profilevar2@units = "J/kg"
      profilevar = profilevar2(1,:,:,:)
 
  else if (myvar .eq. "cin_3d") then
-     profilevar2  = wrf_user_getvar(f,"cape_3d",-1)
+     profilevar2  = wrf_user_getvar(a,"cape_3d",-1)
      profilevar2@_FillValue=-1
      profilevar2@description = "CIN"
      profilevar2@units = "J/kg"
      profilevar = profilevar2(1,:,:,:,:)
 
  else if (myvar .eq. "cape_3d") then
-     profilevar2  = wrf_user_getvar(f,"cape_3d",-1)
+     profilevar2  = wrf_user_getvar(a,"cape_3d",-1)
      profilevar2@_FillValue=-1
      profilevar2@description = "CIN"
      profilevar2@units = "J/kg"
      profilevar = profilevar2(0,:,:,:,:)
 
  else if (myvar .eq. "lcl") then
-     profilevar2  = wrf_user_getvar(f,"cape_2d",-1)
+     profilevar2  = wrf_user_getvar(a,"cape_2d",-1)
      profilevar2@description = "Lifting Condensation Level"
      profilevar2@units = "m"
      profilevar = profilevar2(2,:,:,:)
 
  else if (myvar .eq. "lfc") then
-     profilevar2  = wrf_user_getvar(f,"cape_2d",-1)
+     profilevar2  = wrf_user_getvar(a,"cape_2d",-1)
      profilevar2@description = "Level of Free Convection"
      profilevar2@units = "m"
      profilevar = profilevar2(2,:,:,:)
 
  else if (myvar .eq. "dust_total") then
-     profilevar = wrf_user_getvar(f, "DUST_1", -1) + wrf_user_getvar(f, "DUST_2", -1) + wrf_user_getvar(f, "DUST_3", -1) \
-     + wrf_user_getvar(f, "DUST_4", -1) + wrf_user_getvar(f, "DUST_5", -1)
+     profilevar = wrf_user_getvar(a, "DUST_1", -1) + wrf_user_getvar(a, "DUST_2", -1) + wrf_user_getvar(a, "DUST_3", -1) \
+     + wrf_user_getvar(a, "DUST_4", -1) + wrf_user_getvar(a, "DUST_5", -1)
      profilevar@description = "Total dust concentration"
      profilevar@units = "Micro_gram/kg_dry_air"
-     copy_VarCoords(wrf_user_getvar(f, "DUST_4", -1),profilevar)
+     copy_VarCoords(wrf_user_getvar(a, "DUST_4", -1),profilevar)
 
  else if (myvar .eq. "dust_pm2.5") then
-     profilevar = wrf_user_getvar(f, "DUST_1", -1) + 0.3125*wrf_user_getvar(f, "DUST_2", -1)
+     profilevar = wrf_user_getvar(a, "DUST_1", -1) + 0.3125*wrf_user_getvar(a, "DUST_2", -1)
      profilevar@description = "Dust equal to PM2.5 concentration"
      profilevar@units = "Micro_gram/kg_dry_air"
-     copy_VarCoords(wrf_user_getvar(f, "DUST_4", -1),profilevar)
+     copy_VarCoords(wrf_user_getvar(a, "DUST_4", -1),profilevar)
 
  else if (myvar .eq. "dust_pm10") then
-     profilevar = wrf_user_getvar(f, "DUST_1", -1) + wrf_user_getvar(f, "DUST_2", -1) + wrf_user_getvar(f, "DUST_3", -1) \
-     + 0.87*wrf_user_getvar(f, "DUST_4", -1)
+     profilevar = wrf_user_getvar(a, "DUST_1", -1) + wrf_user_getvar(a, "DUST_2", -1) + wrf_user_getvar(a, "DUST_3", -1) \
+     + 0.87*wrf_user_getvar(a, "DUST_4", -1)
      profilevar@description = "Dust equal to PM10 concentration"
      profilevar@units = "Micro_gram/kg_dry_air"
-     copy_VarCoords(wrf_user_getvar(f, "DUST_4", -1),profilevar)
+     copy_VarCoords(wrf_user_getvar(a, "DUST_4", -1),profilevar)
 
 else if (myvar .eq. "wind_s") then
-     uu10  = wrf_user_getvar(f,"U10",-1)
-     vv10  = wrf_user_getvar(f,"V10",-1)
+     uu10  = wrf_user_getvar(a,"U10",-1)
+     vv10  = wrf_user_getvar(a,"V10",-1)
      profilevar = wind_speed(uu10,vv10)
      profilevar@description = "10m wind speed"
      profilevar@units = "m s-1"
 
  else if (myvar .eq. "wind_d") then
   if (.not.isdefined("uu10")) then
-     uu10  = wrf_user_getvar(f,"U10",-1)
-     vv10  = wrf_user_getvar(f,"V10",-1)
+     uu10  = wrf_user_getvar(a,"U10",-1)
+     vv10  = wrf_user_getvar(a,"V10",-1)
   end if
      profilevar = wind_direction(uu10,vv10,0)
      profilevar@description = "10m wind direction"
      profilevar@units = "Degrees from north"
   else
 
-  profilevar = wrf_user_getvar(f, myvar,-1)
+  profilevar = wrf_user_getvar(a, myvar,-1)
 
 end if
 end if
@@ -203,10 +164,10 @@ end if
 end if
 end if
 
-  zz = wrf_user_getvar(f, "z",-1)
-  times = wrf_user_getvar(f,"times",-1)
-  pp  = wrf_user_getvar(f, "pressure",-1)
-  locs = wrf_user_ll_to_ij(f,lons,lats,True)
+  zz = wrf_user_getvar(a, "z",-1)
+  times = wrf_user_getvar(a,"times",-1)
+  pp  = wrf_user_getvar(a, "pressure",-1)
+  locs = wrf_user_ll_to_ij(a,lons,lats,True)
   loccount = dimsizes(locnames)
   res                   = True
   res@trYReverse        = True                       ; reverse Y-axis
