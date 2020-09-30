@@ -7,19 +7,13 @@ load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/wind_rose.ncl"
 load "$NCARG_ROOT/lib/ncarg/nclscripts/wrf/WRFUserARW.ncl"
 
 begin
-  myfile = getenv("wrfout")
- nullchar = inttochar(0)
- var = str_match(myfile,"/" )
-if (ismissing(var)) then
-  dir = systemfunc("pwd")
-  f = addfile(dir + "/" + myfile,"r")
-else
-  f = addfile(myfile,"r")
-end if
-  times = wrf_user_getvar(f,"times",-1)
+
+load "read_wrfouts.ncl"
+
+  times = wrf_user_getvar(a,"times",-1)
   dimtime = dimsizes(times)
   print("The two notes below can be ignored")
-  uvm10 = wrf_user_getvar(f,"uvmet10",-1)
+  uvm10 = wrf_user_getvar(a,"uvmet10",-1)
   u10 = uvm10(0,:,:,:)
   v10 = uvm10(1,:,:,:)
   nclwndbnd = stringtointeger(getenv("sh_wndbnd"))
@@ -35,7 +29,7 @@ end if
   NCLpanelrows = tointeger(getenv("panelrows"))
   NCLpanelcolumns = tointeger(getenv("panelcolumns"))
   stat = getenv("rosevar")
-  all_steps=f->XTIME
+  all_steps = wrf_user_getvar(a,"XTIME",-1)
   hourstep = (all_steps(1) - all_steps(0))/60
   if (NCLspinup.ge.hourstep) then
     start_timestep = tointeger(NCLspinup/hourstep)
@@ -43,13 +37,15 @@ end if
     start_timestep = 0
   end if
   totstepsminus = dimsizes(times)-1
-  loc = wrf_user_ll_to_ij(f, sh_lons, sh_lats, True)
+  loc = wrf_user_ll_to_ij(a[0], sh_lons, sh_lats, True)
   cr = inttochar(10)
   wks = gsn_open_wks(nclimgtype,nclfilename)
   mx = loc(0) - 1
   ny = loc(1) - 1
-  lat1  = f->XLAT(0,ny,mx)
-  lon1  = f->XLONG(0,ny,mx)
+  lat2 = wrf_user_getvar(a,"XLAT",-1)
+  lon2 = wrf_user_getvar(a,"XLONG",-1)
+  lat1 = lat2(0,ny,mx) 
+  lon1 = lon2(0,ny,mx)
   res               = True
   res@tiMainOffsetYF = 0.04
   res@tiMainPosition = "Center"
