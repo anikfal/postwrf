@@ -9,23 +9,17 @@ load "$NCARG_ROOT/lib/ncarg/nclscripts/contrib/time_axis_labels.ncl"
 load "$NCARG_ROOT/lib/ncarg/nclscripts/contrib/ut_string.ncl"
 
 begin
- myfile = getenv("wrfout")
- var = str_match(myfile,"/" )
-if (ismissing(var)) then
-  dir = systemfunc("pwd")
-  a = addfile(dir + "/" + myfile,"r")
-else
-  a = addfile(myfile,"r")
-end if
 
- print("")
- geotiffvar = getenv("GTIFFVAR")
- NCLspinup = tointeger(getenv("spinup"))
- NCLaverage_onoff = tointeger(getenv("average_onoff"))
- NCLaverage_time = tointeger(getenv("averagetime"))
- ncl_smooth = tointeger(getenv("smooth_onoff"))
+load "read_wrfouts.ncl"
 
- all_steps=a->XTIME
+print("")
+geotiffvar = getenv("GTIFFVAR")
+NCLspinup = tointeger(getenv("spinup"))
+NCLaverage_onoff = tointeger(getenv("average_onoff"))
+NCLaverage_time = tointeger(getenv("averagetime"))
+ncl_smooth = tointeger(getenv("smooth_onoff"))
+
+all_steps = wrf_user_getvar(a, "XTIME", -1)
 hourstep = (all_steps(1) - all_steps(0))/60
 if (NCLspinup.ge.hourstep) then
  start_timestep = tointeger(NCLspinup/hourstep)
@@ -120,17 +114,19 @@ else if (geotiffvar .eq. "lfc") then
      tc = slp1(2,:,:,:)
 
 else if (geotiffvar .eq. "dust_total") then
-     tc  = a->DUST_1+a->DUST_2+a->DUST_3+a->DUST_4+a->DUST_5
+     tc = wrf_user_getvar(a, "DUST_1", -1) + wrf_user_getvar(a, "DUST_2", -1) + wrf_user_getvar(a, "DUST_3", -1) \
+     + wrf_user_getvar(a, "DUST_4", -1) + wrf_user_getvar(a, "DUST_5", -1)
      tc@description = "Total dust concentration"
      tc@units = "Micro_gram/kg_dry_air"
 
  else if (geotiffvar .eq. "dust_pm2.5") then
-     tc  = a->DUST_1+0.3125*a->DUST_2
+     tc = wrf_user_getvar(a, "DUST_1", -1) + 0.3125*wrf_user_getvar(a, "DUST_2", -1)
      tc@description = "Dust equal to PM2.5 concentration"
      tc@units = "Micro_gram/kg_dry_air"
 
  else if (geotiffvar .eq. "dust_pm10") then
-     tc  = a->DUST_1+a->DUST_2+a->DUST_3+0.87*a->DUST_4
+     tc = wrf_user_getvar(a, "DUST_1", -1) + wrf_user_getvar(a, "DUST_2", -1) + wrf_user_getvar(a, "DUST_3", -1) \
+     + 0.87*wrf_user_getvar(a, "DUST_4", -1)
      tc@description = "Dust equal to PM10 concentration"
      tc@units = "Micro_gram/kg_dry_air"
 
@@ -188,8 +184,8 @@ end if
   jj = 0
   totstepsminus = dimsizes(times)-1
   ntimes = totstepsminus
-  lat2d = a->XLAT
-  lon2d = a->XLONG
+  lat2d = wrf_user_getvar(a, "XLAT", -1)
+  lon2d = wrf_user_getvar(a, "XLONG", -1)
   minlat2d = min(lat2d)
   maxlat2d = max(lat2d)
   intvlat2d = tointeger(ceil((maxlat2d - minlat2d)*10))
