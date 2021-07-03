@@ -3,7 +3,9 @@
 
 PostWRF is mainly a combination of NCAR Command Language (NCL) and Linux shell scripts which makes it possible to visualize and post-process the WRF model outputs, without being familiar with NCL programming.
 
-PostWRF is best useful for 
+PostWRF is useful for both expert and novice end users. Students can plot the WRF outputs whithout struggling with coding and syntax errors. Expert users can also plot various variables in a complex manner, without working with codes.
+
+PostWRF can be compared to QGIS without graphical user interphase, but for WRF outputs.
 
 Documentations and user guide: https://postwrf.readthedocs.io/en/master
 
