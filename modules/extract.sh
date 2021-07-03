@@ -48,7 +48,7 @@ if [[ $verticalplotonoff != 1 ]]; then
        fi
        ln -sf $postwrf_dir/modules/extract.ncl .
        ln -sf $postwrf_dir/modules/read_wrfouts.ncl .
-       ncl -Q extract.ncl
+       ncl -nQ extract.ncl
        echo -e "\nPostWRF: Extracting variables finished.\n"
 else
        myvar="Vprofile_X_axis_decimals"
@@ -58,7 +58,7 @@ else
 
        if [ ${average_onoff} != "1" ]; then
               # wrfout2=$(echo $wrfout | awk -F/ '{print $NF}') #For naming, NCL must be run by wrfout, not wrfout2
-              ncl modules/timestep.ncl >timestep_file
+              ncl -nQ modules/timestep.ncl >timestep_file
               echo " "$(tail -n 1 timestep_file | cut -d " " -f 2-)
               rm timestep_file
               read -p "Specify Time_Step(s) Between The Images (Default=1): " tstep
@@ -115,7 +115,7 @@ else
               ln -sf $postwrf_dir/.AllWRFVariables $postwrf_dir/modules
               ln -sf $postwrf_dir/postwrf_wrfout* $postwrf_dir/modules
               ln -sf $postwrf_dir/modules/read_wrfouts.ncl .
-              ncl -Q $postwrf_dir/modules/profile.ncl
+              ncl -nQ $postwrf_dir/modules/profile.ncl
        else
               mkdir -p outputs_$wrfout2
               ln -sf $postwrf_dir/.AllWRFVariables $postwrf_dir/modules
@@ -126,7 +126,7 @@ else
               echo -e "\nPostWRF: Extracting variables by vertical plots ...\n"
               ln -s ../modules/profile.ncl .
               ln -sf $postwrf_dir/modules/read_wrfouts.ncl .
-              ncl -Q profile.ncl
+              ncl -nQ profile.ncl
               rm postwrf_wrfout* 2>/dev/null
               mv ../modules/*.pdf . 2>/dev/null
               mv ../modules/*.png . 2>/dev/null

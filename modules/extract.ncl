@@ -163,13 +163,13 @@ if ( any(yy.eq.NCLvarnames(ii)) ) then ;abcdif
 
  else if (NCLvarnames(ii) .eq. "dust_pm2.5") then
      tc2 = wrf_user_getvar(a, "DUST_1", -1) + 0.3125*wrf_user_getvar(a, "DUST_2", -1)
-     tc2@description = "Dust equal to PM2.5 concentration"
+     tc2@description = "Dust equal to PM2.5"
      tc2@units = "Micro_gram/kg_dry_air"
 
  else if (NCLvarnames(ii) .eq. "dust_pm10") then
      tc2 = wrf_user_getvar(a, "DUST_1", -1) + wrf_user_getvar(a, "DUST_2", -1) + wrf_user_getvar(a, "DUST_3", -1) \
      + 0.87*wrf_user_getvar(a, "DUST_4", -1)
-     tc2@description = "Dust equal to PM10 concentration"
+     tc2@description = "Dust equal to PM10"
      tc2@units = "Micro_gram/kg_dry_air"
 
 else if (NCLvarnames(ii) .eq. "wind_s") then

@@ -6,6 +6,9 @@ Like the contour plots, PostWRF provides a combination of three variables to be 
  in a cross-section plot, besides the path of cross-section in a separate small plot inside the 
  main plot
 
+.. note::
+   Line colors, font sizes, etc., can be modified by changing the relevant variables in **namelist.wrf**
+
 Example 1
 ==========
 
@@ -48,6 +51,8 @@ Output image at a specific time-slot in the WRF output is as bellow:
 .. figure:: images/cross1.png
    :scale: 60 %
    :alt: map to buried treasure
+   
+   Cross-section plot with line contours
 
 Example 2
 =========
@@ -88,6 +93,8 @@ Output image at a specific time-slot in the WRF output is as bellow:
 .. figure:: images/cross2.png
    :scale: 60 %
    :alt: map to buried treasure
+   
+   Cross-section plot with shaded contours
 
 Example 3
 =========
@@ -147,3 +154,5 @@ Output image at a specific time-slot in the WRF output is as bellow:
 .. figure:: images/cross3.png
    :scale: 60 %
    :alt: map to buried treasure
+   
+   Panel plots of cross-sections

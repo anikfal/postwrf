@@ -23,6 +23,8 @@ Output image at a specific time-slot in the WRF output is as bellow:
 .. figure:: images/windrose.png
    :scale: 100 %
    :alt: map to buried treasure
+   
+   Windrose diagram from the WRF output, on a specific location (Berlin)
 
 SkewT
 =====
@@ -40,3 +42,5 @@ Output image at a specific time-slot in the WRF output is as bellow:
 .. figure:: images/skew.png
    :scale: 100 %
    :alt: map to buried treasure
+   
+   SkewT diagram from the WRF output, on a specific location (Berlin)

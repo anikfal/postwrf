@@ -44,7 +44,7 @@ while getopts hdf:i option; do
     rm .wrfvars
   fi ;;
   i)
-    echo "  PostWRF Version 1.0 (May 2018)"
+    echo "  PostWRF Version 1.1 (Oct 2020)"
     echo "  Programmed by Amirhossein Nikfal <ah.nikfal@gmail.com>, <anik@ut.ac.ir>"
     ;;
   esac
@@ -58,8 +58,10 @@ if [[ $1 != "-h" && $1 != "-i" && $1 != "-f" && $1 != "-d" && $1 != "-p" ]]; the
   export roseonoff=$(cat namelist.wrf | grep windrose_On-Off | awk '{print $3}')
   export skewtonoff=$(cat namelist.wrf | grep skewT_On-Off | awk '{print $3}')
   export domainonoff=$(cat namelist.wrf | grep Domain_On-Off | awk '{print $3}')
+  export statisticalonoff=$(cat namelist.wrf | grep STATISTICAL_DIAGRAMS_ON_OFF | awk '{print $3}')
   export GEOTIFF_ONOFF=$(cat namelist.wrf | grep Geotiff_ON_OFF | awk '{print $3}')
-  sumopts=$((extractonoff + contour_onoff + crossonoff + roseonoff + skewtonoff + domainonoff + GEOTIFF_ONOFF))
+  export rttov_onoff=$(cat namelist.wrf | grep RTTOV_On-Off | awk '{print $3}')
+  sumopts=$((extractonoff + contour_onoff + crossonoff + roseonoff + skewtonoff + domainonoff + GEOTIFF_ONOFF + statisticalonoff + rttov_onoff))
   if [[ $sumopts -gt 1 ]]; then
     echo ""
     echo "  More than one section is activated"
@@ -69,7 +71,7 @@ if [[ $1 != "-h" && $1 != "-i" && $1 != "-f" && $1 != "-d" && $1 != "-p" ]]; the
   elif [[ $sumopts -eq 0 ]]; then
     echo ""
     echo "  No section is activated"
-    echo "  Select at least one section in namelist.wrf and run again"
+    echo "  Select one section in namelist.wrf and run again"
     echo ""
 
   else

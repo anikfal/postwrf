@@ -5,6 +5,9 @@ Contour plots
 A combination of three variables, as well as wind vectors and location markers,
 could be plotted by PostWRF.
 
+.. note::
+   Line colors, font sizes, etc., can be modified by changing the relevant variables in **namelist.wrf**
+
 Example 1
 ==========
 
@@ -62,6 +65,8 @@ Output image at a specific time-slot in the WRF output is as bellow:
 .. figure:: images/contour1.png
    :scale: 70 %
    :alt: map to buried treasure
+   
+   Overlaid line contours and some locations
 
 Example 2
 ==========
@@ -124,6 +129,8 @@ Output image at a specific time-slot in the WRF output is as bellow:
 .. figure:: images/contour2.png
    :scale: 70 %
    :alt: map to buried treasure
+   
+   Shaded contours, overlaid by wind vectors
 
 Example 3
 ==========
@@ -197,3 +204,5 @@ Output image at a specific time-slot in the WRF output is as bellow:
 .. figure:: images/contour3.png
    :scale: 70 %
    :alt: map to buried treasure
+   
+   Contour maps as panel plots

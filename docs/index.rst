@@ -1,14 +1,15 @@
-=====================
+=======================
 PostWRF's Documentation
-=====================
+=======================
 
 PostWRF is an interactive tool for the visualizaion and post-processing of the
 `Weather Research and Forecasting (WRF) <https://www.mmm.ucar.edu/weather-research-and-forecasting-model>`_
 model outputs. PostWRF as an integrated system based on the `NCAR Command Language (NCL) <https://www.ncl.ucar.edu>`_
-and Linux shell scripts, acts as a bridge between atmospheric modeling and environmental science, and makes it possible for many environmental scientists to directly
-visualize the WRF model outputs, without any advanced knowledge in NCL scripting and WRF modeling system.
+and Linux shell scripts, acts as a bridge between atmospheric modeling and environmental science, and makes it possible for many environmental scientists to directly visualize the WRF model outputs, without any advanced knowledge in NCL scripting and WRF modeling system.
 
-PostWRF is publically available for download:
+PostWRF can provide the input data for the RTTOV (radiation transfer) model, out of WRF output files. Moreover, it can visualize the RTTOV output files from ASCII format to a desired format of NetCDF, PNG, GeoTIFF, or even RGB image.
+
+PostWRF codes are publically available at:
  https://github.com/anikfal/PostWRF
 
 .. Go to the Satpy project_ page for source code and downloads.
@@ -20,7 +21,7 @@ PostWRF is publically available for download:
 
 .. note::
 
-    PostWRF is a Linux-based software. However, it could be tested on the Mac OS.
+    PostWRF is a Linux-based software, developed on Fedora/CentOS. However, it can be tested on the Mac OS.
 
 .. .. versionchanged:: 0.20.0
 
@@ -39,6 +40,8 @@ PostWRF is publically available for download:
     pw_cross
     pw_domain
     pw_diagram
+    pw_statistical
+    pw_rttov
 .. Indices and tables
 .. ==================
 

@@ -1,31 +1,23 @@
-============================= DATA EXTRACTION ===============================
+======================= DATA EXTRACTION (ON SURFACE) ========================
 =============================================================================
 Extract_On-Off                  = 0
 
-WRF_variable_name               = rh, T2, dust_pm10
-Location_names                  = tehran, ghom,
-Location_latitudes              = 33, 28,
-Location_longitudes             = 50, 42,
+WRF_variable_name               = dust_pm10, dust_pm2.5, T2, rh
+Location_names                  = Loc1, Loc2, Loc3
+Location_latitudes              = 33, 29, 25
+Location_longitudes             = 45, 47, 46
 
-+Vertical_profile_plot_on_off   = 1
++Vertical_profile_plot_on_off   = 0
 +Vprofile_X_axis_decimals       = 3
------------------------------------------------------------------------------
-
-
-=========================== CONVERT TO GEOTIFF ==============================
-=============================================================================
-Geotiff_ON_OFF                  = 0
-Variable_name_to_Geotiff        = (rh+tk)^0.5 + dust_pm10
-Geotiff_pressure_level       	= 500
 -----------------------------------------------------------------------------
 
 
 =============================== CONTOUR PLOT ================================
 =============================================================================
-CONTOUR_ON_OFF                 = 1
+CONTOUR_ON_OFF                 = 0
 
 !!! Variable_1 by line contours !!!
-1st_Variable_on_off            = 1
+1st_Variable_on_off            = 0
 1st_Variable_name              = tc
 1st_Variable_pressure_level    = 700
 1st_Variable_intervals         = 5
@@ -44,20 +36,20 @@ CONTOUR_ON_OFF                 = 1
 2nd_Variable_brokenline_on_off = 1
 
 !!! Variable_3 by filled (colored) contours !!!
-3rd_Variable_on_off            = 0
-3rd_Variable_name              = pvo
+3rd_Variable_on_off            = 1
+3rd_Variable_name              = HFX
 3rd_Variable_pressure_level    = 0,
 
 Wind_Vectors_on_off            = 1
-Wind_Vectors_pressure_level    = 500
+Wind_Vectors_pressure_level    = 850
 Wind_Vectors_speed (m/s)       = 4
 Wind_Vectors_density           = 0.5
 Wind_Vectors_color             = black
 Wind_Vectors_thickness         = 0.5
 
 Location_point_mark_on_off     = 0
-Location_labels_on_off         = 0
-Location_labels_size           = 0.1
+Location_labels_on_off         = 1
+Location_labels_size           = 0.5
 Location_labels_color          = black
 Shapefile_on-off               = 0
 Shapefile_path                 = /home/ah/postwrf/modules/iran_provinces/all.shp
@@ -69,13 +61,13 @@ Shapefile_path                 = /home/ah/postwrf/modules/iran_provinces/all.shp
 CROSSSECTION_ON-OFF            = 0
 
 CrossSection_path_on_off       = 1
-Topographic_map_on_off         = 1
+Topographic_map_on_off         = 0
 
 !!! 3D Variable_1 by line contours !!!
 1st_var_on_off                 = 1
-1st_var_name                   = QRAIN
-1st_var_intervals              = 0
-1st_var_line_color             = red
+1st_var_name                   = (ua^2 + va^2)^0.5
+1st_var_intervals              = 10
+1st_var_line_color             = black
 1st_var_line_thickness         = 0.5
 1st_var_label_size             = 0.5
 
@@ -89,21 +81,37 @@ Topographic_map_on_off         = 1
 2nd_var_brokenline_on_off      = 1
 
 !!! 3D Variable_3 by filled (colored) contours !!!
-3rd_var_on_off                 = 0
+3rd_var_on_off                 = 1
 3rd_var_name                   = dust_pm10
 -----------------------------------------------------------------------------
 
 
-================================ DOMAIN MAP =================================
+========================== STATISTICAL DIAGRAMS =============================
+=============================================================================
+STATISTICAL_DIAGRAMS_ON_OFF      = 1
+
+Timeseries_ON_OFF                = 0
+Timeseries_Line_on_off           = 1
+Timeseries_Marker_on_off         = 1
+
+Scatterplot_ON_OFF               = 1
+
+Taylor_diagram_ON_OFF            = 0
+Taylor_labels_size               = 0.5
+Taylor_markers_size              = 0.5
+-----------------------------------------------------------------------------
+
+
+================================ DOMAIN PLOT ================================
 =============================================================================
 Domain_On-Off                    = 0
 
-namelist.wps_path (schematic)    = /home/ah/wrf4.1/WPS-master/namelist.wps
+namelist.wps_path (schematic)    = /home/anikfal/WRF4.2.2/WPS/namelist.wps
 background_color (schematic)     = forestgreen
 lables_On-Off (schematic)        = 0
 
-+Domain_on_off (topography)      = 1
-+number_of_domains (topography)  = 2
++Domain_on_off (topography)      = 0
++number_of_domains (topography)  = 1
 +box_color                       = white
 -----------------------------------------------------------------------------
 
@@ -117,7 +125,7 @@ wind_location_longitude         = 50
 -----------------------------------------------------------------------------
 
 
-=============================== SKEWT DIAGRAM ===============================
+============================== SKEWT DIAGRAM ================================
 =============================================================================
 skewT_On-Off                    = 0
 skewt_location_name             = Tehran_Station
@@ -126,13 +134,37 @@ skewt_location_longitude        = 50
 -----------------------------------------------------------------------------
 
 
+============================ CONVERT TO GEOTIFF =============================
+=============================================================================
+Geotiff_ON_OFF                  = 0
+Variable_name_to_Geotiff        = (rh+tk)^0.5 + dust_pm10
+Geotiff_pressure_level       	= 500
+-----------------------------------------------------------------------------
+
+
+========================= RTTOV MODEL INPUT/OUTPUT ==========================
+=============================================================================
+RTTOV_On-Off                    = 0
+
+WRF2RTTOV_profiles_OnOff        = 0
+aerosol_profile_OnOff           = 1
+
+RTTOV_OUTPUT_OnOff              = 1
+rttov_output_prefix             = output_example
+Brightness_temperature          = 1
+Reflectance                     = 0
+Radiance                        = 0
+Surface_emissivity              = 0
+-----------------------------------------------------------------------------
+
+
 ============================= GENERAL SETTINGS ==============================
 =============================================================================
 spin-up_time (hours)            = 6
 averaging_on_off                = 0
-average_time (hours)            = 12
+average_time (hours)            = 24
 panel_plot__on_off              = 0
-panel_plot__rows_number         = 2
+panel_plot__rows_number         = 1
 panel_plot__columns_number      = 3
 smooth_maps_on_off              = 1
 map_borderline_color            = black

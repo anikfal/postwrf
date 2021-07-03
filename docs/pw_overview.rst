@@ -8,13 +8,15 @@ proxies between NCL codes and the end user, in modifying the NCL codes
 with regard to some primary input data, provided by the user.
 
 Software structure
-=====
+==================
 
 The processing steps through PostWRF is depicted below as a flowchart diagram:
 
 .. figure:: images/flowchart.png
    :scale: 50 %
    :alt: map to buried treasure
+   
+   PostWRF structure and run processes
 
 Run PostWRF
 ===========

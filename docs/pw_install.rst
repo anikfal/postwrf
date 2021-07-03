@@ -1,6 +1,6 @@
-========
+============
 Installation
-========
+============
 
 | On a Linux (Unix) OS, two steps are required before using PostWRF:
 | 
@@ -13,7 +13,7 @@ Installation
 
     sudo dnf install ncl
 
-In case of more information, please see: `Installing NCL <https://www.ncl.ucar.edu/Download/>`_
+If need more information, please see: `NCL download and installation <https://www.ncl.ucar.edu/Download/>`_
 
 |
 |

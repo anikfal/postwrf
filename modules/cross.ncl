@@ -480,12 +480,11 @@ Nullcnmax = True
 MANcnmax = stats(1)
 end if
 
-if ( (MANcnmax-MANcnmin) .eq. 0) then
-  MANcnmax = max(tc_plane33)
-  MANcnmin = min(tc_plane33)
-end if
+;if ( (MANcnmax-MANcnmin) .eq. 0) then
+;  MANcnmax = max(tc_plane33)
+;  MANcnmin = min(tc_plane33)
+;end if
 
-; if (cnintv .eq. "NULL") then ; code abcnull
   if ((.not. ismissing(Nullcnmin)) .and. ismissing(Nullcnmax))
    cnmax2  = stringtofloat(cnmax)
    MANcnintv = (cnmax2-MANcnmin/10)
@@ -509,7 +508,6 @@ end if
    end if
    end if
    end if
-; end if ; code abcnull
 
 end if ; if for code abc123
 

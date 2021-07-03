@@ -234,7 +234,7 @@ fi
 if [[ $contour_onoff == 1 ]]; then                                                  #For the fifth line (Contour Variables)
   myvar="3rd_Variable_name"                                                         #nclcontourvars11
   CNVAR3=$(sed -n "/$myvar/p" namelist.wrf | awk -F"=" '{print $NF}' | cut -d, -f1) #only one var is read
-  export CNVAR3=$(echo "${CNVAR3// /}") #Remove spaces
+  export CNVAR3=$(echo "${CNVAR3// /}")                                             #Remove spaces
   unset myvar
 
   #------------------------------------------------------------------------------------------------
@@ -303,7 +303,7 @@ if [[ $contour_onoff == 1 ]]; then                                              
     ##------------------------------------------------------------------------------------------------
     myvar="1st_Variable_name"
     CNVAR1=$(sed -n "/$myvar/p" namelist.wrf | awk -F"=" '{print $NF}' | cut -d, -f1) #only one var is read
-    export CNVAR1=$(echo "${CNVAR1// /}") #Remove spaces
+    export CNVAR1=$(echo "${CNVAR1// /}")                                             #Remove spaces
     unset myvar
     ##------------------------------------------------------------------------------------------------
 
@@ -353,7 +353,7 @@ if [[ $contour_onoff == 1 ]]; then                                              
     ##------------------------------------------------------------------------------------------------
     myvar="2nd_Variable_name"                                                         #nclcontourvars33
     CNVAR2=$(sed -n "/$myvar/p" namelist.wrf | awk -F"=" '{print $NF}' | cut -d, -f1) #only one var is read
-    export CNVAR2=$(echo "${CNVAR2// /}") #Remove spaces
+    export CNVAR2=$(echo "${CNVAR2// /}")                                             #Remove spaces
     unset myvar
 
     ##------------------------------------------------------------------------------------------------
@@ -467,7 +467,7 @@ fi
 if [[ $crossonoff == 1 ]]; then                                                      #For the fifth line (Contour Variables)
   myvar="3rd_var_name"                                                               #nclcontourvars11
   xCNVAR3=$(sed -n "/$myvar/p" namelist.wrf | awk -F"=" '{print $NF}' | cut -d, -f1) #only one var is read
-  export xCNVAR3=$(echo "${xCNVAR3// /}") #Remove spaces
+  export xCNVAR3=$(echo "${xCNVAR3// /}")                                            #Remove spaces
   unset myvar
 
   ##------------------------------------------------------------------------------------------------
@@ -531,7 +531,7 @@ if [[ $crossonoff == 1 ]]; then                                                 
     ##------------------------------------------------------------------------------------------------
     myvar="2nd_var_name"                                                               #nclcontourvars33
     xCNVAR2=$(sed -n "/$myvar/p" namelist.wrf | awk -F"=" '{print $NF}' | cut -d, -f1) #only one var is read
-    export xCNVAR2=$(echo "${xCNVAR2// /}") #Remove spaces
+    export xCNVAR2=$(echo "${xCNVAR2// /}")                                            #Remove spaces
     unset myvar
     ##------------------------------------------------------------------------------------------------
     myvar="2nd_var_intervals"
@@ -608,8 +608,53 @@ if [ $domainonoff == 1 ]; then #For the third line (Latitudes)
 
 fi
 
+###################################################################################################
+###############################   Section (STATISTICAL DIAGRAMS)   ################################
+###################################################################################################
+if [ $statisticalonoff == 1 ]; then
+  myvar="Timeseries_ON_OFF"
+  timeseries_onoff=$(sed -n "/$myvar/p" namelist.wrf | awk -F"=" '{print $NF}')
+  export timeseries_onoff=$(echo "${timeseries_onoff// /}")
+  unset myvar
+
+  myvar="Timeseries_Line_on_off"
+  timeseries_line_onoff=$(sed -n "/$myvar/p" namelist.wrf | awk -F"=" '{print $NF}')
+  export timeseries_line_onoff=$(echo "${timeseries_line_onoff// /}")
+  unset myvar
+
+  myvar="Timeseries_Marker_on_off"
+  timeseries_marker_onoff=$(sed -n "/$myvar/p" namelist.wrf | awk -F"=" '{print $NF}')
+  export timeseries_marker_onoff=$(echo "${timeseries_marker_onoff// /}")
+  unset myvar
+
+  myvar="Scatterplot_ON_OFF"
+  scatter_onoff=$(sed -n "/$myvar/p" namelist.wrf | awk -F"=" '{print $NF}')
+  export scatter_onoff=$(echo "${scatter_onoff// /}")
+  unset myvar
+
+  myvar="Taylor_diagram_ON_OFF"
+  taylor_onoff=$(sed -n "/$myvar/p" namelist.wrf | awk -F"=" '{print $NF}')
+  export taylor_onoff=$(echo "${taylor_onoff// /}")
+  unset myvar
+
+  myvar="Taylor_labels_size"
+  taylorlabelsize=$(sed -n "/$myvar/p" namelist.wrf | awk -F"=" '{print $NF}' | cut -d, -f1) #only one var is read
+  export taylorlabelsize=$(echo $taylorlabelsize)                                                  #Remove spaces
+  unset myvar
+
+  myvar="Taylor_markers_size"
+  taylormarkersize=$(sed -n "/$myvar/p" namelist.wrf | awk -F"=" '{print $NF}' | cut -d, -f1) #only one var is read
+  export taylormarkersize=$(echo $taylormarkersize)                                                  #Remove spaces
+  unset myvar
+
+  cd $postwrf_dir
+  ./modules/statistical.sh
+
+fi
+
+
 nofile=False
-if [[ $extractonoff == 1 || $GEOTIFF_ONOFF == 1 || $contour_onoff == 1 || $crossonoff == 1 || $roseonoff == 1 || $skewtonoff == 1 ]]; then #code QQWW
+if [[ $extractonoff == 1 || $GEOTIFF_ONOFF == 1 || $contour_onoff == 1 || $crossonoff == 1 || $roseonoff == 1 || $skewtonoff == 1 || $rttov_onoff == 1 ]]; then #code QQWW
   ###################################################################################################
   ###############   Specifying WRF Output File   ####################################################
   ###################################################################################################
@@ -650,73 +695,78 @@ if [[ $extractonoff == 1 || $GEOTIFF_ONOFF == 1 || $contour_onoff == 1 || $cross
     echo "      SKEWT DIAGRAM                SKEWT DIAGRAM"
     echo "---------------------------------------------------------"
     echo ""
+  elif [ $rttov_onoff == 1 ]; then
+    echo ""
+    echo "---------------------------------------------------------"
+    echo "    RTTOV Input/Output            RTTOV Input/Output"
+    echo "---------------------------------------------------------"
+    echo ""
   fi
 
-if [ -z "$wrfout" ]; then #code abc
-  wrflist=$(ls wrfout_d* 2>/dev/null)
-  wrflistvar=$(echo $wrflist | wc -w)
-  if [ -z "$wrflist" ]; then
-    echo "      No WRF output files in the current directory."
-    echo "      You can link or copy one or more files to the current directory."
-    nofile=True
-  elif [ $wrflistvar == 1 ]; then
-    wrfout=$wrflist
-    echo -e "\n"$wrfout" has been selected in the current directory.\n"
-  else
-    echo -e "There are multiple wrf-files in the current directory:\n"
-    COUNTER=0
-    ls wrfout* >.listfile
-    while [ $COUNTER -lt $wrflistvar ]; do
-      wrffile[$COUNTER]=$(sed -n "$((COUNTER + 1)) p" .listfile)
-      COUNTER=$((COUNTER + 1))
-    done
-    COUNTER=0
-    while [ $COUNTER -lt $wrflistvar ]; do
-      echo -e "   $((COUNTER + 1))) ${wrffile[$COUNTER]}"
-      COUNTER=$((COUNTER + 1))
-    done
-    echo ""
-    unset COUNTER
-
-    read -p "Enter the number of the favored file: " filenum
-    wrfcount=$(echo $filenum | awk -F',' '{ print NF }')
-    wrflastcomma=$(echo $filenum | rev | cut -c1)
-    if [[ $wrflastcomma == "," ]]; then
-      wrfcount=$((wrfcount - 1))
-    fi
-
-    varcount=0
-    echo ""
-    while [ $varcount -lt $wrfcount ]; do
-      wrfnum[$varcount]=$(echo $filenum | awk -F"=" '{print $NF}' | cut -d, -f$((varcount + 1))) #separating wrf number
-      wrfnum[$varcount]=$(echo ${wrfnum[$varcount]})                                             #Remove spaces
-      # selectedwrf=${wrffile[${wrfnum[$varcount]}]}
-      if [[ ${wrfnum[$varcount]} -gt $wrflistvar || ${wrfnum[$varcount]} -lt 1 ]] 2>/dev/null; then
-        echo -e "\nError in file number:"
-        echo ${wrfnum[$varcount]} is out of the range 1 to $wrflistvar
-        echo Run again with correct file numbers.
-        break
-      fi
-      wrfnum_minus=$((wrfnum[$varcount] - 1))
-      selectedwrf=${wrffile[$wrfnum_minus]}
-      # ln -f $postwrf_dir/$selectedwrf $postwrf_dir/modules
+  if [ -z "$wrfout" ]; then #code abc
+    wrflist=$(ls wrfout_d* 2>/dev/null)
+    wrflistvar=$(echo $wrflist | wc -w)
+    if [ -z "$wrflist" ]; then
+      echo "      No WRF output files in the current directory."
+      echo "      You can link or copy one or more files to the current directory."
+      nofile=True
+    elif [ $wrflistvar == 1 ]; then
+      selectedwrf=$wrflist
       ln $postwrf_dir/$selectedwrf $postwrf_dir/postwrf_$selectedwrf
-      echo $selectedwrf has been selected
-      varcount=$((varcount + 1))
-    done
-    echo ""
-    unset varcount
-    unset filenum
-    rm -f .listfile
-  fi
-fi #code abc
+      echo -e "\n"$selectedwrf" has been selected in the current directory.\n"
+    else
+      echo -e "There are multiple wrf-files in the current directory:\n"
+      COUNTER=0
+      ls wrfout* >.listfile
+      while [ $COUNTER -lt $wrflistvar ]; do
+        wrffile[$COUNTER]=$(sed -n "$((COUNTER + 1)) p" .listfile)
+        COUNTER=$((COUNTER + 1))
+      done
+      COUNTER=0
+      while [ $COUNTER -lt $wrflistvar ]; do
+        echo -e "   $((COUNTER + 1))) ${wrffile[$COUNTER]}"
+        COUNTER=$((COUNTER + 1))
+      done
+      echo ""
+      unset COUNTER
+
+      read -p "Enter the number of the favored file: " filenum
+      wrfcount=$(echo $filenum | awk -F',' '{ print NF }')
+      wrflastcomma=$(echo $filenum | rev | cut -c1)
+      if [[ $wrflastcomma == "," ]]; then
+        wrfcount=$((wrfcount - 1))
+      fi
+
+      varcount=0
+      echo ""
+      while [ $varcount -lt $wrfcount ]; do
+        wrfnum[$varcount]=$(echo $filenum | awk -F"=" '{print $NF}' | cut -d, -f$((varcount + 1))) #separating wrf number
+        wrfnum[$varcount]=$(echo ${wrfnum[$varcount]})                                             #Remove spaces
+        if [[ ${wrfnum[$varcount]} -gt $wrflistvar || ${wrfnum[$varcount]} -lt 1 ]] 2>/dev/null; then
+          echo -e "\nError in file number:"
+          echo ${wrfnum[$varcount]} is out of the range 1 to $wrflistvar
+          echo Run again with correct file numbers.
+          break
+        fi
+        wrfnum_minus=$((wrfnum[$varcount] - 1))
+        selectedwrf=${wrffile[$wrfnum_minus]}
+        ln $postwrf_dir/$selectedwrf $postwrf_dir/postwrf_$selectedwrf
+        echo $selectedwrf has been selected
+        varcount=$((varcount + 1))
+      done
+      echo ""
+      unset varcount
+      unset filenum
+      rm -f .listfile
+    fi
+  fi #code abc
 
   if [[ $nofile == False ]]; then
     diagvars=("ua" "va" "wa" "tc" "tk" "td" "td2" "th" "theta" "tv" "twb" "eth" "slp" "p" "pres" "pressure" "geopotential" "geopt" "rh"
       "rh2" "z" "height" "ter" "pvo" "pw" "avo" "cape_surface" "cin_surface" "cape_3d" "cin_3d" "ctt" "dbz" "mdbz" "helicity"
       "omg" "updraft_helicity" "dust_total" "dust_pm10" "dust_pm2.5" "wind_s" "wind_d" "lcl" "lfc")
 
-    if [ $(echo $selectedwrf | rev | cut -c -3 | rev) == ".nc" ]; then
+    if [[ $(echo $selectedwrf | rev | cut -c -3 | rev) == ".nc" ]]; then
       ncl_filedump $selectedwrf | grep "( Time, bottom_top, south_north, west_east" | awk '{print $2}' >.wrfvars
       ncl_filedump $selectedwrf | grep "( Time, bottom_top, south_north_stag, west_east )" | awk '{print $2}' >>.wrfvars
       ncl_filedump $selectedwrf | grep "( Time, south_north, west_east" | awk '{print $2}' >>.wrfvars
@@ -833,6 +883,57 @@ fi #code abc
       export skewlon=$(echo $skewlon)                                                    #Remove spaces
       unset myvar
       ./modules/skewt.sh
+    fi
+
+    # RTTOV Module===================================================================
+    if [[ $rttov_onoff == 1 ]]; then
+      myvar="WRF2RTTOV_profiles_OnOff"
+      rttov_input_onoff=$(sed -n "/$myvar/p" namelist.wrf | awk -F"=" '{print $NF}')
+      export rttov_input_onoff=$(echo "${rttov_input_onoff// /}")
+      unset myvar
+
+      myvar="aerosol_profile_OnOff"
+      rttov_aer_prof_onoff=$(sed -n "/$myvar/p" namelist.wrf | awk -F"=" '{print $NF}')
+      export rttov_aer_prof_onoff=$(echo "${rttov_aer_prof_onoff// /}")
+      unset myvar
+
+      myvar="RTTOV_OUTPUT_OnOff"
+      rttov_output_onoff=$(sed -n "/$myvar/p" namelist.wrf | awk -F"=" '{print $NF}')
+      export rttov_output_onoff=$(echo "${rttov_output_onoff// /}")
+      unset myvar
+
+      myvar="rttov_output_prefix"
+      rttov_output_prefix=$(sed -n "/$myvar/p" namelist.wrf | awk -F"=" '{print $NF}' | cut -d, -f1) #only one var is read
+      export rttov_output_prefix=$(echo "${rttov_output_prefix// /}")                                            #Remove spaces
+      unset myvar
+
+      myvar="Brightness_temperature"
+      rttov_brightness_onoff=$(sed -n "/$myvar/p" namelist.wrf | awk -F"=" '{print $NF}')
+      export rttov_brightness_onoff=$(echo "${rttov_brightness_onoff// /}")
+      unset myvar
+
+      myvar="Reflectance"
+      rttov_reflectance_onoff=$(sed -n "/$myvar/p" namelist.wrf | awk -F"=" '{print $NF}')
+      export rttov_reflectance_onoff=$(echo "${rttov_reflectance_onoff// /}")
+      unset myvar
+
+      myvar="Radiance"
+      rttov_radiance_onoff=$(sed -n "/$myvar/p" namelist.wrf | awk -F"=" '{print $NF}')
+      export rttov_radiance_onoff=$(echo "${rttov_radiance_onoff// /}")
+      unset myvar
+
+      myvar="Surface_emissivity"
+      rttov_emissivity_onoff=$(sed -n "/$myvar/p" namelist.wrf | awk -F"=" '{print $NF}')
+      export rttov_emissivity_onoff=$(echo "${rttov_emissivity_onoff// /}")
+      unset myvar
+
+      if [[ $rttov_input_onoff == 1 ]]; then
+        ./modules/rttov_input.sh
+      fi
+      
+      if [[ $rttov_output_onoff == 1 ]]; then
+        ./modules/rttov_output.sh
+      fi
     fi
 
   fi # code QQWW

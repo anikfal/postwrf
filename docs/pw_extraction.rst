@@ -60,5 +60,7 @@ If +Vertical_profile_plot_on_off is set to 1, the vertical profiles of the locat
 will be plotted:
 
 .. figure:: images/vertical_plot-d01_2020-04-01.000003.png
-   :scale: 50 %
+   :scale: 60 %
    :alt: map to buried treasure
+   
+   Vertical profiles of the potential vorticity over two locations of London and Berlin

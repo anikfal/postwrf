@@ -32,6 +32,8 @@ Output image at a specific time-slot in the WRF output is as bellow:
 .. figure:: images/domain1.png
    :scale: 90 %
    :alt: map to buried treasure
+   
+   Schematic domain, plotted by reading **namelist.wps**
 
 Method 2
 ========
@@ -59,3 +61,5 @@ Output image at a specific time-slot in the WRF output is as bellow:
 .. figure:: images/domain2.png
    :scale: 100 %
    :alt: map to buried treasure
+   
+   WRF domains, plotted directly by reading the WRF output files

@@ -483,10 +483,10 @@ tc_plane3 = (rh/100)  ;;;added_new_line_by_sed333
             MANcnmax = stats(1)
             end if
 
-            if ( (MANcnmax-MANcnmin) .eq. 0) then
-              MANcnmax = max(tc_plane3)
-              MANcnmin = min(tc_plane3)
-            end if
+            ;if ( (MANcnmax-MANcnmin) .eq. 0) then
+            ;  MANcnmax = max(tc_plane3)
+            ;  MANcnmin = min(tc_plane3)
+            ;end if
 
             ; if (cnintv .eq. "NULL") then ; code abcnull
               if ((.not. ismissing(Nullcnmin)) .and. ismissing(Nullcnmax))
@@ -842,11 +842,12 @@ if (NCL1VARONOFF.eq.1) then  ;processing var111
       end do ;;code docheck22
 
               ;;shell script111
-tk = varlist[0]  ;;;added_new_line_by_sed111
+va = varlist[1]  ;;;added_new_line_by_sed111
+ua = varlist[0]  ;;;added_new_line_by_sed111
 
 
         ;equation from namelist.wrf111
-tc_plane1 = tk^0.5  ;;;added_new_line_by_sed111
+tc_plane1 = (ua^2+va^2)^0.5  ;;;added_new_line_by_sed111
 
 copy_VarCoords(varlist[0],tc_plane1)
 copy_VarAtts(varlist[0],tc_plane1)

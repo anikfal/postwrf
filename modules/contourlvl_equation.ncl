@@ -365,12 +365,16 @@ NCLprovince_name_lower = str_lower(NCLprovince_name)
         end do ;;code docheck22
 
         ;;shell script333
-rh = varlist[0]  ;;;added_new_line_by_sed333
+EDUST5 = varlist[4]  ;;;added_new_line_by_sed333
+EDUST4 = varlist[3]  ;;;added_new_line_by_sed333
+EDUST3 = varlist[2]  ;;;added_new_line_by_sed333
+EDUST2 = varlist[1]  ;;;added_new_line_by_sed333
+EDUST1 = varlist[0]  ;;;added_new_line_by_sed333
 delete(varlist)
 delete(varlist2)
 
   ;equation from namelist.wrf333
-tc_plane3 = (rh/100)  ;;;added_new_line_by_sed333
+tc_plane3 = EDUST1+EDUST2+EDUST3+EDUST4+EDUST5  ;;;added_new_line_by_sed333
 
 if (dimsizes(NCLPLEV3).eq.1) then
   if (NCLPLEV3.eq.0) then
