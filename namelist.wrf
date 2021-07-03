@@ -2,7 +2,7 @@
 =============================================================================
 Extract_On-Off                  = 0
 
-WRF_variable_name               = dust_pm10, dust_pm2.5, T2, rh
+WRF_variable_name               = pvo, T2, rh
 Location_names                  = Loc1, Loc2, Loc3
 Location_latitudes              = 33, 29, 25
 Location_longitudes             = 45, 47, 46
@@ -36,8 +36,8 @@ CONTOUR_ON_OFF                 = 0
 2nd_Variable_brokenline_on_off = 1
 
 !!! Variable_3 by filled (colored) contours !!!
-3rd_Variable_on_off            = 1
-3rd_Variable_name              = HFX
+3rd_Variable_on_off            = 0
+3rd_Variable_name              = pvo
 3rd_Variable_pressure_level    = 0,
 
 Wind_Vectors_on_off            = 1
@@ -58,7 +58,7 @@ Shapefile_path                 = /home/ah/postwrf/modules/iran_provinces/all.shp
 
 ============================= CROSS SECTION PLOT ============================
 =============================================================================
-CROSSSECTION_ON-OFF            = 0
+CROSSSECTION_ON-OFF            = 1
 
 CrossSection_path_on_off       = 1
 Topographic_map_on_off         = 0
@@ -72,8 +72,8 @@ Topographic_map_on_off         = 0
 1st_var_label_size             = 0.5
 
 !!! 3D Variable_2 by (broken) line contours !!!
-2nd_var_on_off                 = 0
-2nd_var_name                   = (rh*td/10) ^ 2
+2nd_var_on_off                 = 1
+2nd_var_name                   = rh
 2nd_var_intervals              = 0
 2nd_var_line_color             = blue
 2nd_var_line_thickness         = 0.5
@@ -81,14 +81,14 @@ Topographic_map_on_off         = 0
 2nd_var_brokenline_on_off      = 1
 
 !!! 3D Variable_3 by filled (colored) contours !!!
-3rd_var_on_off                 = 1
+3rd_var_on_off                 = 0
 3rd_var_name                   = dust_pm10
 -----------------------------------------------------------------------------
 
 
 ========================== STATISTICAL DIAGRAMS =============================
 =============================================================================
-STATISTICAL_DIAGRAMS_ON_OFF      = 1
+STATISTICAL_DIAGRAMS_ON_OFF      = 0
 
 Timeseries_ON_OFF                = 0
 Timeseries_Line_on_off           = 1
@@ -119,25 +119,25 @@ lables_On-Off (schematic)        = 0
 ============================= WIND ROSE DIAGRAM =============================
 =============================================================================
 windrose_On-Off                 = 0
-wind_location_name              = tehran
-wind_location_latitude          = 33
-wind_location_longitude         = 50
+wind_location_name              = Berlin
+wind_location_latitude          = 52.520
+wind_location_longitude         = 13.405
 -----------------------------------------------------------------------------
 
 
 ============================== SKEWT DIAGRAM ================================
 =============================================================================
 skewT_On-Off                    = 0
-skewt_location_name             = Tehran_Station
-skewt_location_latitude         = 33
-skewt_location_longitude        = 50
+skewt_location_name             = Paris
+skewt_location_latitude         = 48.857
+skewt_location_longitude        = 2.352
 -----------------------------------------------------------------------------
 
 
 ============================ CONVERT TO GEOTIFF =============================
 =============================================================================
 Geotiff_ON_OFF                  = 0
-Variable_name_to_Geotiff        = (rh+tk)^0.5 + dust_pm10
+Variable_name_to_Geotiff        = (rh+tk)^0.5
 Geotiff_pressure_level       	= 500
 -----------------------------------------------------------------------------
 
@@ -162,7 +162,7 @@ Surface_emissivity              = 0
 =============================================================================
 spin-up_time (hours)            = 6
 averaging_on_off                = 0
-average_time (hours)            = 24
+average_time (hours)            = 6
 panel_plot__on_off              = 0
 panel_plot__rows_number         = 1
 panel_plot__columns_number      = 3

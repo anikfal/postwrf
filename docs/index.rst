@@ -2,7 +2,7 @@
 PostWRF's Documentation
 =======================
 
-PostWRF is an interactive tool for the visualizaion and post-processing of the
+PostWRF is a bunch of interactive tools for the visualizaion and post-processing of the
 `Weather Research and Forecasting (WRF) <https://www.mmm.ucar.edu/weather-research-and-forecasting-model>`_
 model outputs. PostWRF as an integrated system based on the `NCAR Command Language (NCL) <https://www.ncl.ucar.edu>`_
 and Linux shell scripts, acts as a bridge between atmospheric modeling and environmental science, and makes it possible for many environmental scientists to directly visualize the WRF model outputs, without any advanced knowledge in NCL scripting and WRF modeling system.

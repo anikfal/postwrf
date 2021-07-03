@@ -1,6 +1,6 @@
-#!/bin/bash
-#PostWRF Version 1.1 (Apr 2020)
-#Coded by "Amirhossein Nikfal" <ah.nikfal@gmail.com>, <anik@ut.ac.ir>
+#PostWRF Version 1.2 (May 2021)
+#Author: Amirhossein Nikfal <ah.nikfal@gmail.com>, <https://github.com/anikfal>
+
 export postwrf_dir=$(pwd)
 trap 'my_exit; exit' SIGINT SIGQUIT
 count=0

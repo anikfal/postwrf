@@ -1,13 +1,17 @@
 # PostWRF
-***An interactive tool for the visualization of the WRF model outputs***
+***Interactive tools for the visualization of the WRF model outputs***
 
-PostWRF is a combination of NCAR Command Language (NCL) and Linux shell scripts which makes it possible to visualize the WRF model outputs, without the need to be familiar with the NCL programming.
+PostWRF is mainly a combination of NCAR Command Language (NCL) and Linux shell scripts which makes it possible to visualize and post-process the WRF model outputs, without being familiar with NCL programming.
+
+PostWRF is best useful for 
 
 Documentations and user guide: https://postwrf.readthedocs.io/en/master
 
 ## Main capabilities:
 - Data extraction
-- Data conversion to Geotiff
 - Contour plot
 - Cross-section plot
-- Skew-T and wind-rose diagrams
+- Statistical diagrams
+- RTTOV input/output data generation
+- Data conversion to Geotiff
+- Skew-T and windrose diagrams
