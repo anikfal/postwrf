@@ -1,6 +1,5 @@
-#!/bin/bash
 #PostWRF Version 1.2 (May 2021)
-#Coded by "Amirhossein Nikfal" <ah.nikfal@gmail.com>, <anik@ut.ac.ir>
+#Author: Amirhossein Nikfal <ah.nikfal@gmail.com>, <https://github.com/anikfal>
 
 trap 'my_exit; exit' SIGINT SIGQUIT
 my_exit() {

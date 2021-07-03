@@ -1,3 +1,7 @@
+;; This code has been modified
+;; PostWRF Version 1.2 (May 2021)
+;; Author: Amirhossein Nikfal <ah.nikfal@gmail.com>, <https://github.com/anikfal>
+
 function taylor_diagram (wks:graphic ,RATIO[*][*]:numeric, CC[*][*]:numeric \
                                      ,rOpts:logical)
 ;--------------------------------------------------------------------

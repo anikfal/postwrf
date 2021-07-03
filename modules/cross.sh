@@ -1,6 +1,5 @@
-#!/bin/bash
-#PostWRF Version 1.1 (Apr 2020)
-#Coded by "Amirhossein Nikfal" <ah.nikfal@gmail.com>, <anik@ut.ac.ir>
+#PostWRF Version 1.2 (May 2021)
+#Author: Amirhossein Nikfal <ah.nikfal@gmail.com>, <https://github.com/anikfal>
 
 trap 'my_exit; exit' SIGINT SIGQUIT
 my_exit() {
@@ -213,7 +212,7 @@ if [[ ${imgfmt} == "x11" ]]; then
   ln -sf $postwrf_dir/.AllWRFVariables $postwrf_dir/modules
   ln -sf $postwrf_dir/postwrf_wrfout* $postwrf_dir/modules
   ln -sf $postwrf_dir/modules/read_wrfouts.ncl .
-  ncl -Q $postwrf_dir/modules/cross.ncl
+  ncl -nQ $postwrf_dir/modules/cross.ncl
 else
   mkdir -p outputs_$wrfout2
   cd outputs_$wrfout2
@@ -224,7 +223,7 @@ else
   ln -sf $postwrf_dir/postwrf_wrfout* .
   ln -sf $postwrf_dir/modules/cross.ncl .
   ln -sf $postwrf_dir/modules/read_wrfouts.ncl .
-  ncl -Q cross.ncl
+  ncl -nQ cross.ncl
   mv ../modules/*.pdf . 2>/dev/null
   mv ../modules/*.png . 2>/dev/null
   unlink cross.ncl 2>/dev/null

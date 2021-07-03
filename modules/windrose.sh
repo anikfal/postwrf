@@ -1,7 +1,3 @@
-#!/bin/bash
-#PostWRF Version 1.1 (Apr 2020)
-#Coded by "Amirhossein Nikfal" <ah.nikfal@gmail.com>, <anik@ut.ac.ir>
-
 trap 'my_exit; exit' SIGINT SIGQUIT
 my_exit() {
   rm $outputdir/*.ncl $outputdir/postwrf_wrfout* $outputdir/.AllWRFVariables $outputdir/eqname 2>/dev/null
@@ -57,7 +53,7 @@ if [[ ${imgfmt} == "x11" ]]; then
   ln -sf $postwrf_dir/.AllWRFVariables $postwrf_dir/modules
   ln -sf $postwrf_dir/postwrf_wrfout* $postwrf_dir/modules
   ln -sf $postwrf_dir/modules/read_wrfouts.ncl .
-  ncl -Q $postwrf_dir/modules/windrose.ncl
+  ncl -nQ $postwrf_dir/modules/windrose.ncl
 else
   mkdir -p outputs_$wrfout2
   cd outputs_$wrfout2
@@ -68,7 +64,7 @@ else
   ln -sf $postwrf_dir/postwrf_wrfout* .
   ln -sf $postwrf_dir/modules/windrose.ncl .
   ln -sf $postwrf_dir/modules/read_wrfouts.ncl .
-  ncl -Q windrose.ncl
+  ncl -nQ windrose.ncl
 fi
 rm $outputdir/*.ncl $outputdir/postwrf_wrfout* $outputdir/.AllWRFVariables $outputdir/eqname 2>/dev/null
 rm $outputdir/totalequation.txt $outputdir/variables*.txt $outputdir/equnit $postwrf_dir/modules/postwrf_wrfout* 2>/dev/null

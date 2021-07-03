@@ -1,4 +1,3 @@
-#!/bin/bash
 export equation=`cat totalequation.txt`
 echo "Name of the polynomial" $equation "?"
 read eqname

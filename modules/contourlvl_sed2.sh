@@ -1,7 +1,3 @@
-#!/bin/bash
-#PostWRF Version 1.1 (Apr 2020)
-#Coded by "Amirhossein Nikfal" <ah.nikfal@gmail.com>, <anik@ut.ac.ir>
-
 if [[ $contour_onoff == 1 ]]; then
     filename="contourlvl_equation.ncl"
 else

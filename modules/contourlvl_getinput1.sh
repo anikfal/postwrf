@@ -1,4 +1,3 @@
-#!/bin/bash
 export equation=`cat totalequationCN1.txt`
 echo "Contour 1: Name of the polynomial" $equation "?"
 read eqname

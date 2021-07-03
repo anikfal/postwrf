@@ -1,6 +1,5 @@
-#!/bin/bash
-#PostWRF Version 1.1 (Apr 2020)
-#Coded by "Amirhossein Nikfal" <ah.nikfal@gmail.com>, <anik@ut.ac.ir>
+#PostWRF Version 1.2 (May 2021)
+#Author: Amirhossein Nikfal <ah.nikfal@gmail.com>, <https://github.com/anikfal>
 
 trap 'my_exit; exit' SIGINT SIGQUIT
 my_exit() {
@@ -11,7 +10,7 @@ my_exit() {
 }
 
 if [ ${average_onoff} != "1" ]; then
-  ncl -Q modules/timestep.ncl >timestep_file
+  ncl -nQ modules/timestep.ncl >timestep_file
   echo " "$(tail -n 1 timestep_file | cut -d " " -f 2-)
   rm timestep_file
   read -p "Specify Time_Step(s) Between The Images (Default=1): " tstep
@@ -36,7 +35,7 @@ ln -sf $postwrf_dir/postwrf_wrfout* .
 ln -sf $postwrf_dir/modules/geotiff.ncl .
 ln -sf $postwrf_dir/modules/read_wrfouts.ncl .
 echo "Converting to Geotiff. Please wait ..."
-ncl -Q $postwrf_dir/modules/geotiff.ncl
+ncl -nQ $postwrf_dir/modules/geotiff.ncl
 geotiff_resume=$(cat $postwrf_dir/modules/geo_eq_ok.txt)
 if [[ $geotiff_resume == "True" ]]; then
   mv $postwrf_dir/modules/*.nc . 2>/dev/null

@@ -1,6 +1,3 @@
-;;PostWRF Version 1.2 (May 2021)
-;;Coded by "Amirhossein Nikfal" <ah.nikfal@gmail.com>, <anik@ut.ac.ir>
-
 undef ( "get_percentiles" )
 function get_percentiles( \
   i_data           : numeric, \

@@ -1,6 +1,5 @@
-#!/bin/bash
-#PostWRF Version 1.1 (Apr 2020)
-#Coded by "Amirhossein Nikfal" <ah.nikfal@gmail.com>, <anik@ut.ac.ir>
+#PostWRF Version 1.2 (May 2021)
+#Author: Amirhossein Nikfal <ah.nikfal@gmail.com>, <https://github.com/anikfal>
 
 trap 'my_exit; exit' SIGINT SIGQUIT
 my_exit() {
@@ -13,7 +12,7 @@ rm $postwrf_dir/totalequation.txt $postwrf_dir/variables.txt $postwrf_dir/equnit
 wrftemp=( $( ls $postwrf_dir/postwrf_wrfout* ) )
 wrfout2=`basename ${wrftemp[0]}` #In case of mulitfiles, pick the first file for naming
 if [ ${average_onoff} != "1" ]; then
-  ncl -Q modules/timestep.ncl >timestep_file
+  ncl -nQ modules/timestep.ncl >timestep_file
   echo " "$(tail -n 1 timestep_file | cut -d " " -f 2-)
   rm timestep_file
   read -p "Specify Time_Step(s) Between The Images (Default=1): " tstep
@@ -127,7 +126,7 @@ if [[ ${imgfmt} == "x11" ]]; then
   ln -sf $postwrf_dir/.AllWRFVariables $postwrf_dir/modules
   ln -sf $postwrf_dir/postwrf_wrfout* $postwrf_dir/modules
   ln -sf $postwrf_dir/modules/read_wrfouts.ncl .
-  ncl -Q $postwrf_dir/modules/contourlvl.ncl
+  ncl -nQ $postwrf_dir/modules/contourlvl.ncl
 else
   mkdir -p outputs_$wrfout2
   cd outputs_$wrfout2
@@ -138,7 +137,7 @@ else
   ln -sf $postwrf_dir/postwrf_wrfout* .
   ln -sf $postwrf_dir/modules/contourlvl.ncl .
   ln -sf $postwrf_dir/modules/read_wrfouts.ncl .
-  ncl -Q contourlvl.ncl
+  ncl -nQ contourlvl.ncl
   mv ../modules/*.pdf . 2>/dev/null
   mv ../modules/*.png . 2>/dev/null
   unlink contourlvl.ncl 2>/dev/null

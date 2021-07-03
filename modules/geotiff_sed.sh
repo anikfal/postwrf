@@ -1,7 +1,3 @@
-#!/bin/bash
-#PostWRF Version 1.1 (Apr 2020)
-#Coded by "Amirhossein Nikfal" <ah.nikfal@gmail.com>, <anik@ut.ac.ir>
-
 sed '/added_new_line_by_sed333/ d' geotiff_equation.ncl > geotiff_equation_copy #cleaning previous vars added by sed
 mv geotiff_equation_copy geotiff_equation.ncl #recycling the code to its initial condition
 count=`cat variablesCN3.txt | wc -l`

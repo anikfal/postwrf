@@ -1,6 +1,3 @@
-;;PostWRF Version 1.2 (May 2021)
-;;Coded by "Amirhossein Nikfal" <ah.nikfal@gmail.com>, <anik@ut.ac.ir>
-
 timelist = asciiread("wrf_time_list.txt", -1, "integer") - 1
 load "read_wrfouts.ncl"
 wrffile = a

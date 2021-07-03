@@ -1,6 +1,5 @@
-#!/bin/bash
-#PostWRF Version 1.1 (Apr 2020)
-#Coded by "Amirhossein Nikfal" <ah.nikfal@gmail.com>, <anik@ut.ac.ir>
+#PostWRF Version 1.2 (May 2021)
+#Author: Amirhossein Nikfal <ah.nikfal@gmail.com>, <https://github.com/anikfal>
 
 echo -e "\n Specify The Format Of The Images: 1, 2, or 3?"
 select imgfmt in "x11" "pdf" "png"; do
@@ -48,7 +47,7 @@ if [[ ${domtopo_onoff} != 1 ]]; then
     done
   fi
   export fontsz
-  ncl -Q modules/domain.ncl
+  ncl -nQ modules/domain.ncl
 
 else
 
@@ -95,5 +94,5 @@ else
     export domfile$domcount
     domcount=$(($domcount + 1))
   done
-  ncl -Q modules/3dom.ncl
+  ncl -nQ modules/3dom.ncl
 fi

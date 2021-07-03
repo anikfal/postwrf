@@ -1,5 +1,3 @@
-;PostWRF Version 1.1 (Apr 2020)
-;Programmed by Amirhossein Nikfal <ah.nikfal@gmail.com>, <anik@ut.ac.ir>
 begin
   NCLaverage_onoff = tointeger(getenv("average_onoff"))
   NCLaverage_time = tointeger(getenv("averagetime"))
