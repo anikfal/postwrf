@@ -225,7 +225,7 @@ do bandnum=0, allbands ;each band
     res@pmTickMarkDisplayMode = "Always"    ; better map tickmarks
     ; res@tiMainString   = "Plotting data on its native grid"
     res@mpDataBaseVersion = "MediumRes"
-    res@mpGeophysicalLineThicknessF = 2
+    res@mpGeophysicalLineThicknessF = 6
     plot = gsn_csm_contour_map(wks, rttovvar(bandnum, :, :), res)
     ; print(" " + band_name + ": Converting to NetCDF ...")
 end do

@@ -53,6 +53,16 @@ export tablename
 
 ncl -nQ rttov_input.ncl
 
+##Correction of water vapor
+for myname in $tablename"_"[0123456789]*".dat"; do
+        echo Correcting outliers in the profile: $myname
+        invalidnum=`grep 0.00000000000 $myname | wc -l` 2>/dev/null
+        if [[ $invalidnum != 0 ]]; then
+            echo "      Note: there are $invalidnum water vapor value(s) less than 1e-11, replaced with 1e-11"
+            sed -i 's/0.00000000000/0.00000000001/g' $myname
+        fi
+done
+
 if [[ $rttov_aer_prof_onoff == 1 ]]; then
   echo "Making dust profiles ..."
   ncl -nQ rttov_input_dust.ncl

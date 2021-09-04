@@ -7,7 +7,7 @@ Location_names                  = Loc1, Loc2, Loc3
 Location_latitudes              = 33, 29, 25
 Location_longitudes             = 45, 47, 46
 
-+Vertical_profile_plot_on_off   = 0
++Vertical_profile_plot_on_off   = 1
 +Vprofile_X_axis_decimals       = 3
 -----------------------------------------------------------------------------
 
@@ -17,17 +17,17 @@ Location_longitudes             = 45, 47, 46
 CONTOUR_ON_OFF                 = 0
 
 !!! Variable_1 by line contours !!!
-1st_Variable_on_off            = 0
+1st_Variable_on_off            = 1
 1st_Variable_name              = tc
 1st_Variable_pressure_level    = 700
 1st_Variable_intervals         = 5
-1st_Variable_line_color        = blue
-1st_Variable_line_thickness    = 0.5
-1st_Variable_label_size        = 0.5
+1st_Variable_line_color        = black
+1st_Variable_line_thickness    = 0.7
+1st_Variable_label_size        = 0.7
 
 !!! Variable_2 by (broken) line contours !!!
 2nd_Variable_on_off            = 0
-2nd_Variable_name              = tk+rh
+2nd_Variable_name              = tk*rh
 2nd_Variable_pressure_level    = 700
 2nd_Variable_intervals         = 0
 2nd_Variable_line_color        = red
@@ -36,32 +36,32 @@ CONTOUR_ON_OFF                 = 0
 2nd_Variable_brokenline_on_off = 1
 
 !!! Variable_3 by filled (colored) contours !!!
-3rd_Variable_on_off            = 0
-3rd_Variable_name              = pvo
+3rd_Variable_on_off            = 1
+3rd_Variable_name              = td2
 3rd_Variable_pressure_level    = 0,
 
 Wind_Vectors_on_off            = 1
-Wind_Vectors_pressure_level    = 850
-Wind_Vectors_speed (m/s)       = 4
+Wind_Vectors_pressure_level    = 300
+Wind_Vectors_speed (m/s)       = 10
 Wind_Vectors_density           = 0.5
-Wind_Vectors_color             = black
+Wind_Vectors_color             = blue
 Wind_Vectors_thickness         = 0.5
 
 Location_point_mark_on_off     = 0
-Location_labels_on_off         = 1
+Location_labels_on_off         = 0
 Location_labels_size           = 0.5
 Location_labels_color          = black
 Shapefile_on-off               = 0
-Shapefile_path                 = /home/ah/postwrf/modules/iran_provinces/all.shp
+Shapefile_path                 = /home/a_nikfal/postwrf/shapefiles/anzali_swamp.shp
 -----------------------------------------------------------------------------
 
 
 ============================= CROSS SECTION PLOT ============================
 =============================================================================
-CROSSSECTION_ON-OFF            = 1
+CROSSSECTION_ON-OFF            = 0
 
 CrossSection_path_on_off       = 1
-Topographic_map_on_off         = 0
+Topographic_map_on_off         = 1
 
 !!! 3D Variable_1 by line contours !!!
 1st_var_on_off                 = 1
@@ -73,16 +73,16 @@ Topographic_map_on_off         = 0
 
 !!! 3D Variable_2 by (broken) line contours !!!
 2nd_var_on_off                 = 1
-2nd_var_name                   = rh
-2nd_var_intervals              = 0
-2nd_var_line_color             = blue
+2nd_var_name                   = tc
+2nd_var_intervals              = 20
+2nd_var_line_color             = red
 2nd_var_line_thickness         = 0.5
 2nd_var_label_size             = 0.5
 2nd_var_brokenline_on_off      = 1
 
 !!! 3D Variable_3 by filled (colored) contours !!!
-3rd_var_on_off                 = 0
-3rd_var_name                   = dust_pm10
+3rd_var_on_off                 = 1
+3rd_var_name                   = QVAPOR
 -----------------------------------------------------------------------------
 
 
@@ -104,9 +104,9 @@ Taylor_markers_size              = 0.5
 
 ================================ DOMAIN PLOT ================================
 =============================================================================
-Domain_On-Off                    = 0
+Domain_On-Off                    = 1
 
-namelist.wps_path (schematic)    = /home/anikfal/WRF4.2.2/WPS/namelist.wps
+namelist.wps_path (schematic)    = /home/a_nikfal/WRF4.2.2/WPS/namelist.wps
 background_color (schematic)     = forestgreen
 lables_On-Off (schematic)        = 0
 
@@ -147,10 +147,10 @@ Geotiff_pressure_level       	= 500
 RTTOV_On-Off                    = 0
 
 WRF2RTTOV_profiles_OnOff        = 0
-aerosol_profile_OnOff           = 1
+aerosol_profile_OnOff           = 0
 
 RTTOV_OUTPUT_OnOff              = 1
-rttov_output_prefix             = output_example
+rttov_output_prefix             = output_example_
 Brightness_temperature          = 1
 Reflectance                     = 0
 Radiance                        = 0
@@ -160,7 +160,7 @@ Surface_emissivity              = 0
 
 ============================= GENERAL SETTINGS ==============================
 =============================================================================
-spin-up_time (hours)            = 6
+spin-up_time (hours)            = 0
 averaging_on_off                = 0
 average_time (hours)            = 6
 panel_plot__on_off              = 0
