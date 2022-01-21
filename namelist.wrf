@@ -104,13 +104,13 @@ Taylor_markers_size              = 0.5
 
 ================================ DOMAIN PLOT ================================
 =============================================================================
-Domain_On-Off                    = 1
+Domain_On-Off                    = 0
 
-namelist.wps_path (schematic)    = /home/a_nikfal/WRF4.2.2/WPS/namelist.wps
+namelist.wps_path (schematic)    = /home/anikfal/WRF4.2.2/WPS/namelist.wps
 background_color (schematic)     = forestgreen
 lables_On-Off (schematic)        = 0
 
-+Domain_on_off (topography)      = 0
++Domain_on_off (topography)      = 1
 +number_of_domains (topography)  = 1
 +box_color                       = white
 -----------------------------------------------------------------------------
@@ -160,7 +160,7 @@ Surface_emissivity              = 0
 
 ============================= ERA5 CONTOUR PLOT =============================
 =============================================================================
-ERA5_ON_OFF                     = 0
+ERA5_ON_OFF                     = 1
 
 !!! Variable_1 by line contours !!!
 1st_ERA5_Var_on_off             = 1
@@ -184,7 +184,7 @@ ERA5_ON_OFF                     = 0
 !!! Variable_3 by filled (colored) contours !!!
 3rd_ERA5_Var_on_off             = 1
 3rd_ERA5_Var_name               = td2
-3rd_ERA5_Var_pressure_level     = 0,
+3rd_ERA5_Var_pressure_level     = 0
 
 Wind_ERA5_on_off                = 1
 Wind_ERA5_pressure_level        = 300
