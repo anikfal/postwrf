@@ -7,9 +7,6 @@ echo "              Run './postwrf.sh -h' to get help                "
 echo "   In case of problems, please contact <ah.nikfal@gmail.com>   "
 echo "==============================================================="
 
-echo "Inside main_era.sh"
-exit
-
 curdir=$(pwd)
 trap 'my_exit; exit' SIGINT SIGQUIT
 count=0
@@ -43,23 +40,23 @@ function countline() {
 }
 
 #Readign the variables of the section General settings
-./$postwrf_dir/modules_era/global_settings.sh
+$postwrf_dir/modules_era/global_settings.sh
 
 ###############   2nd Section (CONTOUR_MAP)   #######################
-if [[ $contour_onoff == 1 ]]; then                                                  #For the fifth line (Contour Variables)
-  myvar="3rd_Variable_name"                                                         #nclcontourvars11
+if [[ $era_onoff == 1 ]]; then                                                  #For the fifth line (Contour Variables)
+  myvar="3rd_ERA5_Var_name"                                                         #nclcontourvars11
   CNVAR3=$(sed -n "/$myvar/p" namelist.wrf | awk -F"=" '{print $NF}' | cut -d, -f1) #only one var is read
   export CNVAR3=$(echo "${CNVAR3// /}")                                             #Remove spaces
   unset myvar
 
   #------------------------------------------------------------------------------------------------
-  myvar="3rd_Variable_on_off"
+  myvar="3rd_ERA5_Var_on_off"
   THIRDVAR_ONOFF=$(sed -n "/$myvar/p" namelist.wrf | awk -F"=" '{print $NF}')
   export THIRDVAR_ONOFF=$(echo ${THIRDVAR_ONOFF}) #Remove spaces
   unset myvar
 
   ##------------------------------------------------------------------------------------------------
-  myvar="3rd_Variable_pressure_level"
+  myvar="3rd_ERA5_Var_pressure_level"
   countline
   export CNLEV3_num=$numlinevars #Zero (0) is included in the line numbers
   #Extracting Vairables into array
@@ -79,50 +76,50 @@ if [[ $contour_onoff == 1 ]]; then                                              
   unset myvar
 
   #------------------------------------------------------------------------------------------------
-  myvar="Location_point_mark_on_off"
+  myvar="ERA5_point_mark_on_off"
   contourpoints_onoff=$(sed -n "/$myvar/p" namelist.wrf | awk -F"=" '{print $NF}')
   export contourpoints_onoff=$(echo ${contourpoints_onoff}) #Remove spaces
   unset myvar
 
   #------------------------------------------------------------------------------------------------
-  myvar="Location_labels_size"
+  myvar="ERA5_labels_size"
   labelsize=$(sed -n "/$myvar/p" namelist.wrf | awk -F"=" '{print $NF}' | cut -d, -f1) #only one var is read
   export labelsize=$(echo $labelsize)                                                  #Remove spaces
   unset myvar
 
   ##------------------------------------------------------------------------------------------------
-  myvar="Location_labels_color"
+  myvar="ERA5_labels_color"
   labelcolor=$(sed -n "/$myvar/p" namelist.wrf | awk -F"=" '{print $NF}' | cut -d, -f1) #only one var is read
   export labelcolor=$(echo $labelcolor)                                                 #Remove spaces
   unset myvar
 
   #------------------------------------------------------------------------------------------------
-  myvar="Location_labels_on_off"
+  myvar="ERA5_labels_on_off"
   contourlabel_onoff=$(sed -n "/$myvar/p" namelist.wrf | awk -F"=" '{print $NF}')
   export contourlabel_onoff=$(echo ${contourlabel_onoff}) #Remove spaces
   unset myvar
 
   ##------------------------------------------------------------------------------------------------
-  myvar="1st_Variable_on_off" #secondvar_onoffF
+  myvar="1st_ERA5_Var_on_off" #secondvar_onoffF
   FIRSTVAR_ONOFF=$(sed -n "/$myvar/p" namelist.wrf | awk -F"=" '{print $NF}')
   export FIRSTVAR_ONOFF=$(echo "${FIRSTVAR_ONOFF// /}")
   unset myvar
 
   ##------------------------------------------------------------------------------------------------
-  myvar="2nd_Variable_on_off" #thirdvar_onofff
+  myvar="2nd_ERA5_Var_on_off" #thirdvar_onofff
   SECONDVAR_ONOFF=$(sed -n "/$myvar/p" namelist.wrf | awk -F"=" '{print $NF}')
   export SECONDVAR_ONOFF=$(echo "${SECONDVAR_ONOFF// /}")
   unset myvar
 
   if [ $FIRSTVAR_ONOFF == 1 ]; then
     ##------------------------------------------------------------------------------------------------
-    myvar="1st_Variable_name"
+    myvar="1st_ERA5_Var_name"
     CNVAR1=$(sed -n "/$myvar/p" namelist.wrf | awk -F"=" '{print $NF}' | cut -d, -f1) #only one var is read
     export CNVAR1=$(echo "${CNVAR1// /}")                                             #Remove spaces
     unset myvar
     ##------------------------------------------------------------------------------------------------
 
-    myvar="1st_Variable_pressure_level"
+    myvar="1st_ERA5_Var_pressure_level"
     countline
     export CNLEV1_num=$numlinevars #Zero (0) is included in the line numbers
     #Extracting Vairables into array
@@ -143,22 +140,22 @@ if [[ $contour_onoff == 1 ]]; then                                              
     unset myvar
 
     ##------------------------------------------------------------------------------------------------
-    myvar="1st_Variable_intervals"                                                     #nclintv22
+    myvar="1st_ERA5_Var_intervals"                                                     #nclintv22
     CNINTV1=$(sed -n "/$myvar/p" namelist.wrf | awk -F"=" '{print $NF}' | cut -d, -f1) #only one var is read
     export CNINTV1=$(echo $CNINTV1)                                                    #Remove spaces
     unset myvar
     ##------------------------------------------------------------------------------------------------
-    myvar="1st_Variable_line_color"                                                     #nclcontourcolor22
+    myvar="1st_ERA5_Var_line_color"                                                     #nclcontourcolor22
     CNCOLOR1=$(sed -n "/$myvar/p" namelist.wrf | awk -F"=" '{print $NF}' | cut -d, -f1) #only one var is read
     export CNCOLOR1=$(echo $CNCOLOR1)                                                   #Remove spaces
     unset myvar
     ##------------------------------------------------------------------------------------------------
-    myvar="1st_Variable_line_thickness"                                                 #nclthickness22
+    myvar="1st_ERA5_Var_line_thickness"                                                 #nclthickness22
     CNTHICK1=$(sed -n "/$myvar/p" namelist.wrf | awk -F"=" '{print $NF}' | cut -d, -f1) #only one var is read
     export CNTHICK1=$(echo $CNTHICK1)                                                   #Remove spaces
     unset myvar
     ##------------------------------------------------------------------------------------------------
-    myvar="1st_Variable_label_size"                                                     #ncllabel2
+    myvar="1st_ERA5_Var_label_size"                                                     #ncllabel2
     CNLABEL1=$(sed -n "/$myvar/p" namelist.wrf | awk -F"=" '{print $NF}' | cut -d, -f1) #only one var is read
     export CNLABEL1=$(echo $CNLABEL1)                                                   #Remove spaces
     unset myvar
@@ -166,13 +163,13 @@ if [[ $contour_onoff == 1 ]]; then                                              
 
   if [ $SECONDVAR_ONOFF == 1 ]; then
     ##------------------------------------------------------------------------------------------------
-    myvar="2nd_Variable_name"                                                         #nclcontourvars33
+    myvar="2nd_ERA5_Var_name"                                                         #nclcontourvars33
     CNVAR2=$(sed -n "/$myvar/p" namelist.wrf | awk -F"=" '{print $NF}' | cut -d, -f1) #only one var is read
     export CNVAR2=$(echo "${CNVAR2// /}")                                             #Remove spaces
     unset myvar
 
     ##------------------------------------------------------------------------------------------------
-    myvar="2nd_Variable_pressure_level"
+    myvar="2nd_ERA5_Var_pressure_level"
     countline
     export CNLEV2_num=$numlinevars #Zero (0) is included in the line numbers
     #Extracting Vairables into array
@@ -193,79 +190,79 @@ if [[ $contour_onoff == 1 ]]; then                                              
     unset myvar
 
     ##------------------------------------------------------------------------------------------------
-    myvar="2nd_Variable_intervals"
+    myvar="2nd_ERA5_Var_intervals"
     CNINTV2=$(sed -n "/$myvar/p" namelist.wrf | awk -F"=" '{print $NF}' | cut -d, -f1) #only one var is read
     export CNINTV2=$(echo $CNINTV2)                                                    #Remove spaces
     unset myvar
     ##------------------------------------------------------------------------------------------------
-    myvar="2nd_Variable_line_color"
+    myvar="2nd_ERA5_Var_line_color"
     CNCOLOR2=$(sed -n "/$myvar/p" namelist.wrf | awk -F"=" '{print $NF}' | cut -d, -f1) #only one var is read
     export CNCOLOR2=$(echo $CNCOLOR2)                                                   #Remove spaces
     unset myvar
     ##------------------------------------------------------------------------------------------------
-    myvar="2nd_Variable_line_thickness"
+    myvar="2nd_ERA5_Var_line_thickness"
     CNTHICK2=$(sed -n "/$myvar/p" namelist.wrf | awk -F"=" '{print $NF}' | cut -d, -f1) #only one var is read
     export CNTHICK2=$(echo $CNTHICK2)                                                   #Remove spaces
     unset myvar
     ##------------------------------------------------------------------------------------------------
-    myvar="2nd_Variable_label_size"
+    myvar="2nd_ERA5_Var_label_size"
     CNLABEL2=$(sed -n "/$myvar/p" namelist.wrf | awk -F"=" '{print $NF}' | cut -d, -f1) #only one var is read
     export CNLABEL2=$(echo $CNLABEL2)                                                   #Remove spaces
     unset myvar
     ##------------------------------------------------------------------------------------------------
-    myvar="2nd_Variable_brokenline_on_off" #CNBROKEN2
+    myvar="2nd_ERA5_Var_brokenline_on_off" #CNBROKEN2
     CNBROKEN2=$(sed -n "/$myvar/p" namelist.wrf | awk -F"=" '{print $NF}')
     export CNBROKEN2=$(echo ${CNBROKEN2}) #Remove spaces
     unset myvar
   fi
 
   ##------------------------------------------------------------------------------------------------
-  myvar="Wind_Vectors_on_off"
+  myvar="Wind_ERA5_on_off"
   wind_onoff=$(sed -n "/$myvar/p" namelist.wrf | awk -F"=" '{print $NF}')
   wind_onoff=$(echo ${wind_onoff}) #Remove spaces
   export wind_onoff
   unset myvar
 
   if [ $wind_onoff == 1 ]; then
-    myvar="Wind_Vectors_pressure_level"
+    myvar="Wind_ERA5_pressure_level"
     windlev=$(sed -n "/$myvar/p" namelist.wrf | awk -F"=" '{print $NF}' | cut -d, -f1) #only one var is read
     windlev=$(echo $windlev)                                                           #Remove spaces
     export nclwindlev=$windlev
     unset myvar
 
     ##------------------------------------------------------------------------------------------------
-    myvar="Wind_Vectors_speed"
+    myvar="Wind_ERA5_speed"
     windsize=$(sed -n "/$myvar/p" namelist.wrf | awk -F"=" '{print $NF}' | cut -d, -f1) #only one var is read
     export windsize=$(echo $windsize)                                                   #Remove spaces
     unset myvar
 
     ##------------------------------------------------------------------------------------------------
-    myvar="Wind_Vectors_density"
+    myvar="Wind_ERA5_density"
     winddens=$(sed -n "/$myvar/p" namelist.wrf | awk -F"=" '{print $NF}' | cut -d, -f1) #only one var is read
     export winddens=$(echo $winddens)                                                   #Remove spaces
     unset myvar
     ##------------------------------------------------------------------------------------------------
-    myvar="Wind_Vectors_color"
+    myvar="Wind_ERA5_color"
     windcolor=$(sed -n "/$myvar/p" namelist.wrf | awk -F"=" '{print $NF}' | cut -d, -f1) #only one var is read
     export windcolor=$(echo $windcolor)                                                  #Remove spaces
     unset myvar
 
     ##------------------------------------------------------------------------------------------------
-    myvar="Wind_Vectors_thickness"
+    myvar="Wind_ERA5_thickness"
     windthick=$(sed -n "/$myvar/p" namelist.wrf | awk -F"=" '{print $NF}' | cut -d, -f1) #only one var is read
     export windthick=$(echo $windthick)                                                  #Remove spaces
     unset myvar
   fi
 
   ##------------------------------------------------------------------------------------------------
-  myvar="Shapefile_on-off"
+  myvar="ERA5_Shapefile_on_off"
   shape_onoff=$(sed -n "/$myvar/p" namelist.wrf | awk -F"=" '{print $NF}')
   shape_onoff=$(echo ${shape_onoff}) #Remove spaces
   export shape_onoff
   unset myvar
 
   ##------------------------------------------------------------------------------------------------
-  myvar="Shapefile_path"
+  myvar="ERA5_Shapefile_path"
   shape_path=$(sed -n "/$myvar/p" namelist.wrf | awk -F"=" '{print $NF}')
   shape_path=$(echo ${shape_path}) #Remove spaces
   export shape_path
@@ -276,24 +273,16 @@ if [[ $contour_onoff == 1 ]]; then                                              
 fi
 
 nofile=False
-if [[ $extractonoff == 1 || $GEOTIFF_ONOFF == 1 || $contour_onoff == 1  ]]; then #code QQWW
   ###################################################################################################
   ###############   Specifying WRF Output File   ####################################################
   ###################################################################################################
 
-  if [ $extractonoff == 1 ]; then
     echo ""
     echo "---------------------------------------------------------"
-    echo "      EXTRACT VARIABLE             EXTRACT VARIABLE"
+    echo "      ERA5 Plot             ERA5 Plot"
     echo "---------------------------------------------------------"
     echo ""
-  elif [ $contour_onoff == 1 ]; then
-    echo ""
-    echo "---------------------------------------------------------"
-    echo "       CONTOUR PLOT                CONTOUR PLOT"
-    echo "---------------------------------------------------------"
-    echo ""
-  fi
+
 
   if [ -z "$wrfout" ]; then #code abc
     wrflist=$(ls wrfout_d* 2>/dev/null)
@@ -381,17 +370,17 @@ if [[ $extractonoff == 1 || $GEOTIFF_ONOFF == 1 || $contour_onoff == 1  ]]; then
     ###################################################################################
     ####################                 NCL            ###############################
     ###################################################################################
-    if [[ $extractonoff == 1 ]]; then
-      myvar="Vertical_profile_plot_on_off"
-      verticalplotonoff=$(sed -n "/$myvar/p" namelist.wrf | awk -F"=" '{print $NF}')
-      export verticalplotonoff=$(echo "${verticalplotonoff// /}")
-      unset myvar
-      ##------------------------------------------------------------------------------------------------
-      ./modules_era/extract.sh
-    fi
+    # if [[ $extractonoff == 1 ]]; then
+    #   myvar="Vertical_profile_plot_on_off"
+    #   verticalplotonoff=$(sed -n "/$myvar/p" namelist.wrf | awk -F"=" '{print $NF}')
+    #   export verticalplotonoff=$(echo "${verticalplotonoff// /}")
+    #   unset myvar
+    #   ##------------------------------------------------------------------------------------------------
+    #   ./modules_era/extract.sh
+    # fi
 
     # Contour (Level) Module==========================================================
-    if [[ $contour_onoff == 1 ]]; then #code rrr9
+    if [[ $era_onoff == 1 ]]; then #code rrr9
       if [[ ($THIRDVAR_ONOFF == 1 || $FIRSTVAR_ONOFF == 1 || $SECONDVAR_ONOFF == 1) ]]; then
         echo "Plotting  contour maps ..."
         echo ""
@@ -407,11 +396,10 @@ if [[ $extractonoff == 1 || $GEOTIFF_ONOFF == 1 || $contour_onoff == 1  ]]; then
       else
         echo -e "\nPostWRF: No contour variable is ON in namelist.wrf ..."
       fi
-      unset contour_onoff
+      unset era_onoff
     fi #code rrr9
   fi # code QQWW
 
-fi #if nofile is false
 rm -f .wrfvars 2>/dev/null
 rm -f .AllWRFVariables 2>/dev/null
 rm -f postwrf_wrfout* 2>/dev/null

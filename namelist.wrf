@@ -2,12 +2,12 @@
 =============================================================================
 Extract_On-Off                  = 0
 
-WRF_variable_name               = pvo, T2, rh
-Location_names                  = Loc1, Loc2, Loc3
+WRF_variable_name               = RAINC+RAINNC
+Location_names                  = Loc1, Loc2, Loc3, loc4,
 Location_latitudes              = 33, 29, 25
 Location_longitudes             = 45, 47, 46
 
-+Vertical_profile_plot_on_off   = 1
++Vertical_profile_plot_on_off   = 0
 +Vprofile_X_axis_decimals       = 3
 -----------------------------------------------------------------------------
 
@@ -19,11 +19,11 @@ CONTOUR_ON_OFF                 = 0
 !!! Variable_1 by line contours !!!
 1st_Variable_on_off            = 1
 1st_Variable_name              = tc
-1st_Variable_pressure_level    = 700
+1st_Variable_pressure_level    = 0
 1st_Variable_intervals         = 5
-1st_Variable_line_color        = black
-1st_Variable_line_thickness    = 0.7
-1st_Variable_label_size        = 0.7
+1st_Variable_line_color        = red
+1st_Variable_line_thickness    = 0.5
+1st_Variable_label_size        = 0.5
 
 !!! Variable_2 by (broken) line contours !!!
 2nd_Variable_on_off            = 0
@@ -37,14 +37,14 @@ CONTOUR_ON_OFF                 = 0
 
 !!! Variable_3 by filled (colored) contours !!!
 3rd_Variable_on_off            = 1
-3rd_Variable_name              = td2
+3rd_Variable_name              = RAINC+RAINNC
 3rd_Variable_pressure_level    = 0,
 
 Wind_Vectors_on_off            = 1
-Wind_Vectors_pressure_level    = 300
+Wind_Vectors_pressure_level    = 700
 Wind_Vectors_speed (m/s)       = 10
 Wind_Vectors_density           = 0.5
-Wind_Vectors_color             = blue
+Wind_Vectors_color             = black
 Wind_Vectors_thickness         = 0.5
 
 Location_point_mark_on_off     = 0
@@ -64,7 +64,7 @@ CrossSection_path_on_off       = 1
 Topographic_map_on_off         = 1
 
 !!! 3D Variable_1 by line contours !!!
-1st_var_on_off                 = 1
+1st_var_on_off                 = 0
 1st_var_name                   = (ua^2 + va^2)^0.5
 1st_var_intervals              = 10
 1st_var_line_color             = black
@@ -82,7 +82,7 @@ Topographic_map_on_off         = 1
 
 !!! 3D Variable_3 by filled (colored) contours !!!
 3rd_var_on_off                 = 1
-3rd_var_name                   = QVAPOR
+3rd_var_name                   = QCLOUD
 -----------------------------------------------------------------------------
 
 
@@ -106,11 +106,11 @@ Taylor_markers_size              = 0.5
 =============================================================================
 Domain_On-Off                    = 0
 
-namelist.wps_path (schematic)    = /home/anikfal/WRF4.2.2/WPS/namelist.wps
+namelist.wps_path (schematic)    = /home/anikfal/sebal/SEBAL_FULL_JAN2022/WRF_MODEL/WPS/namelist.wps
 background_color (schematic)     = forestgreen
 lables_On-Off (schematic)        = 0
 
-+Domain_on_off (topography)      = 1
++Domain_on_off (topography)      = 0
 +number_of_domains (topography)  = 1
 +box_color                       = white
 -----------------------------------------------------------------------------
@@ -119,18 +119,18 @@ lables_On-Off (schematic)        = 0
 ============================= WIND ROSE DIAGRAM =============================
 =============================================================================
 windrose_On-Off                 = 0
-wind_location_name              = Berlin
-wind_location_latitude          = 52.520
-wind_location_longitude         = 13.405
+wind_location_name              = shiraz
+wind_location_latitude          = 29.5
+wind_location_longitude         = 52.5
 -----------------------------------------------------------------------------
 
 
 ============================== SKEWT DIAGRAM ================================
 =============================================================================
 skewT_On-Off                    = 0
-skewt_location_name             = Paris
-skewt_location_latitude         = 48.857
-skewt_location_longitude        = 2.352
+skewt_location_name             = shiraz
+skewt_location_latitude         = 29.5
+skewt_location_longitude        = 52.5
 -----------------------------------------------------------------------------
 
 
@@ -172,7 +172,7 @@ ERA5_ON_OFF                     = 1
 1st_ERA5_Var_label_size         = 0.7
 
 !!! Variable_2 by (broken) line contours !!!
-2nd_ERA5_Var_on_off             = 0
+2nd_ERA5_Var_on_off             = 1
 2nd_ERA5_Var_name               = tk*rh
 2nd_ERA5_Var_pressure_level     = 700
 2nd_ERA5_Var_intervals          = 0
@@ -193,11 +193,11 @@ Wind_ERA5_density               = 0.5
 Wind_ERA5_color                 = blue
 Wind_ERA5_thickness             = 0.5
 
-ERA5_point_mark_on_off          = 0
-ERA5_labels_on_off              = 0
+ERA5_point_mark_on_off          = 1
+ERA5_labels_on_off              = 1
 ERA5_labels_size                = 0.5
 ERA5_labels_color               = black
-ERA5_Shapefile_on-off           = 0
+ERA5_Shapefile_on_off           = 1
 ERA5_Shapefile_path             = /home/a_nikfal/postwrf/shapefiles/anzali_swamp.shp
 -----------------------------------------------------------------------------
 
