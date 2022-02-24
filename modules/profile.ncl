@@ -166,6 +166,13 @@ end if
   times = wrf_user_getvar(a,"times",-1)
   pp  = wrf_user_getvar(a, "pressure",-1)
   locs = wrf_user_ll_to_ij(a,lons,lats,True)
+  if (dimsizes(dimsizes(locs)) .eq. 1) then ; In case of only
+    new_loc = new((/2,1/), "integer")
+    new_loc(0,0) = locs(0)
+    new_loc(1,0) = locs(1)
+    locs := new_loc
+    delete(new_loc)
+  end if
   loccount = dimsizes(locnames)
   res                   = True
   res@trYReverse        = True                       ; reverse Y-axis
