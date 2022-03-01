@@ -13,10 +13,9 @@ count=0
 my_exit() {
   curdir2=$(pwd)
   rm timestep_file 2>/dev/null
-  rm .AllWRFVariables postwrf_wrfout* 2>/dev/null
+  rm .AllWRFVariables postwrf_era_* 2>/dev/null
   if [[ $curdir != $curdir2 ]]; then
-
-    wrflist2=$(ls wrfout*)
+    wrflist2=$(ls *.nc)
     totnom=$(echo $wrflist2 | wc -w)
     rmcounter=1
     while [ $rmcounter -le $totnom ]; do
@@ -26,24 +25,86 @@ my_exit() {
       fi
       rmcounter=$((rmcounter + 1))
     done
-
     unset rmcounter
   fi
 }
 
 function countline() {
   numlinevars=$(sed -n "/$myvar/p" namelist.wrf | awk -F"=" '{print $NF}' | awk -F',' '{ print NF }')
-  ifendcomma=$(sed -n "/$myvar/p" namelist.wrf | awk -F"=" '{print $NF}' | rev | cut -c1)
+  ifendcomma=$(sed -n "/$myvar/p" namelist.wrf | rev | cut -c1)
   if [[ $ifendcomma == "," ]]; then
     numlinevars=$((numlinevars - 1))
   fi
 }
 
-#Readign the variables of the section General settings
-$postwrf_dir/modules_era/global_settings.sh
+#Reading the variables of the section General settings
+source $postwrf_dir/modules_era/global_settings.sh
 
 ###############   2nd Section (CONTOUR_MAP)   #######################
 if [[ $era_onoff == 1 ]]; then                                                  #For the fifth line (Contour Variables)
+    #Counting Variables in a line of namelist.wrf
+  myvar="Location_names"
+  countline
+  export ncllocs=$numlinevars #Zero (0) is included in the line numbers
+  #Extracting Vairables into array
+  varcount=0
+  while [ $varcount -lt $numlinevars ]; do
+    locnames[$varcount]=$(sed -n "/$myvar/p" namelist.wrf | awk -F"=" '{print $NF}' | cut -d, -f$((varcount + 1)))
+    locnames[$varcount]=$(echo ${locnames[$varcount]}) #Remove spaces
+    varcount=$((varcount + 1))
+  done
+  unset varcount
+
+  varcount=0
+  while [ $varcount -lt $numlinevars ]; do
+    declare ncllocnames$varcount=${locnames[$varcount]}
+    export ncllocnames$varcount
+    varcount=$((varcount + 1))
+  done
+  unset myvar
+  ###################################################################################################
+  #Counting Variables in a line of namelist.wrf
+  myvar="Location_latitudes"
+  countline
+  export ncllats=$numlinevars #Zero (0) is included in the line numbers
+  #Extracting Variables into array
+  varcount=0
+  while [ $varcount -lt $numlinevars ]; do
+    loclats[$varcount]=$(sed -n "/$myvar/p" namelist.wrf | awk -F"=" '{print $NF}' | cut -d, -f$((varcount + 1)))
+    loclats[$varcount]=$(echo ${loclats[$varcount]}) #Remove spaces
+    varcount=$((varcount + 1))
+  done
+  unset varcount
+
+  varcount=0
+  while [ $varcount -lt $numlinevars ]; do
+    declare nclloclats$varcount=${loclats[$varcount]}
+    export nclloclats$varcount
+    varcount=$((varcount + 1))
+  done
+  unset myvar
+  ###################################################################################################
+  #Counting Variables in a line of namelist.wrf
+  myvar="Location_longitudes"
+  countline
+  export ncllons=$numlinevars #Zero (0) is included in the line numbers
+  #Extracting Vairables into array
+  varcount=0
+  while [ $varcount -lt $numlinevars ]; do
+    loclons[$varcount]=$(sed -n "/$myvar/p" namelist.wrf | awk -F"=" '{print $NF}' | cut -d, -f$((varcount + 1)))
+    loclons[$varcount]=$(echo ${loclons[$varcount]}) #Remove spaces
+    varcount=$((varcount + 1))
+  done
+  unset varcount
+
+  varcount=0
+  while [ $varcount -lt $numlinevars ]; do
+    declare nclloclons$varcount=${loclons[$varcount]}
+    export nclloclons$varcount
+    varcount=$((varcount + 1))
+  done
+  unset myvar
+    
   myvar="3rd_ERA5_Var_name"                                                         #nclcontourvars11
   CNVAR3=$(sed -n "/$myvar/p" namelist.wrf | awk -F"=" '{print $NF}' | cut -d, -f1) #only one var is read
   export CNVAR3=$(echo "${CNVAR3// /}")                                             #Remove spaces
@@ -267,38 +328,60 @@ if [[ $era_onoff == 1 ]]; then                                                  
   shape_path=$(echo ${shape_path}) #Remove spaces
   export shape_path
   unset myvar
-  export province_onoff=0
-  export province_num=1
-  export ncl_province_names0="Anzali"
+
+  myvar="ERA5_SubDomain_on_off"
+  era_subdom_onoff=$(sed -n "/$myvar/p" namelist.wrf | awk -F"=" '{print $NF}')
+  era_subdom_onoff=$(echo ${era_subdom_onoff}) #Remove spaces
+  export era_subdom_onoff
+  unset myvar
+
+  myvar="Min_lat"
+  era_minlat=$(sed -n "/$myvar/p" namelist.wrf | awk -F"=" '{print $NF}' | cut -d, -f1) #only one var is read
+  export era_minlat=$(echo $era_minlat)                                                   #Remove spaces
+  unset myvar
+
+  myvar="Max_lat"
+  era_maxlat=$(sed -n "/$myvar/p" namelist.wrf | awk -F"=" '{print $NF}' | cut -d, -f1) #only one var is read
+  export era_maxlat=$(echo $era_maxlat)                                                   #Remove spaces
+  unset myvar
+
+  myvar="Min_lon"
+  era_minlon=$(sed -n "/$myvar/p" namelist.wrf | awk -F"=" '{print $NF}' | cut -d, -f1) #only one var is read
+  export era_minlon=$(echo $era_minlon)                                                   #Remove spaces
+  unset myvar
+
+  myvar="Max_lon"
+  era_maxlon=$(sed -n "/$myvar/p" namelist.wrf | awk -F"=" '{print $NF}' | cut -d, -f1) #only one var is read
+  export era_maxlon=$(echo $era_maxlon)                                                   #Remove spaces
+  unset myvar
+
 fi
 
-nofile=False
   ###################################################################################################
   ###############   Specifying WRF Output File   ####################################################
   ###################################################################################################
 
     echo ""
     echo "---------------------------------------------------------"
-    echo "      ERA5 Plot             ERA5 Plot"
+    echo "      ERA5 NetCDF Plot             ERA5 NetCDF Plot"
     echo "---------------------------------------------------------"
     echo ""
 
-
   if [ -z "$wrfout" ]; then #code abc
-    wrflist=$(ls wrfout_d* 2>/dev/null)
+    wrflist=$(ls *.nc 2>/dev/null)
     wrflistvar=$(echo $wrflist | wc -w)
     if [ -z "$wrflist" ]; then
-      echo "      No WRF output files in the current directory."
+      echo "      No ERA5 NetCDF files in the current directory."
       echo "      You can link or copy one or more files to the current directory."
-      nofile=True
+      exit
     elif [ $wrflistvar == 1 ]; then
       selectedwrf=$wrflist
-      ln $postwrf_dir/$selectedwrf $postwrf_dir/postwrf_$selectedwrf
+      ln $postwrf_dir/$selectedwrf $postwrf_dir/postwrf_era_$selectedwrf
       echo -e "\n"$selectedwrf" has been selected in the current directory.\n"
     else
-      echo -e "There are multiple wrf-files in the current directory:\n"
+      echo -e "There are multiple NetCDF (ERA5) files in the current directory:\n"
       COUNTER=0
-      ls wrfout* >.listfile
+      ls *.nc >.listfile
       while [ $COUNTER -lt $wrflistvar ]; do
         wrffile[$COUNTER]=$(sed -n "$((COUNTER + 1)) p" .listfile)
         COUNTER=$((COUNTER + 1))
@@ -331,7 +414,7 @@ nofile=False
         fi
         wrfnum_minus=$((wrfnum[$varcount] - 1))
         selectedwrf=${wrffile[$wrfnum_minus]}
-        ln $postwrf_dir/$selectedwrf $postwrf_dir/postwrf_$selectedwrf
+        ln $postwrf_dir/$selectedwrf $postwrf_dir/postwrf_era_$selectedwrf
         echo $selectedwrf has been selected
         varcount=$((varcount + 1))
       done
@@ -342,31 +425,8 @@ nofile=False
     fi
   fi #code abc
 
-  if [[ $nofile == False ]]; then
-    diagvars=("ua" "va" "wa" "tc" "tk" "td" "td2" "th" "theta" "tv" "twb" "eth" "slp" "p" "pres" "pressure" "geopotential" "geopt" "rh"
-      "rh2" "z" "height" "ter" "pvo" "pw" "avo" "cape_surface" "cin_surface" "cape_3d" "cin_3d" "ctt" "dbz" "mdbz" "helicity"
-      "omg" "updraft_helicity" "dust_total" "dust_pm10" "dust_pm2.5" "wind_s" "wind_d" "lcl" "lfc")
+    ncl_filedump $selectedwrf | grep short | awk '{print $2}' >.AllWRFVariables
 
-    if [[ $(echo $selectedwrf | rev | cut -c -3 | rev) == ".nc" ]]; then
-      ncl_filedump $selectedwrf | grep "( Time, bottom_top, south_north, west_east" | awk '{print $2}' >.wrfvars
-      ncl_filedump $selectedwrf | grep "( Time, bottom_top, south_north_stag, west_east )" | awk '{print $2}' >>.wrfvars
-      ncl_filedump $selectedwrf | grep "( Time, south_north, west_east" | awk '{print $2}' >>.wrfvars
-      ncl_filedump $selectedwrf | grep float | awk '{print $2}' >.AllWRFVariables
-      ncl_filedump $selectedwrf | grep "Variable" | grep -v "f" | awk '{print $2}' >>.AllWRFVariables
-    else
-      ncl_filedump "$selectedwrf.nc" | grep "( Time, bottom_top, south_north, west_east" | awk '{print $2}' >.wrfvars
-      ncl_filedump "$selectedwrf.nc" | grep "( Time, bottom_top, south_north_stag, west_east )" | awk '{print $2}' >>.wrfvars
-      ncl_filedump "$selectedwrf.nc" | grep "( Time, south_north, west_east" | awk '{print $2}' >>.wrfvars
-      ncl_filedump "$selectedwrf.nc" | grep float | awk '{print $2}' >.AllWRFVariables
-      ncl_filedump "$selectedwrf.nc" | grep "Variable" | grep -v "f" | awk '{print $2}' >>.AllWRFVariables
-    fi
-    varcount=0
-    diagcount=${#diagvars[@]}
-    while [ $varcount -lt $diagcount ]; do
-      echo ${diagvars[$varcount]} >>.AllWRFVariables
-      varcount=$((varcount + 1))
-    done
-    unset varcount
     ###################################################################################
     ####################                 NCL            ###############################
     ###################################################################################
@@ -382,9 +442,9 @@ nofile=False
     # Contour (Level) Module==========================================================
     if [[ $era_onoff == 1 ]]; then #code rrr9
       if [[ ($THIRDVAR_ONOFF == 1 || $FIRSTVAR_ONOFF == 1 || $SECONDVAR_ONOFF == 1) ]]; then
-        echo "Plotting  contour maps ..."
+        echo "Plotting contour maps ..."
         echo ""
-        ./modules/contourlvl.sh
+        ./modules_era/contourlvl_era.sh
         cd $postwrf_dir
         unlink variablesCN1.txt 2>/dev/null
         unlink variablesCN2.txt 2>/dev/null
@@ -398,7 +458,6 @@ nofile=False
       fi
       unset era_onoff
     fi #code rrr9
-  fi # code QQWW
 
 rm -f .wrfvars 2>/dev/null
 rm -f .AllWRFVariables 2>/dev/null

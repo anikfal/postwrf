@@ -38,7 +38,7 @@ end if
 
  print("Please wait. NCL is processing ...")
  print("")
- all_steps = cd_calendar(aaa->time, 3)
+ all_steps = tointeger(cd_calendar(aaa->time, 3))
  NCLCNVAR3 = getenv("CNVAR3") ;NCLcontours11
  NCLCNVAR1 = getenv("CNVAR1") ;NCLcontours22
  NCLCNVAR2 = getenv("CNVAR2") ;NCLcontours33
@@ -71,7 +71,6 @@ end if
   label_onoff = 0
  end if
  NCLgridline_onoff = tointeger(getenv("gridline_onoff"))
- NCLspinup = tointeger(getenv("spinup"))
  NCLaverage_onoff = tointeger(getenv("average_onoff"))
  NCLaverage_time = tointeger(getenv("averagetime"))
  NCLtitle = tointeger(getenv("titile_option"))
@@ -257,6 +256,20 @@ if ( any(yy.eq.NCLCNVAR3) .and. any(yy.eq.NCLCNVAR1) .and. any(yy.eq.NCLCNVAR2) 
       levdim = dimsizes(levs)-1
       highestPressureLev = levs(0)
       lowestPressureLev = levs(levdim)
+      if (tointeger(getenv("era_subdom_onoff")) .ne. 1) then
+        mylat = aaa->latitude
+        mylon = aaa->longitude
+        min_lat = min(mylat)
+        max_lat = max(mylat)
+        min_lon = min(mylon)
+        max_lon = max(mylon)
+        else
+        min_lat = tointeger(getenv("era_minlat"))
+        max_lat = tointeger(getenv("era_maxlat"))
+        min_lon = tointeger(getenv("era_minlon"))
+        max_lon = tointeger(getenv("era_maxlon"))
+      end if
+      
       if (NCL3VARONOFF .eq. 1) then ; code pprggvar1
         NCLPLEV3 = tointeger(getenv("CNLEV30")) ;pressure_levelsS
         cnmode = getenv("contvar")
@@ -276,9 +289,16 @@ if ( any(yy.eq.NCLCNVAR3) .and. any(yy.eq.NCLCNVAR1) .and. any(yy.eq.NCLCNVAR2) 
               tc = wind_direction(uu10, vv10, 0)
               tc@description = "wind direction"
               tc@units = "Degrees from north"
+           else if (NCLCNVAR3 .eq. "z") then
+              tc0 = short2flt(aaa->z)
+              tc = tc0/98.1 ;convert to hectopascal
+              copy_VarCoords(tc0, tc)
+              copy_VarAtts(tc0, tc)
+              delete(tc0)
+              tc@units = "Decameter"
             else
             tc = short2flt(aaa->$NCLCNVAR3$)
-
+          end if
           end if
           end if
 
@@ -289,8 +309,10 @@ if ( any(yy.eq.NCLCNVAR3) .and. any(yy.eq.NCLCNVAR1) .and. any(yy.eq.NCLCNVAR2) 
             tc_plane33@PlotLevelID = "surface"
           else ;if dimsize equals 4
             if (NCLPLEV3.eq.0) then ;surface pressure
-                tc_plane33 = tc(:,levdim,:,:)
-                tc_plane33@PlotLevelID = "surface"
+                NCLPLEV3 = lowestPressureLev
+                tc_plane33 = tc(:, {NCLPLEV3}, :, :)
+                ; tc_plane33 = tc(:,levdim,:,:)
+                ; tc_plane33@PlotLevelID = "surface"
               else
                 if (NCLPLEV3 .lt. highestPressureLev) then
                   print("Pressure level has been set to " + highestPressureLev)
@@ -304,45 +326,6 @@ if ( any(yy.eq.NCLCNVAR3) .and. any(yy.eq.NCLCNVAR1) .and. any(yy.eq.NCLCNVAR2) 
                 tc_plane33 = tc(:, {NCLPLEV3}, :, :)
             end if
         end if
-
-        ; BandW2 = (/"(/0, 0, 0/)","(/0.1, 0.1, 0.1/)","(/0.2, 0.2, 0.2/)","(/0.3, 0.3, 0.3/)","(/0.4, 0.4, 0.4/)","(/0.5, 0.5, 0.5/)","(/0.6, 0.6, 0.6/)",\
-        ;           "(/0.7, 0.7, 0.7/)","(/0.8, 0.8, 0.8/)","(/0.9, 0.9, 0.9/)","(/1, 1, 1/)"/)
-
-        ;   WandB2 = (/"(/1, 1, 1/)", "(/0.9, 0.9, 0.9/)", "(/0.8, 0.8, 0.8/)", "(/0.7, 0.7, 0.7/)", \
-        ;                       "(/0.6, 0.6, 0.6/)", "(/0.5, 0.5, 0.5/)", "(/0.4, 0.4, 0.4/)", "(/0.3, 0.3, 0.3/)", "(/0.2, 0.2, 0.2/)", \
-        ;                       "(/0.1, 0.1, 0.1/)", "(/0, 0, 0/)"/)
-
-        ;   MPL_Reds2 = (/"(/1.00, 1.00, 1.00/)", "(/1, 0.9, 0.9/)", "(/1, 0.8, 0.8/)", "(/1, 0.7, 0.7/)", \
-        ;                       "(/1, 0.6, 0.6/)", "(/1, 0.5, 0.5/)", "(/1, 0.4, 0.4/)", "(/1, 0.3, 0.3/)", "(/1, 0.2, 0.2/)", \
-        ;                       "(/1, 0.1, 0.1/)", "(/1, 0, 0/)", "(/0.9, 0, 0/)"/)
-
-        ;   WhiteBlue2 = (/"(/1.00, 1.00, 1.00/)", "(/0.9, 0.9, 1/)", "(/0.8, 0.8, 1/)", "(/0.7, 0.7, 1/)", \
-        ;                       "(/0.6, 0.6, 1/)", "(/0.5, 0.5, 1/)", "(/0.4, 0.4, 1/)", "(/0.3, 0.3, 1/)", "(/0.2, 0.2, 1/)", \
-        ;                       "(/0.1, 0.1, 1/)", "(/0, 0, 1/)", "(/0, 0, 0.9/)"/)
-
-        ;   WhiteYellowOrangeRed2 = (/ "(/1, 1, 1/)", "(/1, 1, 0.75/)", "(/1, 1, 0.55/)", \
-        ;                       "(/1, 1, 0.4/)", "(/1, 1, 0.25/)", "(/1, 1, 0.1/)", "(/1, 0.8, 0/)", "(/1, 0.65, 0/)", \
-        ;                       "(/1, 0.5, 0/)", "(/1, 0.35, 0/)", "(/1, 0.2, 0/)", "(/1, 0.05, 0/)"/)
-
-        ;   BlueRed2 = (/ "(/0.15, 0.15, 1/)", "(/0.3, 0.3, 1/)", "(/0.45, 0.45, 1/)", \
-        ;                       "(/0.6, 0.6, 1/)", "(/0.75, 0.75, 1/)", "(/0.9, 0.9, 1/)", "(/1, 0.9, 0.9/)", "(/1, 0.75, 0.75/)", \
-        ;                       "(/1, 0.6, 0.6/)", "(/1, 0.45, 0.45/)", "(/1, 0.3, 0.3/)", "(/1, 0.15, 0.15/)"/)
-
-        ;   WhBlGrYeRe2 = (/"(/1, 1, 1/)", "(/0.51, 0, 0.86/)", "(/0.12, 0.24, 1/)", "(/0, 0.63, 1/)", \
-        ;                       "(/0, 0.82, 0.55/)", "(/0, 0.86, 0/)", "(/0.63, 0.90, 0.20/)", "(/0.90, 0.86, 0.2/)", \
-        ;                       "(/0.90, 0.69, 0.18/)", "(/0.94, 0.51, 0.16/)", "(/0.98, 0.24, 0.24/)", "(/0.94, 0, 0.51/)"/)
-
-        ;   MPL_gist_rainbow2 = (/"(/0.94, 0, 0.51/)","(/0.98, 0.24, 0.24/)","(/0.94, 0.51, 0.16/)","(/0.90, 0.69, 0.18/)",\
-        ;                       "(/0.90, 0.86, 0.2/)", "(/0.63, 0.90, 0.20/)","(/0, 0.86, 0/)","(/0, 0.82, 0.55/)","(/0, 0.78, 0.78/)",\
-        ;                       "(/0.12, 0.24, 1/)","(/0.51, 0, 0.86/)","(/0.63, 0, 0.78/)"/)
-
-        ;   rainbow2 = (/"(/0.6, 0, 1/)", "(/0.2, 0.2, 1/)", "(/0.5, 0.5, 1/)", \
-        ;                       "(/0, 0.78, 0.78/)", "(/0, 0.82, 0.55/)", "(/0, 0.86, 0/)", "(/0.63, 0.90, 0.20/)", "(/0.90, 0.86, 0.2/)", \
-        ;                       "(/0.90, 0.69, 0.18/)", "(/0.94, 0.51, 0.16/)", "(/0.98, 0.24, 0.24/)", "(/0.94, 0, 0.51/)"/)
-
-        ;   WhiteGreen2 = (/"(/1.00, 1.00, 1.00/)", "(/0.9, 1, 0.9/)", "(/0.8, 1, 0.8/)", "(/0.7, 1, 0.7/)", \
-        ;                         "(/0.6, 1, 0.6/)", "(/0.5, 1, 0.5/)", "(/0.4, 1, 0.4/)", "(/0.3, 1, 0.3/)", "(/0.2, 1, 0.2/)", \
-        ;                         "(/0.1, 1, 0.1/)", "(/0, 1, 0/)", "(/0, 0.9, 0/)"/)
 
         ; opt1 = True
         ; opt1@lbLabelFontHeightF = 0.02
@@ -359,16 +342,23 @@ if ( any(yy.eq.NCLCNVAR3) .and. any(yy.eq.NCLCNVAR1) .and. any(yy.eq.NCLCNVAR2) 
         opt1@cnFillOn          = True   ; fill contours
         opt1@cnFillPalette = contourcolorpal ;"WhBlGrYeRe"
         opt1@cnLinesOn         = False
-        opt1@gsnLeftString     = "long_nameeeeeeee" ;var@long_name
-        opt1@tiMainString      = "title_main" ;year + "-" + sprinti("%0.2i",month) + "-" + sprinti("%0.2i",day) + "_" + sprinti("%0.2i",hour)
+        opt1@gsnLeftString     = tc@long_name
         opt1@tiMainFontHeightF = 0.018
         opt1@tiMainFontThicknessF = 0.2
         ; opt1@cnLevelSpacingF   = 40     ; change the contour spacing to be 60 m
         ; opt1@cnMaxLevelCount   = 40
         opt1@lbLabelStride     = 2      ; only print value for every other contour in label bar
         opt1@cnLineLabelDensityF = 1.5
-        opt1@mpOceanFillColor = "deepskyblue"
-        opt1@mpLandFillColor = (/1,1,1/) ; for lesser versions of ncl 6.4 set to (0,0,0)
+        if (ocean_onoff .eq. 1) then
+          opt1@mpFillOn             = True
+          opt1@mpOceanFillColor = "deepskyblue"
+          opt1@mpLandFillColor      = "transparent"
+          opt1@mpFillDrawOrder      = "PostDraw"          
+        end if
+        if (NCLgridline_onoff .eq. 1) then
+          opt1@mpGridAndLimbOn = True
+        end if
+        ; opt1@mpLandFillColor = (/1,1,1/) ; for lesser versions of ncl 6.4 set to (0,0,0)
         opt1@mpInlandWaterFillColor = "deepskyblue"
         opt1@gsnLeftStringFontHeightF = 0.017
         opt1@gsnRightStringFontHeightF = 0.017
@@ -381,54 +371,19 @@ if ( any(yy.eq.NCLCNVAR3) .and. any(yy.eq.NCLCNVAR1) .and. any(yy.eq.NCLCNVAR2) 
         opt1@vpHeightF     = 0.5
         opt1@cnLineLabelBackgroundColor = "Transparent"
         opt1@cnLineLabelFontHeightF = 0.019
-        opt1@mpMinLatF         = 25
-        opt1@mpMaxLatF         = 55
-        opt1@mpMinLonF         = 45
-        opt1@mpMaxLonF         = 85
+        opt1@mpMinLatF         = min_lat
+        opt1@mpMaxLatF         = max_lat
+        opt1@mpMinLonF         = min_lon
+        opt1@mpMaxLonF         = max_lon
         opt1@gsnAddCyclic = False
-        opt1@cnLevelSelectionMode = "ManualLevels" ;"EqualSpacedLevels"  ; ;"AutomaticLevels" ;
-        opt1@cnMinLevelValF = 29000
-        opt1@cnMaxLevelValF = 31300
-        ; opt1@cnLevelSpacingF = 100
         opt1@mpOutlineBoundarySets = "AllBoundaries"
-        opt1@mpGeophysicalLineThicknessF = 3
-        opt1@mpNationalLineThicknessF = 2
-        opt1@mpGeophysicalLineColor = "white"
+        opt1@mpGeophysicalLineThicknessF = nclborder_thick
+        opt1@mpNationalLineThicknessF = nclborder_thick
+        opt1@mpGeophysicalLineColor = nclborder
+        opt1@mpNationalLineColor = nclborder
 
         ; if (NCLtitle.ne.1) then
         ; opt1 = opt_notitle
-        ; end if
-        
-        ; if(contourcolorpal .eq. "BlueRed1") then
-        ;   opt1@cnFillColors = BlueRed2
-        ; end if
-        ; if(contourcolorpal .eq. "WhiteYellowOrangeRed1") then
-        ;   opt1@cnFillColors = WhiteYellowOrangeRed2
-        ; end if
-        ; if(contourcolorpal .eq. "WhBlGrYeRe1") then
-        ;   opt1@cnFillColors = WhBlGrYeRe2
-        ; end if
-        ; if(contourcolorpal .eq. "MPL_gist_rainbow1") then
-        ;   opt1@cnFillColors = MPL_gist_rainbow2
-        ; end if
-        ; if(contourcolorpal .eq. "rainbow1") then
-        ;   ; opt1@cnFillColors = rainbow2
-        ;   print("do nothing")
-        ; end if
-        ; if(contourcolorpal .eq. "WhiteGreen1") then
-        ;   opt1@cnFillColors = WhiteGreen2
-        ; end if
-        ; if(contourcolorpal .eq. "MPL_Reds1") then
-        ;   opt1@cnFillColors = MPL_Reds2
-        ; end if
-        ; if(contourcolorpal .eq. "WandB") then
-        ;   opt1@cnFillColors = WandB2
-        ; end if
-        ; if(contourcolorpal .eq. "WhiteBlue1") then
-        ;   opt1@cnFillColors = WhiteBlue2
-        ; end if
-        ; if(contourcolorpal .eq. "BandW") then
-        ;   opt1@cnFillColors = BandW2
         ; end if
 
         ; Plotting options for T                
@@ -449,42 +404,17 @@ if ( any(yy.eq.NCLCNVAR3) .and. any(yy.eq.NCLCNVAR1) .and. any(yy.eq.NCLCNVAR2) 
 
           if (ncl_smooth.eq.1) then
             ; wrf_smooth_2d(tc_plane33,3)
-            smth9(tc_plane33, 0.5, -0.25, False)
+            tc_plane33 := smth9_Wrap(tc_plane33, 0.5, -0.25, False)
           end if
 
           if (cnmin .eq. "NULL") then
           Nullcnmin = True
           MANcnmin = stats(0)
-          print("MANcnminnnnnnnnnnnnnnnnn" + stats(0))
           end if
 
           if (cnmax .eq. "NULL") then
           Nullcnmax = True
           MANcnmax = stats(1)
-          end if
-
-          if ((.not. ismissing(Nullcnmin)) .and. ismissing(Nullcnmax))
-            cnmax2  = stringtofloat(cnmax)
-            MANcnintv = (cnmax2-MANcnmin/10)
-            else if (ismissing(Nullcnmin) .and. (.not. ismissing(Nullcnmax)))
-            cnmin2  = stringtofloat(cnmin)
-            MANcnintv = (MANcnmax-cnmin2)/10
-            else if (ismissing(Nullcnmin) .and. ismissing(Nullcnmax))
-            cnmax2  = stringtofloat(cnmax)
-            cnmin2  = stringtofloat(cnmin)
-            if((contourcolorpal .eq. "WandB") .or. (contourcolorpal .eq. "BandW")) then
-              MANcnintv = (cnmax2-cnmin2)/9
-             else
-              MANcnintv = (cnmax2-cnmin2)/10
-            end if
-           else
-            if((contourcolorpal .eq. "WandB") .or. (contourcolorpal .eq. "BandW")) then
-              MANcnintv = (MANcnmax-MANcnmin)/9
-             else
-             MANcnintv = (MANcnmax-MANcnmin)/10
-            end if
-           end if
-           end if
           end if
 
           opt1@cnLevelSelectionMode = "ManualLevels"
@@ -500,42 +430,7 @@ if ( any(yy.eq.NCLCNVAR3) .and. any(yy.eq.NCLCNVAR1) .and. any(yy.eq.NCLCNVAR2) 
             cnmax3  = stringtofloat(cnmax)
             opt1@cnMaxLevelValF = cnmax3
           end if
-          opt1@cnLevelSpacingF = MANcnintv
         end if ; if for code abc123
-
-        ; if(cnmode .eq. "Automatic") then  ; code abc123
-        ;       if(contourcolorpal .eq. "BlueRed1") then
-        ;         opt1@cnMaxLevelCount = 11
-        ;       end if
-        ;       if(contourcolorpal .eq. "WhiteYellowOrangeRed1") then
-        ;         opt1@cnMaxLevelCount = 11
-        ;       end if
-        ;       if(contourcolorpal .eq. "WhBlGrYeRe1") then
-        ;         opt1@cnMaxLevelCount = 11
-        ;       end if
-        ;       if(contourcolorpal .eq. "MPL_gist_rainbow1") then
-        ;         opt1@cnMaxLevelCount = 11
-        ;       end if
-        ;       if(contourcolorpal .eq. "rainbow1") then
-        ;         ; opt1@cnMaxLevelCount = 11
-        ;         print("do nothing")
-        ;       end if
-        ;       if(contourcolorpal .eq. "WhiteGreen1") then
-        ;         opt1@cnMaxLevelCount = 11
-        ;       end if
-        ;       if(contourcolorpal .eq. "MPL_Reds1") then
-        ;         opt1@cnMaxLevelCount = 11
-        ;       end if
-        ;       if(contourcolorpal .eq. "WandB") then
-        ;         opt1@cnMaxLevelCount = 9
-        ;       end if
-        ;       if(contourcolorpal .eq. "WhiteBlue1") then
-        ;         opt1@cnMaxLevelCount = 11
-        ;       end if
-        ;       if(contourcolorpal .eq. "BandW") then
-        ;         opt1@cnMaxLevelCount = 9
-        ;       end if
-        ; end if
 
         ; opt1@cnLineLabelDensityF = 1
         ; opt1@cnLineLabelInterval = 1
@@ -929,10 +824,10 @@ if ( any(yy.eq.NCLCNVAR3) .and. any(yy.eq.NCLCNVAR1) .and. any(yy.eq.NCLCNVAR2) 
         pltres@FontHeightF = 0.013 ;;no panel, no average
         mpres = True
         
-        if (ocean_onoff.eq.1) then
-          mpres@mpFillOn = True
-          mpres@mpFillColors = (/"transparent","LightSkyBlue1","transparent","LightSkyBlue1", "transparent"/) ;background LightSkyBlue
-        end if
+        ; if (ocean_onoff.eq.1) then
+        ;   mpres@mpFillOn = True
+        ;   mpres@mpFillColors = (/"transparent","LightSkyBlue1","transparent","LightSkyBlue1", "transparent"/) ;background LightSkyBlue
+        ; end if
         
         if (NCLgridline_onoff.eq.0) then
           mpres@mpGridAndLimbOn = False
@@ -1058,18 +953,17 @@ if ( any(yy.eq.NCLCNVAR3) .and. any(yy.eq.NCLCNVAR1) .and. any(yy.eq.NCLCNVAR2) 
             end if
 
               if (NCL3VARONOFF.eq.1) then
-                ; opt1@TimeLabel = all_steps(it)
-                opt1@tiMainString = all_steps(it)
+                opt1@tiMainString = all_steps(it) + " - " + tc_plane33@level + " hpa"
                 contour_tc = gsn_csm_contour_map(wks,tc_plane33(it,:,:),opt1) ;wrf_contour(aaa,wks,tc_plane33(it,:,:),opt1)
               end if
               
               if (NCL1VARONOFF.eq.1) then
-                opt2@TimeLabel = all_steps(it)
+                opt2@TimeLabel = all_steps(it) + " - " + tc_plane11@level + " hpa"
                 contour_tc2 = wrf_contour(aaa,wks,tc_plane11(it,:,:),opt2)
               end if
 
               if (NCL2VARONOFF.eq.1) then
-                opt3@TimeLabel = all_steps(it)
+                opt3@TimeLabel = all_steps(it) + " - " + tc_plane22@level + " hpa"
                 contour_tc3 = wrf_contour(aaa,wks,tc_plane22(it,:,:),opt3)
               end if
 
