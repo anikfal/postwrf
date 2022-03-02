@@ -320,7 +320,7 @@ if ( any(yy.eq.NCLCNVAR3) .and. any(yy.eq.NCLCNVAR1) .and. any(yy.eq.NCLCNVAR2) 
                   else if (NCLPLEV3 .gt. lowestPressureLev) then
                     print("Pressure level has been set to " + lowestPressureLev)
                     NCLPLEV3 = lowestPressureLev
-                end if
+                  end if
                 end if
                 
                 tc_plane33 = tc(:, {NCLPLEV3}, :, :)
@@ -340,7 +340,7 @@ if ( any(yy.eq.NCLCNVAR3) .and. any(yy.eq.NCLCNVAR1) .and. any(yy.eq.NCLCNVAR2) 
         ; opt1@gsnSpreadColors   = True   ; use all of the colormap
         ; opt1@gsnSpreadColorEnd = 102    ; but only up color #189 (right before gray)
         opt1@cnFillOn          = True   ; fill contours
-        opt1@cnFillPalette = contourcolorpal ;"WhBlGrYeRe"
+        opt1@cnFillPalette     = contourcolorpal ;"WhBlGrYeRe"
         opt1@cnLinesOn         = False
         opt1@gsnLeftString     = tc@long_name
         opt1@tiMainFontHeightF = 0.018
@@ -352,6 +352,7 @@ if ( any(yy.eq.NCLCNVAR3) .and. any(yy.eq.NCLCNVAR1) .and. any(yy.eq.NCLCNVAR2) 
         if (ocean_onoff .eq. 1) then
           opt1@mpFillOn             = True
           opt1@mpOceanFillColor = "deepskyblue"
+          opt1@mpInlandWaterFillColor = "deepskyblue"
           opt1@mpLandFillColor      = "transparent"
           opt1@mpFillDrawOrder      = "PostDraw"          
         end if
@@ -359,7 +360,6 @@ if ( any(yy.eq.NCLCNVAR3) .and. any(yy.eq.NCLCNVAR1) .and. any(yy.eq.NCLCNVAR2) 
           opt1@mpGridAndLimbOn = True
         end if
         ; opt1@mpLandFillColor = (/1,1,1/) ; for lesser versions of ncl 6.4 set to (0,0,0)
-        opt1@mpInlandWaterFillColor = "deepskyblue"
         opt1@gsnLeftStringFontHeightF = 0.017
         opt1@gsnRightStringFontHeightF = 0.017
         opt1@cnLineThicknessF = 5
@@ -461,123 +461,110 @@ if ( any(yy.eq.NCLCNVAR3) .and. any(yy.eq.NCLCNVAR1) .and. any(yy.eq.NCLCNVAR2) 
           NCLLABEL1 = 0.02
         end if
         
-        opt2 = optfirst
-        
-        if (NCLtitle.ne.1) then
-          opt2 = opt_notitle
+        if (NCLCNVAR1 .eq. "wind_s") then
+            uu10  = short2flt(aaa->u)
+            vv10  = short2flt(aaa->v)
+            tc2 = wind_speed(uu10, vv10)
+            tc2@description = "wind speed"
+            tc2@units = "m s-1"
+          else if (NCLCNVAR1 .eq. "wind_d") then
+            uu10  = short2flt(aaa->u)
+            vv10  = short2flt(aaa->v)
+            tc2 = wind_direction(uu10, vv10, 0)
+            tc2@description = "wind direction"
+            tc2@units = "Degrees from north"
+          else if (NCLCNVAR1 .eq. "z") then
+            tc0 = short2flt(aaa->z)
+            tc2 = tc0/98.1 ;convert to hectopascal
+            copy_VarCoords(tc0, tc2)
+            copy_VarAtts(tc0, tc2)
+            delete(tc0)
+            tc2@units = "Decameter"
+          else
+          tc2 = short2flt(aaa->$NCLCNVAR1$)
+          end if
+          end if
         end if
-        opt2@cnFillOn = False
+
+        opt2                   = True
+        opt2@gsnDraw           = False  ; do not draw plot yet (need False for paneling)
+        opt2@gsnFrame          = False  ; do not frame plot yet (need False for paneling)
+        opt2@gsnMaximize       = True   ; make plots as big as possible
+        opt2@cnFillOn          = False   ; fill contours
+        ; opt2@cnFillPalette = contourcolorpal ;"WhBlGrYeRe"
+        opt2@cnLinesOn         = True
+        opt2@gsnLeftString     = tc2@long_name
+        opt2@tiMainFontHeightF = 0.018
+        opt2@tiMainFontThicknessF = 0.2
+        opt2@lbLabelStride     = 2      ; only print value for every other contour in label bar
+        opt2@cnLineLabelDensityF = 1.5
+        if (ocean_onoff .eq. 1) then
+          opt2@mpFillOn               = True
+          opt2@mpOceanFillColor       = "deepskyblue"
+          opt2@mpLandFillColor        = "transparent"
+          opt2@mpInlandWaterFillColor = "deepskyblue"
+          opt2@mpFillDrawOrder        = "PreDraw" ;"PostDraw"          
+        end if
+        if (NCLgridline_onoff .eq. 1) then
+          opt2@mpGridAndLimbOn = True
+        end if
+        opt2@gsnLeftStringFontHeightF = 0.017
+        opt2@gsnRightStringFontHeightF = 0.017
+        opt2@cnLineLabelPlacementMode = "Constant"
+        opt2@cnLineDashSegLenF = 0.2
+        opt2@cnLineLabelInterval = 1
+        opt2@mpShapeMode  = "FreeAspect"
+        opt2@vpWidthF      = 0.5
+        opt2@vpHeightF     = 0.5
+        opt2@cnLineLabelBackgroundColor = "Transparent"
+        opt2@mpMinLatF         = min_lat
+        opt2@mpMaxLatF         = max_lat
+        opt2@mpMinLonF         = min_lon
+        opt2@mpMaxLonF         = max_lon
+        opt2@gsnAddCyclic = False
+        opt2@mpOutlineBoundarySets = "AllBoundaries"
+        opt2@mpGeophysicalLineThicknessF = nclborder_thick
+        opt2@mpNationalLineThicknessF = nclborder_thick
+        opt2@mpGeophysicalLineColor = nclborder
+        opt2@mpNationalLineColor = nclborder
+        ; opt2@mpFillColors = (/"transparent","LightSkyBlue1","transparent","LightSkyBlue1", "transparent"/) ;background LightSkyBlue
+        ; opt2 = optfirst
+        ; opt2 = True
+        ; if (NCLtitle.ne.1) then
+        ;   opt2 = opt_notitle
+        ; end if
         opt2@cnLineColor = NCLCOLOR1
         opt2@cnLineThicknessF  = NCLTHICK1
         opt2@cnLineLabelFontHeightF = NCLLABEL1
-        opt2@cnLineLabelInterval = 1
-        opt2@cnLineLabelPlacementMode = "Constant"
         opt2@gsnContourNegLineDashPattern = 0
         opt2@gsnContourPosLineDashPattern = 0
-        cnvar = NCLCNVAR1
-        if (cnvar .eq. "cape_surface") then
-        slp2 = wrf_user_getvar(aaa,"cape_2d",-1)
-        slp2@_FillValue=-1
-        slp2@description = "CAPE"
-        slp2@units = "J/kg"
-        tc2 = slp2(0,:,:,:)
-        else if (cnvar .eq. "cin_surface") then
-        slp2 = wrf_user_getvar(aaa,"cape_2d",-1)
-        slp2@_FillValue=-1
-        slp2@description = "CIN"
-        slp2@units = "J/kg"
-        tc2 = slp2(1,:,:,:)
-        else if (cnvar .eq. "cin_3d") then
-          slp2  = wrf_user_getvar(aaa,"cape_3d",-1)
-          slp2@_FillValue=-1
-          slp2@description = "CIN"
-          slp2@units = "J/kg"
-          tc2 = slp2(1,:,:,:,:)
-        else if (cnvar .eq. "cape_3d") then
-          slp2 = wrf_user_getvar(aaa,"cape_3d",-1)
-          slp2@_FillValue=-1
-          slp2@description = "CAPE"
-          slp2@units = "J/kg"
-          tc2 = slp2(0,:,:,:,:)
-          delete(slp2)
-        else if (cnvar .eq. "lcl") then
-          slp2  = wrf_user_getvar(aaa,"cape_2d",-1)
-          slp2@description = "Lifting Condensation Level"
-          slp2@units = "m"
-          tc2 = slp2(2,:,:,:)
-        else if (cnvar .eq. "lfc") then
-          slp2 = wrf_user_getvar(aaa,"cape_2d",-1)
-          slp2@description = "Level of Free Convection"
-          slp2@units = "m"
-          tc2 = slp2(2,:,:,:)
-
-        else if (cnvar .eq. "dust_total") then
-          tc2 = wrf_user_getvar(aaa, "DUST_1", -1) + wrf_user_getvar(aaa, "DUST_2", -1) + wrf_user_getvar(aaa, "DUST_3", -1) \
-          + wrf_user_getvar(aaa, "DUST_4", -1) + wrf_user_getvar(aaa, "DUST_5", -1)
-          tc2@description = "Total dust concentration"
-          tc2@units = "Microgram/kg_dry_air"
-
-        else if (cnvar .eq. "dust_pm2.5") then
-          tc2 = wrf_user_getvar(aaa, "DUST_1", -1) + 0.3125*wrf_user_getvar(aaa, "DUST_2", -1)
-          tc2@description = "Dust_PM2.5 concentration"
-          tc2@units = "Microgram/kg_dry_air"
-
-        else if (cnvar .eq. "dust_pm10") then
-          tc2 = wrf_user_getvar(aaa, "DUST_1", -1) + wrf_user_getvar(aaa, "DUST_2", -1) + wrf_user_getvar(aaa, "DUST_3", -1) \
-          + 0.87*wrf_user_getvar(aaa, "DUST_4", -1)
-          tc2@description = "Dust_PM10 concentration"
-          tc2@units = "Microgram/kg_dry_air"
-
-        else if (cnvar .eq. "wind_s") then
-          uu10  = wrf_user_getvar(aaa,"U10",-1)
-          vv10  = wrf_user_getvar(aaa,"V10",-1)
-          tc2 = wind_speed(uu10,vv10)
-          tc2@description = "10m wind speed"
-          tc2@units = "m s-1"
-
-        else if (cnvar .eq. "wind_d") then
-          if (.not.isdefined("uu10")) then
-            uu10  = wrf_user_getvar(aaa,"U10",-1)
-            vv10  = wrf_user_getvar(aaa,"V10",-1)
-          end if
-            tc2 = wind_direction(uu10,vv10,0)
-            tc2@description = "10m wind direction"
-            tc2@units = "Degrees from north"
-
-        else
-        tc2 = wrf_user_getvar(aaa,cnvar,-1)        ; T in C
-
-        end if
-        end if
-        end if
-        end if
-        end if
-        end if
-        end if
-        end if
-        end if
-        end if
-        end if
 
         mydim2 = dimsizes(dimsizes(tc2))  
         if (mydim2.eq.3) then
           tc_plane11 = tc2
           tc_plane11@PlotLevelID = "surface"
-        else ;if dimsize equals 4
+          else ;if dimsize equals 4
           if (NCLPLEV1.eq.0) then ;surface pressure
-              tc_plane11 = tc2(:,0,:,:)
-              tc_plane11@PlotLevelID = "surface"
+                NCLPLEV1 = lowestPressureLev
+                tc_plane11 = tc2(:, {NCLPLEV1}, :, :)
+                ; tc_plane11 = tc2(:,0,:,:)
+                ; tc_plane11@PlotLevelID = "surface"
             else
-            ; p  = wrf_user_getvar(aaa, "pressure",-1)
-          if (.not.isdefined("p")) then
-            p  = wrf_user_getvar(aaa, "pressure",-1)
-          end if
-        tc_plane11 = wrf_user_intrp3d(tc2,p,"h",NCLPLEV1,0.,False)
+              if (NCLPLEV1 .lt. highestPressureLev) then
+                print("Pressure level has been set to " + highestPressureLev)
+                NCLPLEV1 = highestPressureLev
+                else if (NCLPLEV1 .gt. lowestPressureLev) then
+                  print("Pressure level has been set to " + lowestPressureLev)
+                  NCLPLEV1 = lowestPressureLev
+                end if
+              end if
+              tc_plane11 = tc2(:, {NCLPLEV1}, :, :)
           end if
         end if
-        
+
         if (ncl_smooth.eq.1) then
-          wrf_smooth_2d(tc_plane11,3)
+          ; wrf_smooth_2d(tc_plane11,3)
+          tc_plane11 := smth9_Wrap(tc_plane11, 0.5, -0.25, False)
         end if
         
         stats1 = stat_dispersion(tc_plane11, False)
@@ -604,8 +591,7 @@ if ( any(yy.eq.NCLCNVAR3) .and. any(yy.eq.NCLCNVAR1) .and. any(yy.eq.NCLCNVAR2) 
         opt2@cnMaxLevelValF = upper_bound1
         opt2@cnMinLevelValF = lower_bound1
         opt2@cnMaxLevelCount = 255
-
-      end if ;end of VAR2
+      end if ;end of VAR1
 
       ;;;;;####################################################################
       ;processing VAR2
@@ -958,8 +944,9 @@ if ( any(yy.eq.NCLCNVAR3) .and. any(yy.eq.NCLCNVAR1) .and. any(yy.eq.NCLCNVAR2) 
               end if
               
               if (NCL1VARONOFF.eq.1) then
-                opt2@TimeLabel = all_steps(it) + " - " + tc_plane11@level + " hpa"
-                contour_tc2 = wrf_contour(aaa,wks,tc_plane11(it,:,:),opt2)
+                opt2@tiMainString = all_steps(it) + " - " + tc_plane11@level + " hpa"
+                ; contour_tc2 = wrf_contour(aaa,wks,tc_plane11(it,:,:),opt2)
+                contour_tc2 = gsn_csm_contour_map(wks,tc_plane11(it,:,:),opt2)
               end if
 
               if (NCL2VARONOFF.eq.1) then
@@ -995,7 +982,8 @@ if ( any(yy.eq.NCLCNVAR3) .and. any(yy.eq.NCLCNVAR1) .and. any(yy.eq.NCLCNVAR2) 
               else if (NCL3VARONOFF.ne.1 .and. NCL1VARONOFF.eq.1 .and. NCL2VARONOFF.ne.1 .and. NCLwindonoff.eq.1) then
                 plot = wrf_map_overlays(aaa,wks,(/contour_tc2,vector/),pltres,mpres)
               else if (NCL3VARONOFF.ne.1 .and. NCL1VARONOFF.eq.1 .and. NCL2VARONOFF.ne.1 .and. NCLwindonoff.ne.1) then
-                plot = wrf_map_overlays(aaa,wks,(/contour_tc2/),pltres,mpres)
+                ; plot = wrf_map_overlays(aaa,wks,(/contour_tc2/),pltres,mpres)
+                plot = contour_tc2
               else if (NCL3VARONOFF.ne.1 .and. NCL1VARONOFF.ne.1 .and. NCL2VARONOFF.eq.1 .and. NCLwindonoff.eq.1) then
                 plot = wrf_map_overlays(aaa,wks,(/contour_tc3,vector/),pltres,mpres)
               else if (NCL3VARONOFF.ne.1 .and. NCL1VARONOFF.ne.1 .and. NCL2VARONOFF.eq.1 .and. NCLwindonoff.ne.1) then

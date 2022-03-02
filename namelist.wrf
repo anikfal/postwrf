@@ -163,13 +163,13 @@ RTTOV_OUTPUT_OnOff               = 1
 ERA5_ON_OFF                      = 1
 
 !!! Variable_1 by line contours !!!
-1st_ERA5_Var_on_off              = 0
- 1st_ERA5_Var_name               = tc
+1st_ERA5_Var_on_off              = 1
+ 1st_ERA5_Var_name               = z
  1st_ERA5_Var_pressure_level     = 700
  1st_ERA5_Var_intervals          = 5
  1st_ERA5_Var_line_color         = black
- 1st_ERA5_Var_line_thickness     = 0.7
- 1st_ERA5_Var_label_size         = 0.7
+ 1st_ERA5_Var_line_thickness     = 0.5
+ 1st_ERA5_Var_label_size         = 0.5
 
 !!! Variable_2 by (broken) line contours !!!
 2nd_ERA5_Var_on_off              = 0
@@ -182,7 +182,7 @@ ERA5_ON_OFF                      = 1
  2nd_ERA5_Var_brokenline_on_off  = 1
 
 !!! Variable_3 by filled (colored) contours !!!
-3rd_ERA5_Var_on_off              = 1
+3rd_ERA5_Var_on_off              = 0
  3rd_ERA5_Var_name               = z
  3rd_ERA5_Var_pressure_level     = 0
 
@@ -219,7 +219,7 @@ panel_plot__on_off               = 0
 smooth_maps_on_off               = 1
 map_borderline_color             = black
 map_borderline_thickness         = 0.5
-map_filled_ocean_on_off          = 1
+map_filled_ocean_on_off          = 0
 map_gridlines_on_off             = 0
 plot_titles_on_off               = 1
 -----------------------------------------------------------------------------
