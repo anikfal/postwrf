@@ -323,7 +323,7 @@ if [[ $era_onoff == 1 ]]; then                                                  
   unset myvar
 
   ##------------------------------------------------------------------------------------------------
-  myvar="ERA5_Shapefile_path"
+  myvar="ERA5_shapefile_path"
   shape_path=$(sed -n "/$myvar/p" namelist.wrf | awk -F"=" '{print $NF}')
   shape_path=$(echo ${shape_path}) #Remove spaces
   export shape_path
@@ -441,7 +441,7 @@ fi
 
     # Contour (Level) Module==========================================================
     if [[ $era_onoff == 1 ]]; then #code rrr9
-      if [[ ($THIRDVAR_ONOFF == 1 || $FIRSTVAR_ONOFF == 1 || $SECONDVAR_ONOFF == 1) ]]; then
+      if [[ ($THIRDVAR_ONOFF == 1 || $FIRSTVAR_ONOFF == 1 || $SECONDVAR_ONOFF == 1 || $wind_onoff == 1) ]]; then
         echo "Plotting contour maps ..."
         echo ""
         ./modules_era/contourlvl_era.sh

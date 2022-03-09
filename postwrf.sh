@@ -27,27 +27,22 @@ while getopts hdf:i option; do
     echo "    -i,  PostWRF version and basic informations"
     ;;
   d) cat modules/readme ;;
-  f) if [[ $(echo $2 | rev | cut -c -3 | rev) == ".nc" ]]; then
-    ncl_filedump $2 | grep "( Time, bottom_top, south_north, west_east" | awk '{print $2}' >.wrfvars
-    ncl_filedump $2 | grep "( Time, bottom_top, south_north_stag, west_east )" | awk '{print $2}' >>.wrfvars
-    ncl_filedump $2 | grep "( Time, south_north, west_east" | awk '{print $2}' >>.wrfvars
-    ncl_filedump $2 | grep "Variable" | grep -v "f" | awk '{print $2}' >>.wrfvars
-    echo -e "\n  List of variables inside $2:"
-    echo ""
-    var_list=$(cat .wrfvars)
-    echo $var_list | sed 's/ /,  /g'
-    rm .wrfvars
-  else
-    ncl_filedump "$2.nc" | grep "( Time, bottom_top, south_north, west_east" | awk '{print $2}' >.wrfvars
-    ncl_filedump "$2.nc" | grep "( Time, bottom_top, south_north_stag, west_east )" | awk '{print $2}' >>.wrfvars
-    ncl_filedump "$2.nc" | grep "( Time, south_north, west_east" | awk '{print $2}' >>.wrfvars
-    ncl_filedump "$2.nc" | grep "Variable" | grep -v "f" | awk '{print $2}' >>.wrfvars
-    echo -e "\n  List of variables inside $2:"
-    echo ""
-    var_list=$(cat .wrfvars)
-    echo $var_list | sed 's/ /,  /g'
-    rm .wrfvars
-  fi ;;
+  f)  if [[ $(echo $2 | awk -F. '{ print $NF }') == "nc" ]]; then
+        echo "  Variable names inside the file $2:"
+        ncl_filedump $2 | awk '/short/ {for(i=2;i<=NF;i++) printf $i" "; print ""}'
+        echo "  Variables' description:"
+        ncl_filedump $2 | awk '/long_name/ {for(i=1;i<=NF;i++) printf $i" "; print ""}' | sed -n '5,$ p'
+        else
+        ncl_filedump "$2.nc" | grep "( Time, bottom_top, south_north, west_east" | awk '{print $2}' >.wrfvars
+        ncl_filedump "$2.nc" | grep "( Time, bottom_top, south_north_stag, west_east )" | awk '{print $2}' >>.wrfvars
+        ncl_filedump "$2.nc" | grep "( Time, south_north, west_east" | awk '{print $2}' >>.wrfvars
+        ncl_filedump "$2.nc" | grep "Variable" | grep -v "f" | awk '{print $2}' >>.wrfvars
+        echo -e "\n  List of variables inside $2:"
+        echo ""
+        var_list=$(cat .wrfvars)
+        echo $var_list | sed 's/ /,  /g'
+        rm .wrfvars
+      fi ;;
   i)
     echo "  PostWRF Version 1.2 (January 2022)"
     echo "  Author: Amirhossein Nikfal <ah.nikfal@gmail.com>, <anik@ut.ac.ir>"

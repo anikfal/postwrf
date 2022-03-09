@@ -78,12 +78,6 @@ end if
  NCLpanelrows = tointeger(getenv("panelrows"))
  NCLpanelcolumns = tointeger(getenv("panelcolumns"))
 
-  ; optfirst = True
-  ; optfirst@FontHeightF = 0.013
-  ; if (panel_onoff.eq.1) then
-  ;   optfirst@FontHeightF = 0.007
-  ; end if
-  ; optfirst@Footer = False
   opt_notitle = True
   opt_notitle@NoHeaderFooter = True
   opt_notitle@InitTime = False
@@ -94,6 +88,8 @@ end if
    if (type .eq. "animated_gif") then
     type = "png"
    end if
+  ; type@wkPaperHeightF = 22
+  ; type@wkPaperSize = "A4"
     wks = gsn_open_wks(type,filename)
 
     totstepsminus = dimsizes(all_steps)-1
@@ -102,7 +98,7 @@ end if
       hourstep = all_steps(1) - all_steps(0)
       ncltstep = tointeger(NCLaverage_time/hourstep)
       totstepsminus = totstepsminus - time_first
-      ntimes = totstepsminus - mod(totstepsminus, ncltstep) - ncltstep
+      ; ntimes = totstepsminus - mod(totstepsminus, ncltstep) - ncltstep
     end if
 
 yy  = asciiread(".AllWRFVariables", -1, "string")
@@ -280,39 +276,37 @@ if ( any(yy.eq.NCLCNVAR3) .and. any(yy.eq.NCLCNVAR1) .and. any(yy.eq.NCLCNVAR2) 
           if (NCLCNVAR3 .eq. "wind_s") then
               uu10  = short2flt(aaa->u)
               vv10  = short2flt(aaa->v)
-              tc = wind_speed(uu10, vv10)
-              tc@description = "wind speed"
-              tc@units = "m s-1"
+              tc3 = wind_speed(uu10, vv10)
+              tc3@description = "wind speed"
+              tc3@units = "m s-1"
            else if (NCLCNVAR3 .eq. "wind_d") then
               uu10  = short2flt(aaa->u)
               vv10  = short2flt(aaa->v)
-              tc = wind_direction(uu10, vv10, 0)
-              tc@description = "wind direction"
-              tc@units = "Degrees from north"
+              tc3 = wind_direction(uu10, vv10, 0)
+              tc3@description = "wind direction"
+              tc3@units = "Degrees from north"
            else if (NCLCNVAR3 .eq. "z") then
               tc0 = short2flt(aaa->z)
-              tc = tc0/98.1 ;convert to hectopascal
-              copy_VarCoords(tc0, tc)
-              copy_VarAtts(tc0, tc)
+              tc3 = tc0/98.1 ;convert to hectopascal
+              copy_VarCoords(tc0, tc3)
+              copy_VarAtts(tc0, tc3)
               delete(tc0)
-              tc@units = "Decameter"
+              tc3@units = "Decameter"
             else
-            tc = short2flt(aaa->$NCLCNVAR3$)
+            tc3 = short2flt(aaa->$NCLCNVAR3$)
           end if
           end if
           end if
 
-        mydim1 = dimsizes(dimsizes(tc))
+        mydim1 = dimsizes(dimsizes(tc3))
 
         if (mydim1.eq.3) then
-            tc_plane33 = tc
+            tc_plane33 = tc3
             tc_plane33@PlotLevelID = "surface"
           else ;if dimsize equals 4
             if (NCLPLEV3.eq.0) then ;surface pressure
                 NCLPLEV3 = lowestPressureLev
-                tc_plane33 = tc(:, {NCLPLEV3}, :, :)
-                ; tc_plane33 = tc(:,levdim,:,:)
-                ; tc_plane33@PlotLevelID = "surface"
+                tc_plane33 = tc3(:, {NCLPLEV3}, :, :)
               else
                 if (NCLPLEV3 .lt. highestPressureLev) then
                   print("Pressure level has been set to " + highestPressureLev)
@@ -322,72 +316,62 @@ if ( any(yy.eq.NCLCNVAR3) .and. any(yy.eq.NCLCNVAR1) .and. any(yy.eq.NCLCNVAR2) 
                     NCLPLEV3 = lowestPressureLev
                   end if
                 end if
-                
-                tc_plane33 = tc(:, {NCLPLEV3}, :, :)
+                tc_plane33 = tc3(:, {NCLPLEV3}, :, :)
             end if
         end if
+        tc3@long_name := tc3@long_name + " at " + NCLPLEV3 + " hpa"
 
-        ; opt1 = True
-        ; opt1@lbLabelFontHeightF = 0.02
-        ; opt1@lbTitleFontHeightF = 0.025
-        ; opt1@lbBottomMarginF = -0.15
-        ; gsn_merge_colormaps(wks,"rainbow", "lightgray")
-        ; gsn_merge_colormaps(wks, "WhBlGrYeRe", "lightgray")
-        opt1                   = True
-        opt1@gsnDraw           = False  ; do not draw plot yet (need False for paneling)
-        opt1@gsnFrame          = False  ; do not frame plot yet (need False for paneling)
-        opt1@gsnMaximize       = True   ; make plots as big as possible
-        ; opt1@gsnSpreadColors   = True   ; use all of the colormap
-        ; opt1@gsnSpreadColorEnd = 102    ; but only up color #189 (right before gray)
-        opt1@cnFillOn          = True   ; fill contours
-        opt1@cnFillPalette     = contourcolorpal ;"WhBlGrYeRe"
-        opt1@cnLinesOn         = False
-        opt1@gsnLeftString     = tc@long_name
-        opt1@tiMainFontHeightF = 0.018
-        opt1@tiMainFontThicknessF = 0.2
-        ; opt1@cnLevelSpacingF   = 40     ; change the contour spacing to be 60 m
-        ; opt1@cnMaxLevelCount   = 40
-        opt1@lbLabelStride     = 2      ; only print value for every other contour in label bar
-        opt1@cnLineLabelDensityF = 1.5
+        opt333                   = True
+        opt333@gsnDraw           = False  ; do not draw plot yet (need False for paneling)
+        opt333@gsnFrame          = False  ; do not frame plot yet (need False for paneling)
+        opt333@cnFillOn          = True   ; fill contours
+        opt333@cnFillPalette     = contourcolorpal ;"WhBlGrYeRe"
+        opt333@cnFillDrawOrder   = "PreDraw"
+        opt333@cnLinesOn         = False
+        opt333@gsnLeftString     = "" ;tc3@long_name
+        opt333@gsnRightString    = ""
+        opt333@tiMainFontHeightF = 0.018
+        opt333@tiMainFontThicknessF = 0.2
+        opt333@lbLabelStride     = 2      ; only print value for every other contour in label bar
+        opt333@cnLineLabelDensityF = 1.5
+        opt333@mpLandFillColor      = "transparent"
+        opt333@mpShapeMode  = "FreeAspect"        
         if (ocean_onoff .eq. 1) then
-          opt1@mpFillOn             = True
-          opt1@mpOceanFillColor = "deepskyblue"
-          opt1@mpInlandWaterFillColor = "deepskyblue"
-          opt1@mpLandFillColor      = "transparent"
-          opt1@mpFillDrawOrder      = "PostDraw"          
+          opt333@mpFillOn             = True
+          opt333@mpOceanFillColor = "deepskyblue"
+          opt333@mpInlandWaterFillColor = "deepskyblue"
+          opt333@mpFillDrawOrder      = "draw" ;"PostDraw"          
         end if
         if (NCLgridline_onoff .eq. 1) then
-          opt1@mpGridAndLimbOn = True
+          opt333@mpGridAndLimbOn = True
         end if
-        ; opt1@mpLandFillColor = (/1,1,1/) ; for lesser versions of ncl 6.4 set to (0,0,0)
-        opt1@gsnLeftStringFontHeightF = 0.017
-        opt1@gsnRightStringFontHeightF = 0.017
-        opt1@cnLineThicknessF = 5
-        opt1@cnLineLabelPlacementMode = "Constant"
-        opt1@cnLineDashSegLenF = 0.2
-        opt1@cnLineLabelInterval = 1
-        opt1@mpShapeMode  = "FreeAspect"
-        opt1@vpWidthF      = 0.5
-        opt1@vpHeightF     = 0.5
-        opt1@cnLineLabelBackgroundColor = "Transparent"
-        opt1@cnLineLabelFontHeightF = 0.019
-        opt1@mpMinLatF         = min_lat
-        opt1@mpMaxLatF         = max_lat
-        opt1@mpMinLonF         = min_lon
-        opt1@mpMaxLonF         = max_lon
-        opt1@gsnAddCyclic = False
-        opt1@mpOutlineBoundarySets = "AllBoundaries"
-        opt1@mpGeophysicalLineThicknessF = nclborder_thick
-        opt1@mpNationalLineThicknessF = nclborder_thick
-        opt1@mpGeophysicalLineColor = nclborder
-        opt1@mpNationalLineColor = nclborder
+        ; opt333@gsnLeftStringFontHeightF = 0.017
+        ; opt333@gsnRightStringFontHeightF = 0.017
+        opt333@cnLineThicknessF = 5
+        opt333@cnLineLabelPlacementMode = "Constant"
+        opt333@cnLineDashSegLenF = 0.2
+        opt333@cnLineLabelInterval = 1
+        opt333@vpWidthF      = 0.5
+        opt333@vpHeightF     = 0.5
+        opt333@cnLineLabelBackgroundColor = "Transparent"
+        opt333@cnLineLabelFontHeightF = 0.019
+        opt333@mpMinLatF         = min_lat
+        opt333@mpMaxLatF         = max_lat
+        opt333@mpMinLonF         = min_lon
+        opt333@mpMaxLonF         = max_lon
+        opt333@gsnAddCyclic = False
+        opt333@mpOutlineBoundarySets = "AllBoundaries"
+        opt333@mpGeophysicalLineThicknessF = nclborder_thick
+        opt333@mpNationalLineThicknessF = nclborder_thick
+        opt333@mpGeophysicalLineColor = nclborder
+        opt333@mpNationalLineColor = nclborder
 
         ; if (NCLtitle.ne.1) then
-        ; opt1 = opt_notitle
+        ; opt333 = opt_notitle
         ; end if
 
         ; Plotting options for T                
-        opt1@cnFillOn = True
+        opt333@cnFillOn = True
         if(cnmode .eq. "Manual") then  ; code abc123
           Nullcnmin = new(1,"logical")
           Nullcnmax = new(1,"logical")
@@ -417,28 +401,20 @@ if ( any(yy.eq.NCLCNVAR3) .and. any(yy.eq.NCLCNVAR1) .and. any(yy.eq.NCLCNVAR2) 
           MANcnmax = stats(1)
           end if
 
-          opt1@cnLevelSelectionMode = "ManualLevels"
+          opt333@cnLevelSelectionMode = "ManualLevels"
           if (cnmin .eq. "NULL") then
-            opt1@cnMinLevelValF = MANcnmin
+            opt333@cnMinLevelValF = MANcnmin
             else
             cnmin3  = stringtofloat(cnmin)
-            opt1@cnMinLevelValF = cnmin3
+            opt333@cnMinLevelValF = cnmin3
           end if
           if (cnmax .eq. "NULL") then
-            opt1@cnMaxLevelValF = MANcnmax
+            opt333@cnMaxLevelValF = MANcnmax
             else
             cnmax3  = stringtofloat(cnmax)
-            opt1@cnMaxLevelValF = cnmax3
+            opt333@cnMaxLevelValF = cnmax3
           end if
         end if ; if for code abc123
-
-        ; opt1@cnLineLabelDensityF = 1
-        ; opt1@cnLineLabelInterval = 1
-        ; opt1@cnInfoLabelOrthogonalPosF = 0.07  ; offset second label information
-        ; opt1@gsnContourLineThicknessesScale = 2.0
-        ; opt1@gsnContourLineThicknessesScale = 3.0
-        ; opt1@cnLineLabelFontHeightF = 0.025
-        ; opt1@cnHighLabelFontHeightF   = 0.03
       end if ;code pprggvar1
 
       ;;;;;####################################################################
@@ -464,91 +440,108 @@ if ( any(yy.eq.NCLCNVAR3) .and. any(yy.eq.NCLCNVAR1) .and. any(yy.eq.NCLCNVAR2) 
         if (NCLCNVAR1 .eq. "wind_s") then
             uu10  = short2flt(aaa->u)
             vv10  = short2flt(aaa->v)
-            tc2 = wind_speed(uu10, vv10)
-            tc2@description = "wind speed"
-            tc2@units = "m s-1"
+            tc1 = wind_speed(uu10, vv10)
+            tc1@description = "wind speed"
+            tc1@units = "m s-1"
           else if (NCLCNVAR1 .eq. "wind_d") then
             uu10  = short2flt(aaa->u)
             vv10  = short2flt(aaa->v)
-            tc2 = wind_direction(uu10, vv10, 0)
-            tc2@description = "wind direction"
-            tc2@units = "Degrees from north"
+            tc1 = wind_direction(uu10, vv10, 0)
+            tc1@description = "wind direction"
+            tc1@units = "Degrees from north"
           else if (NCLCNVAR1 .eq. "z") then
             tc0 = short2flt(aaa->z)
-            tc2 = tc0/98.1 ;convert to hectopascal
-            copy_VarCoords(tc0, tc2)
-            copy_VarAtts(tc0, tc2)
+            tc1 = tc0/98.1 ;convert to hectopascal
+            copy_VarCoords(tc0, tc1)
+            copy_VarAtts(tc0, tc1)
             delete(tc0)
-            tc2@units = "Decameter"
+            tc1@units = "Decameter"
           else
-          tc2 = short2flt(aaa->$NCLCNVAR1$)
+          tc1 = short2flt(aaa->$NCLCNVAR1$)
           end if
           end if
         end if
 
-        opt2                   = True
-        opt2@gsnDraw           = False  ; do not draw plot yet (need False for paneling)
-        opt2@gsnFrame          = False  ; do not frame plot yet (need False for paneling)
-        opt2@gsnMaximize       = True   ; make plots as big as possible
-        opt2@cnFillOn          = False   ; fill contours
-        ; opt2@cnFillPalette = contourcolorpal ;"WhBlGrYeRe"
-        opt2@cnLinesOn         = True
-        opt2@gsnLeftString     = tc2@long_name
-        opt2@tiMainFontHeightF = 0.018
-        opt2@tiMainFontThicknessF = 0.2
-        opt2@lbLabelStride     = 2      ; only print value for every other contour in label bar
-        opt2@cnLineLabelDensityF = 1.5
+        opt111                   = True
+        opt111@gsnDraw           = False  ; do not draw plot yet (need False for paneling)
+        opt111@gsnFrame          = False  ; do not frame plot yet (need False for paneling)
+        ; opt111@gsnMaximize       = True   ; make plots as big as possible
+        opt111@cnFillOn          = False   ; fill contours
+        opt111@cnLinesOn         = True
+        ; opt111@gsnLeftString     = tc1@long_name
+        opt111@gsnLeftStringFontColor = NCLCOLOR1
+        opt111@gsnRightStringFontColor = NCLCOLOR1
+        opt111@tiMainFontHeightF = 0.018
+        opt111@tiMainFontThicknessF = 0.2
+        opt111@lbLabelStride     = 2      ; only print value for every other contour in label bar
+        opt111@cnLineLabelDensityF = 1.5
+        opt111@mpLandFillColor        = "transparent"
         if (ocean_onoff .eq. 1) then
-          opt2@mpFillOn               = True
-          opt2@mpOceanFillColor       = "deepskyblue"
-          opt2@mpLandFillColor        = "transparent"
-          opt2@mpInlandWaterFillColor = "deepskyblue"
-          opt2@mpFillDrawOrder        = "PreDraw" ;"PostDraw"          
+          opt111@mpFillOn               = True
+          opt111@mpOceanFillColor       = "deepskyblue"
+          opt111@mpInlandWaterFillColor = "deepskyblue"
+          opt111@mpFillDrawOrder        =  "PreDraw" ;"PostDraw"          
         end if
         if (NCLgridline_onoff .eq. 1) then
-          opt2@mpGridAndLimbOn = True
+          opt111@mpGridAndLimbOn = True
         end if
-        opt2@gsnLeftStringFontHeightF = 0.017
-        opt2@gsnRightStringFontHeightF = 0.017
-        opt2@cnLineLabelPlacementMode = "Constant"
-        opt2@cnLineDashSegLenF = 0.2
-        opt2@cnLineLabelInterval = 1
-        opt2@mpShapeMode  = "FreeAspect"
-        opt2@vpWidthF      = 0.5
-        opt2@vpHeightF     = 0.5
-        opt2@cnLineLabelBackgroundColor = "Transparent"
-        opt2@mpMinLatF         = min_lat
-        opt2@mpMaxLatF         = max_lat
-        opt2@mpMinLonF         = min_lon
-        opt2@mpMaxLonF         = max_lon
-        opt2@gsnAddCyclic = False
-        opt2@mpOutlineBoundarySets = "AllBoundaries"
-        opt2@mpGeophysicalLineThicknessF = nclborder_thick
-        opt2@mpNationalLineThicknessF = nclborder_thick
-        opt2@mpGeophysicalLineColor = nclborder
-        opt2@mpNationalLineColor = nclborder
-        ; opt2@mpFillColors = (/"transparent","LightSkyBlue1","transparent","LightSkyBlue1", "transparent"/) ;background LightSkyBlue
-        ; opt2 = optfirst
-        ; opt2 = True
-        ; if (NCLtitle.ne.1) then
-        ;   opt2 = opt_notitle
-        ; end if
-        opt2@cnLineColor = NCLCOLOR1
-        opt2@cnLineThicknessF  = NCLTHICK1
-        opt2@cnLineLabelFontHeightF = NCLLABEL1
-        opt2@gsnContourNegLineDashPattern = 0
-        opt2@gsnContourPosLineDashPattern = 0
-
-        mydim2 = dimsizes(dimsizes(tc2))  
+        opt111@gsnLeftStringFontHeightF = 0.017
+        opt111@gsnRightStringFontHeightF = 0.017
+        opt111@cnLineLabelPlacementMode = "Constant"
+        opt111@cnLineDashSegLenF = 0.2
+        opt111@cnLineLabelInterval = 1
+        opt111@mpShapeMode  = "FreeAspect"
+        opt111@vpWidthF      = 0.5
+        opt111@vpHeightF     = 0.5
+        opt111@cnLineLabelBackgroundColor = "Transparent"
+        opt111@mpMinLatF         = min_lat
+        opt111@mpMaxLatF         = max_lat
+        opt111@mpMinLonF         = min_lon
+        opt111@mpMaxLonF         = max_lon
+        opt111@gsnAddCyclic = False
+        opt111@mpOutlineOn = True
+        opt111@mpOutlineBoundarySets = "AllBoundaries"
+        opt111@mpGeophysicalLineThicknessF = nclborder_thick
+        opt111@mpNationalLineThicknessF = nclborder_thick
+        opt111@mpGeophysicalLineColor = nclborder
+        opt111@mpNationalLineColor = nclborder
+        opt111@cnLineColor = NCLCOLOR1
+        opt111@cnLineThicknessF  = NCLTHICK1
+        opt111@cnLineLabelFontHeightF = NCLLABEL1
+        opt111@gsnContourNegLineDashPattern = 0
+        opt111@gsnContourPosLineDashPattern = 0
+        opt111@cnInfoLabelOn   = False
+        if (NCL3VARONOFF.eq.1) then
+          delete(opt111@mpShapeMode)
+          delete(opt111@mpMinLatF)
+          delete(opt111@mpMaxLatF)
+          delete(opt111@mpMinLonF)
+          delete(opt111@mpMaxLonF)
+          delete(opt111@mpOutlineBoundarySets)
+          delete(opt111@mpGeophysicalLineThicknessF)
+          delete(opt111@mpNationalLineThicknessF)
+          delete(opt111@mpGeophysicalLineColor)
+          delete(opt111@mpNationalLineColor)
+          delete(opt111@mpOutlineOn)
+          delete(opt111@mpLandFillColor)
+          if (ocean_onoff .eq. 1) then
+            delete(opt111@mpFillOn)
+            delete(opt111@mpOceanFillColor)
+            delete(opt111@mpInlandWaterFillColor)
+            delete(opt111@mpFillDrawOrder)
+          end if
+          if (NCLgridline_onoff .eq. 1) then
+            delete(opt111@mpGridAndLimbOn)
+          end if
+        end if
+        mydim2 = dimsizes(dimsizes(tc1))  
         if (mydim2.eq.3) then
-          tc_plane11 = tc2
+          tc_plane11 = tc1
           tc_plane11@PlotLevelID = "surface"
           else ;if dimsize equals 4
           if (NCLPLEV1.eq.0) then ;surface pressure
                 NCLPLEV1 = lowestPressureLev
-                tc_plane11 = tc2(:, {NCLPLEV1}, :, :)
-                ; tc_plane11 = tc2(:,0,:,:)
-                ; tc_plane11@PlotLevelID = "surface"
+                tc_plane11 = tc1(:, {NCLPLEV1}, :, :)
             else
               if (NCLPLEV1 .lt. highestPressureLev) then
                 print("Pressure level has been set to " + highestPressureLev)
@@ -558,12 +551,13 @@ if ( any(yy.eq.NCLCNVAR3) .and. any(yy.eq.NCLCNVAR1) .and. any(yy.eq.NCLCNVAR2) 
                   NCLPLEV1 = lowestPressureLev
                 end if
               end if
-              tc_plane11 = tc2(:, {NCLPLEV1}, :, :)
+              tc_plane11 = tc1(:, {NCLPLEV1}, :, :)
           end if
         end if
+        tc1@long_name := tc1@long_name + " at " + NCLPLEV1 + " hpa"
+        opt111@gsnLeftString = tc1@long_name
 
         if (ncl_smooth.eq.1) then
-          ; wrf_smooth_2d(tc_plane11,3)
           tc_plane11 := smth9_Wrap(tc_plane11, 0.5, -0.25, False)
         end if
         
@@ -582,15 +576,15 @@ if ( any(yy.eq.NCLCNVAR3) .and. any(yy.eq.NCLCNVAR1) .and. any(yy.eq.NCLCNVAR2) 
           lower_bound1 = min1
         end if
         intv_range2 = upper_bound1 - lower_bound1
-        opt2@cnLevelSelectionMode = "ManualLevels"
+        opt111@cnLevelSelectionMode = "ManualLevels"
         if (NCLINTV1.eq.0 .or. NCLINTV1.gt.intv_range2) then
-          opt2@cnLevelSpacingF = intv_range2/10
+          opt111@cnLevelSpacingF = intv_range2/10
         else
-          opt2@cnLevelSpacingF = NCLINTV1
+          opt111@cnLevelSpacingF = NCLINTV1
         end if
-        opt2@cnMaxLevelValF = upper_bound1
-        opt2@cnMinLevelValF = lower_bound1
-        opt2@cnMaxLevelCount = 255
+        opt111@cnMaxLevelValF = upper_bound1
+        opt111@cnMinLevelValF = lower_bound1
+        opt111@cnMaxLevelCount = 255
       end if ;end of VAR1
 
       ;;;;;####################################################################
@@ -615,124 +609,133 @@ if ( any(yy.eq.NCLCNVAR3) .and. any(yy.eq.NCLCNVAR1) .and. any(yy.eq.NCLCNVAR2) 
           NCLLABEL2 = 0.02
         end if
 
-        opt3 = optfirst
-        opt3@cnInfoLabelZone = 4
-        if (NCLtitle.ne.1) then
-          opt3 = opt_notitle
-        end if
-        opt3@cnFillOn = False
-        opt3@cnLineColor = NCLCOLOR2
-        opt3@cnLineThicknessF  = NCLTHICK2
-        opt3@cnLineLabelFontHeightF = NCLLABEL2
-        opt3@gsnContourNegLineDashPattern = NCLBROKEN2
-        opt3@gsnContourPosLineDashPattern = NCLBROKEN2
-        opt3@cnLineLabelInterval = 1
-        opt3@cnLineLabelPlacementMode = "Constant"
-
-        cnvar = NCLCNVAR2
-        if (cnvar .eq. "cape_surface") then
-        slp3 = wrf_user_getvar(aaa,"cape_2d",-1)
-        slp3@_FillValue=-1
-        slp3@description = "CAPE"
-        slp3@units = "J/kg"
-        tc3 = slp3(0,:,:,:)
-        else if (cnvar .eq. "cin_surface") then
-        slp3 = wrf_user_getvar(aaa,"cape_2d",-1)
-        slp3@_FillValue=-1
-        slp3@description = "CIN"
-        slp3@units = "J/kg"
-        tc3 = slp3(1,:,:,:)
-        else if (cnvar .eq. "cin_3d") then
-          slp3  = wrf_user_getvar(aaa,"cape_3d",-1)
-          slp3@_FillValue=-1
-          slp3@description = "CIN"
-          slp3@units = "J/kg"
-          tc3 = slp3(1,:,:,:,:)
-        else if (cnvar .eq. "cape_3d") then
-          slp3 = wrf_user_getvar(aaa,"cape_3d",-1)
-          slp3@_FillValue=-1
-          slp3@description = "CAPE"
-          slp3@units = "J/kg"
-          tc3 = slp3(0,:,:,:,:)
-          delete(slp3)
-        else if (cnvar .eq. "lcl") then
-          slp3  = wrf_user_getvar(aaa,"cape_2d",-1)
-          slp3@description = "Lifting Condensation Level"
-          slp3@units = "m"
-          tc3 = slp3(2,:,:,:)
-        else if (cnvar .eq. "lfc") then
-          slp3 = wrf_user_getvar(aaa,"cape_2d",-1)
-          slp3@description = "Level of Free Convection"
-          slp3@units = "m"
-          tc3 = slp3(2,:,:,:)
-
-        else if (cnvar .eq. "dust_total") then
-          tc3 = wrf_user_getvar(aaa, "DUST_1", -1) + wrf_user_getvar(aaa, "DUST_2", -1) + wrf_user_getvar(aaa, "DUST_3", -1) \
-          + wrf_user_getvar(aaa, "DUST_4", -1) + wrf_user_getvar(aaa, "DUST_5", -1)
-          tc3@description = "Total dust concentration"
-          tc3@units = "Microgram/kg_dry_air"
-
-        else if (cnvar .eq. "dust_pm2.5") then
-          tc3 = wrf_user_getvar(aaa, "DUST_1", -1) + 0.3125*wrf_user_getvar(aaa, "DUST_2", -1)
-          tc3@description = "Dust_PM2.5 concentration"
-          tc3@units = "Microgram/kg_dry_air"
-
-        else if (cnvar .eq. "dust_pm10") then
-          tc3 = wrf_user_getvar(aaa, "DUST_1", -1) + wrf_user_getvar(aaa, "DUST_2", -1) + wrf_user_getvar(aaa, "DUST_3", -1) \
-          + 0.87*wrf_user_getvar(aaa, "DUST_4", -1)
-          tc3@description = "Dust_PM10 concentration"
-          tc3@units = "Microgram/kg_dry_air"
-
-          else if (cnvar .eq. "wind_s") then
-          uu10  = wrf_user_getvar(aaa,"U10",-1)
-          vv10  = wrf_user_getvar(aaa,"V10",-1)
-          tc3 = wind_speed(uu10,vv10)
-          tc3@description = "10m wind speed"
-          tc3@units = "m s-1"
-
-        else if (cnvar .eq. "wind_d") then
-          if (.not.isdefined("uu10")) then
-            uu10  = wrf_user_getvar(f,"U10",-1)
-            vv10  = wrf_user_getvar(f,"V10",-1)
+        if (NCLCNVAR2 .eq. "wind_s") then
+            uu10  := short2flt(aaa->u)
+            vv10  := short2flt(aaa->v)
+            tc2 = wind_speed(uu10, vv10)
+            tc2@description = "wind speed"
+            tc2@units = "m s-1"
+          else if (NCLCNVAR2 .eq. "wind_d") then
+            uu10  := short2flt(aaa->u)
+            vv10  := short2flt(aaa->v)
+            tc2 = wind_direction(uu10, vv10, 0)
+            tc2@description = "wind direction"
+            tc2@units = "Degrees from north"
+          else if (NCLCNVAR2 .eq. "z") then
+            tc0 := short2flt(aaa->z)
+            tc2 = tc0/98.1 ;convert to decameter
+            copy_VarCoords(tc0, tc2)
+            copy_VarAtts(tc0, tc2)
+            delete(tc0)
+            tc2@units = "Decameter"
+          else
+          tc2 = short2flt(aaa->$NCLCNVAR2$)
           end if
-            tc3 = wind_direction(uu10,vv10,0)
-            tc3@description = "10m wind direction"
-            tc3@units = "Degrees from north"
+          end if
+        end if
+        ; opt222 = optfirst
+        ; opt222@cnInfoLabelZone = 4
+        ; if (NCLtitle.ne.1) then
+        ;   opt222 = opt_notitle
+        ; end if
 
-        else
-        tc3 = wrf_user_getvar(aaa,cnvar,-1)        ; T in C
-
+        opt222                   = True
+        opt222@gsnDraw           = False  ; do not draw plot yet (need False for paneling)
+        opt222@gsnFrame          = False  ; do not frame plot yet (need False for paneling)
+        ; opt222@gsnMaximize       = True   ; make plots as big as possible
+        opt222@cnFillOn          = False   ; fill contours
+        opt222@cnLinesOn         = True
+        ; opt222@gsnLeftString     = tc2@long_name
+        opt222@gsnLeftStringFontColor = NCLCOLOR2
+        opt222@gsnRightStringFontColor = NCLCOLOR2
+        opt222@tiMainFontHeightF = 0.018
+        opt222@tiMainFontThicknessF = 0.2
+        opt222@cnLineColor = NCLCOLOR2
+        opt222@cnLineThicknessF  = NCLTHICK2
+        opt222@cnLineLabelFontHeightF = NCLLABEL2
+        opt222@gsnContourNegLineDashPattern = NCLBROKEN2
+        opt222@gsnContourPosLineDashPattern = NCLBROKEN2
+        opt222@cnInfoLabelOn   = False
+        opt222@lbLabelStride     = 2      ; only print value for every other contour in label bar
+        opt222@cnLineLabelDensityF = 1.5
+        opt222@mpLandFillColor        = "transparent"
+        if (ocean_onoff .eq. 1) then
+          opt222@mpFillOn               = True
+          opt222@mpOceanFillColor       = "deepskyblue"
+          opt222@mpInlandWaterFillColor = "deepskyblue"
+          opt222@mpFillDrawOrder        = "PreDraw" ;"PostDraw"          
         end if
+        if (NCLgridline_onoff .eq. 1) then
+          opt222@mpGridAndLimbOn = True
         end if
+        opt222@gsnLeftStringFontHeightF = 0.017
+        opt222@gsnRightStringFontHeightF = 0.017
+        opt222@cnLineLabelPlacementMode = "Constant"
+        opt222@cnLineDashSegLenF = 0.2
+        opt222@cnLineLabelInterval = 1
+        opt222@mpShapeMode  = "FreeAspect"
+        opt222@vpWidthF      = 0.5
+        opt222@vpHeightF     = 0.5
+        opt222@cnLineLabelBackgroundColor = "Transparent"
+        opt222@mpMinLatF         = min_lat
+        opt222@mpMaxLatF         = max_lat
+        opt222@mpMinLonF         = min_lon
+        opt222@mpMaxLonF         = max_lon
+        opt222@gsnAddCyclic = False
+        opt222@mpOutlineOn = True
+        opt222@mpOutlineBoundarySets = "AllBoundaries"
+        opt222@mpGeophysicalLineThicknessF = nclborder_thick
+        opt222@mpNationalLineThicknessF = nclborder_thick
+        opt222@mpGeophysicalLineColor = nclborder
+        opt222@mpNationalLineColor = nclborder
+        if (NCL3VARONOFF.eq.1 .or. NCL1VARONOFF.eq.1) then
+          delete(opt222@mpShapeMode)
+          delete(opt222@mpMinLatF)
+          delete(opt222@mpMaxLatF)
+          delete(opt222@mpMinLonF)
+          delete(opt222@mpMaxLonF)
+          delete(opt222@mpOutlineBoundarySets)
+          delete(opt222@mpGeophysicalLineThicknessF)
+          delete(opt222@mpNationalLineThicknessF)
+          delete(opt222@mpGeophysicalLineColor)
+          delete(opt222@mpNationalLineColor)
+          delete(opt222@mpOutlineOn)
+          delete(opt222@mpLandFillColor)
+          if (ocean_onoff .eq. 1) then
+            delete(opt222@mpFillOn)
+            delete(opt222@mpOceanFillColor)
+            delete(opt222@mpInlandWaterFillColor)
+            delete(opt222@mpFillDrawOrder)
+          end if
+          if (NCLgridline_onoff .eq. 1) then
+            delete(opt222@mpGridAndLimbOn)
+          end if
         end if
-        end if
-        end if
-        end if
-        end if
-        end if
-        end if
-        end if
-        end if
-
-        mydim3 = dimsizes(dimsizes(tc3))  
+        mydim3 = dimsizes(dimsizes(tc2))  
         if (mydim3.eq.3) then
-          tc_plane22 = tc3
+          tc_plane22 = tc2
           tc_plane22@PlotLevelID = "surface"
           else ;if dimsize equals 4
           if (NCLPLEV2.eq.0) then ;surface pressure
-              tc_plane22 = tc3(:,0,:,:)
-              tc_plane22@PlotLevelID = "surface"
+              NCLPLEV2 = lowestPressureLev
+              tc_plane22 = tc2(:, {NCLPLEV2}, :, :)              
             else
-
-          if (.not.isdefined("p")) then
-            p  = wrf_user_getvar(aaa, "pressure",-1)
-          end if
-              tc_plane22 = wrf_user_intrp3d(tc3,p,"h",NCLPLEV2,0.,False)
+              if (NCLPLEV2 .lt. highestPressureLev) then
+                print("Pressure level has been set to " + highestPressureLev)
+                NCLPLEV2 = highestPressureLev
+                else if (NCLPLEV2 .gt. lowestPressureLev) then
+                  print("Pressure level has been set to " + lowestPressureLev)
+                  NCLPLEV2 = lowestPressureLev
+                end if
+              end if
+              tc_plane22 = tc2(:, {NCLPLEV2}, :, :)
           end if
         end if
-        
+        tc2@long_name := tc2@long_name + " at " + NCLPLEV2 + " hpa"
+        opt222@gsnLeftString = tc2@long_name
+
         if (ncl_smooth.eq.1) then
-          wrf_smooth_2d(tc_plane22,3)
+          tc_plane22 := smth9_Wrap(tc_plane22, 0.5, -0.25, False)
         end if
           
         stats2 = stat_dispersion(tc_plane22, False)
@@ -750,15 +753,15 @@ if ( any(yy.eq.NCLCNVAR3) .and. any(yy.eq.NCLCNVAR1) .and. any(yy.eq.NCLCNVAR2) 
           lower_bound2 = min2
         end if
         intv_range3 = upper_bound2 - lower_bound2
-        opt3@cnLevelSelectionMode = "ManualLevels"
+        opt222@cnLevelSelectionMode = "ManualLevels"
         if (NCLINTV2.eq.0 .or. NCLINTV2.gt.intv_range3) then
-          opt3@cnLevelSpacingF = intv_range3/10
+          opt222@cnLevelSpacingF = intv_range3/10
         else
-          opt3@cnLevelSpacingF = NCLINTV2
+          opt222@cnLevelSpacingF = NCLINTV2
         end if
-        opt3@cnMaxLevelValF = upper_bound2
-        opt3@cnMinLevelValF = lower_bound2
-        opt3@cnMaxLevelCount = 255
+        opt222@cnMaxLevelValF = upper_bound2
+        opt222@cnMinLevelValF = lower_bound2
+        opt222@cnMaxLevelCount = 255
       end if ;end of VAR3
 
       if (NCLwindonoff .eq. 1)
@@ -767,45 +770,52 @@ if ( any(yy.eq.NCLCNVAR3) .and. any(yy.eq.NCLCNVAR1) .and. any(yy.eq.NCLCNVAR2) 
         NCLwinddens = tofloat(getenv("winddens"))
         NCLwindcolor = getenv("windcolor")
         NCLwindthick = tofloat(getenv("windthick"))
+        uu = short2flt(aaa->u)
+        vv = short2flt(aaa->v)
         if (NCLwindlev.eq.0) then
-          u  = wrf_user_getvar(aaa,"U10",-1)
-          v  = wrf_user_getvar(aaa,"V10",-1)
-          u_plane  = u
-          v_plane  = v
-          u_plane@PlotLevelID = "10 m"
-          v_plane@PlotLevelID = "10 m"
+          NCLwindlev = lowestPressureLev
+          u_plane = uu(:, {NCLwindlev}, :, :)
+          v_plane = vv(:, {NCLwindlev}, :, :)
+          ; u_plane@PlotLevelID = "10 m"
+          ; v_plane@PlotLevelID = "10 m"
           else
-          u  = wrf_user_getvar(aaa,"ua",-1)        ; u averaged to mass points
-          v  = wrf_user_getvar(aaa,"va",-1)        ; v averaged to mass points
-          if (.not.isdefined("p")) then
-            p  = wrf_user_getvar(aaa, "pressure",-1)
-          end if
-          u_plane  = wrf_user_intrp3d( u,p,"h",NCLwindlev,0.,False)
-          v_plane  = wrf_user_intrp3d( v,p,"h",NCLwindlev,0.,False)
+              if (NCLwindlev .lt. highestPressureLev) then
+                print("Pressure level has been set to " + highestPressureLev)
+                NCLwindlev = highestPressureLev
+                else if (NCLwindlev .gt. lowestPressureLev) then
+                  print("Pressure level has been set to " + lowestPressureLev)
+                  NCLwindlev = lowestPressureLev
+                end if
+              end if
+              u_plane = uu(:, {NCLwindlev}, :, :)
+              v_plane = vv(:, {NCLwindlev}, :, :)
         end if
-
-          opts = optfirst
-          if (NCLtitle.ne.1) then
-            opts = opt_notitle
-          end if
-          opts@vcRefMagnitudeF   = NCLwindsize
-          opts@vcRefAnnoString1 = opts@vcRefMagnitudeF + " m/s"
-          opts@vcRefLengthF      = 0.01   ; setting for nicely sized vectors
-          opts@vcLineArrowColor = NCLwindcolor
-          if (NCLwindthick.le.1 .and. NCLwindthick.ge.0) then
+        u_plane@long_name = "Wind speed"
+        opts = True
+        ; if (NCLtitle.ne.1) then
+        ;   opts = opt_notitle
+        ; end if
+        opts@vcRefMagnitudeF = NCLwindsize
+        opts@gsnDraw = False
+        opts@gsnFrame = False
+        opts@gsnLeftString = ""
+        opts@gsnRightString = ""
+        opts@vcRefAnnoString1 = opts@vcRefMagnitudeF + " m/s"
+        opts@vcRefAnnoString2 = "At " + u_plane@level + " hpa"
+        opts@vcRefLengthF      = 0.01   ; setting for nicely sized vectors
+        opts@vcLineArrowColor = NCLwindcolor
+        if (NCLwindthick.le.1 .and. NCLwindthick.ge.0) then
           opts@vcLineArrowThicknessF = 0.5 + 3*NCLwindthick ;; No need to else, cuase its default value is 1
-          end if
-
-
+        end if
         if (NCLwinddens.le.1 .and. NCLwinddens.ge.0) then
           opts@vcMinDistanceF = (1-NCLwinddens)*0.1 + 0.01
-        else
+         else
           opts@vcMinDistanceF = 0.03
         end if
-          opts@vcRefAnnoOrthogonalPosF = -0.24         ; Moves reference vector box inside the 
           opts@vcRefAnnoOn       = True
           opts@vcGlyphStyle     = "CurlyVector"
       end if
+
         pltres = True
         pltres@FontHeightF = 0.013 ;;no panel, no average
         mpres = True
@@ -835,13 +845,15 @@ if ( any(yy.eq.NCLCNVAR3) .and. any(yy.eq.NCLCNVAR1) .and. any(yy.eq.NCLCNVAR2) 
         if (point_onoff.eq.1) then
           NCLlabelsize = tofloat(getenv("labelsize"))
           if (NCLlabelsize.le.1 .and. NCLlabelsize.ge.0) then
-          NCLlabelsize = 0.005 + 0.025*NCLlabelsize
-          else
-          NCLlabelsize = 0.01
+            NCLlabelsize = 0.005 + 0.025*NCLlabelsize
+            else
+            NCLlabelsize = 0.01
           end if
           NCLlabelcolor = getenv("labelcolor")
           pmres = True
           pmres@gsMarkerColor = NCLlabelcolor
+          pmres@tfPolyDrawOrder = "PostDraw"
+          ; pmres@tfPolyDrawOrder = "Draw"
           if (panel_onoff.ne.1) then
             pmres@gsMarkerSizeF = NCLlabelsize
             else
@@ -894,11 +906,11 @@ if ( any(yy.eq.NCLCNVAR3) .and. any(yy.eq.NCLCNVAR1) .and. any(yy.eq.NCLCNVAR2) 
         else ;;Panel 
 
         if (NCLtitle.ne.1) then
-        pltres@CommonTitle = True
-        pltres@FontHeightF = 0.0145
-        pltres@NoTitles = True
-        else
-        pltres@FontHeightF = 0.007
+          pltres@CommonTitle = True
+          pltres@FontHeightF = 0.0145
+          pltres@NoTitles = True
+          else
+          pltres@FontHeightF = 0.007
         end if
         pltres@FontHeightF = pltres@FontHeightF * (6/tofloat(NCLpanelrows*NCLpanelcolumns))^0.3
         
@@ -913,9 +925,9 @@ if ( any(yy.eq.NCLCNVAR3) .and. any(yy.eq.NCLCNVAR1) .and. any(yy.eq.NCLCNVAR2) 
         pnlres@lbBoxMinorExtentF          = 0.13
 
         if (NCL3VARONOFF.eq.1 .and. cnmode.eq."Manual") then
-          pnlres@txString                   = "colored contours: " + tc@description + " (" + tc@units + " )"
+          pnlres@txString                   = "colored contours: " + tc3@description + " (" + tc3@units + " )"
           pnlres@gsnPanelLabelBar = True
-          opt1@lbLabelBarOn = False
+          opt333@lbLabelBarOn = False
         end if
 
       end if
@@ -934,62 +946,171 @@ if ( any(yy.eq.NCLCNVAR3) .and. any(yy.eq.NCLCNVAR1) .and. any(yy.eq.NCLCNVAR2) 
             
             print("Working on time: " + all_steps(it))
 
-            if (NCLtitle.ne.1) then
-              pltres@PlotTitle   = all_steps(it)
-            end if
-
-              if (NCL3VARONOFF.eq.1) then
-                opt1@tiMainString = all_steps(it) + " - " + tc_plane33@level + " hpa"
-                contour_tc = gsn_csm_contour_map(wks,tc_plane33(it,:,:),opt1) ;wrf_contour(aaa,wks,tc_plane33(it,:,:),opt1)
-              end if
-              
-              if (NCL1VARONOFF.eq.1) then
-                opt2@tiMainString = all_steps(it) + " - " + tc_plane11@level + " hpa"
-                ; contour_tc2 = wrf_contour(aaa,wks,tc_plane11(it,:,:),opt2)
-                contour_tc2 = gsn_csm_contour_map(wks,tc_plane11(it,:,:),opt2)
-              end if
-
-              if (NCL2VARONOFF.eq.1) then
-                opt3@TimeLabel = all_steps(it) + " - " + tc_plane22@level + " hpa"
-                contour_tc3 = wrf_contour(aaa,wks,tc_plane22(it,:,:),opt3)
-              end if
-
-              if (NCLwindonoff .eq. 1)
-                opts@FieldTitle = "Wind Velocity"
-                vector = wrf_vector(aaa,wks,u_plane(it,:,:),v_plane(it,:,:),opts)
-              end if
-
               if (NCL3VARONOFF.eq.1 .and. NCL1VARONOFF.eq.1 .and. NCL2VARONOFF.eq.1 .and. NCLwindonoff.eq.1) then
-                plot = wrf_map_overlays(aaa,wks,(/contour_tc,contour_tc2,contour_tc3,vector/),pltres,mpres)
+                opt333@tiMainString = all_steps(it) ;+ " - " + tc_plane33@level + " hpa"
+                opt333@lbTitleString    = tc3@long_name + " (" + tc3@units + ")"
+                opt333@lbTitleFontHeightF = .015
+                opt333@lbTopMarginF = 0.1
+                opt333@lbTopMarginF = 0.2
+                opt333@lbBottomMarginF = 0.4
+                opts@vcRefAnnoOrthogonalPosF = -0.48  ; 2 titles
+                contour_tc3 = gsn_csm_contour_map(wks, tc_plane33(it,:,:), opt333)
+                opt111@gsnLeftString = tc1@long_name + "~C~" + " "
+                opt111@gsnRightString = tc1@units + "~C~" + " "
+                contour_tc1 = gsn_csm_contour(wks, tc_plane11(it,:,:), opt111)
+                contour_tc2 = gsn_csm_contour(wks, tc_plane22(it,:,:), opt222)
+                vector = gsn_csm_vector(wks, u_plane(it,:,:), v_plane(it,:,:), opts)
+                overlay(contour_tc3, contour_tc1)
+                overlay(contour_tc3, contour_tc2)
+                overlay(contour_tc3, vector)
+                plot = contour_tc3
               else if (NCL3VARONOFF.eq.1 .and. NCL1VARONOFF.eq.1 .and. NCL2VARONOFF.eq.1 .and. NCLwindonoff.ne.1) then
-                plot = wrf_map_overlays(aaa,wks,(/contour_tc,contour_tc2,contour_tc3/),pltres,mpres)
+                opt333@tiMainString = all_steps(it) ;+ " - " + tc_plane33@level + " hpa"
+                opt333@lbTitleString = tc3@long_name + " (" + tc3@units + ")"
+                opt333@lbTitleFontHeightF = .015
+                opt333@lbTopMarginF = 0.1
+                opt333@lbTopMarginF = 0.2
+                opt333@lbBottomMarginF = 0.4
+                contour_tc3 = gsn_csm_contour_map(wks, tc_plane33(it,:,:), opt333)
+                opt111@gsnLeftString = tc1@long_name + "~C~" + " "
+                opt111@gsnRightString = tc1@units + "~C~" + " "
+                contour_tc1 = gsn_csm_contour(wks, tc_plane11(it,:,:), opt111)
+                contour_tc2 = gsn_csm_contour(wks, tc_plane22(it,:,:), opt222)
+                overlay(contour_tc3, contour_tc1)
+                overlay(contour_tc3, contour_tc2)
+                plot = contour_tc3
               else if (NCL3VARONOFF.eq.1 .and. NCL1VARONOFF.eq.1 .and. NCL2VARONOFF.ne.1 .and. NCLwindonoff.eq.1) then
-                plot = wrf_map_overlays(aaa,wks,(/contour_tc,contour_tc2,vector/),pltres,mpres)
+                opt333@tiMainString = all_steps(it) ;+ " - " + tc_plane33@level + " hpa"
+                opt333@lbTitleString = tc3@long_name + " (" + tc3@units + ")"
+                opt333@lbTitleFontHeightF = .015
+                opt333@lbTopMarginF = 0.1
+                opt333@lbTopMarginF = 0.2
+                opt333@lbBottomMarginF = 0.4
+                opts@vcRefAnnoOrthogonalPosF = -0.465  ; 2 titles
+                contour_tc3 = gsn_csm_contour_map(wks, tc_plane33(it,:,:), opt333)
+                contour_tc1 = gsn_csm_contour(wks, tc_plane11(it,:,:), opt111)
+                vector = gsn_csm_vector(wks, u_plane(it,:,:), v_plane(it,:,:), opts)
+                overlay(contour_tc3, contour_tc1)
+                overlay(contour_tc3, vector)
+                plot = contour_tc3       
               else if (NCL3VARONOFF.eq.1 .and. NCL1VARONOFF.eq.1 .and. NCL2VARONOFF.ne.1 .and. NCLwindonoff.ne.1) then
-                plot = wrf_map_overlays(aaa,wks,(/contour_tc,contour_tc2/),pltres,mpres)
+                opt333@tiMainString = all_steps(it) ;+ " - " + tc_plane33@level + " hpa"
+                contour_tc3 = gsn_csm_contour_map(wks, tc_plane33(it,:,:), opt333)
+                contour_tc1 = gsn_csm_contour(wks, tc_plane11(it,:,:), opt111)
+                overlay(contour_tc3, contour_tc1)
+                plot = contour_tc3
               else if (NCL3VARONOFF.eq.1 .and. NCL1VARONOFF.ne.1 .and. NCL2VARONOFF.eq.1 .and. NCLwindonoff.eq.1) then
-                plot = wrf_map_overlays(aaa,wks,(/contour_tc,contour_tc3,vector/),pltres,mpres)
+                opt333@tiMainString = all_steps(it) ;+ " - " + tc_plane33@level + " hpa"
+                opt333@lbTitleString = tc3@long_name + " (" + tc3@units + ")"
+                opt333@lbTitleFontHeightF = .017
+                opt333@lbTopMarginF = 0.1
+                opt333@lbTopMarginF = 0.2
+                opt333@lbBottomMarginF = 0.4
+                opts@vcRefAnnoOrthogonalPosF = -0.485  ; 2 titles
+                contour_tc3 = gsn_csm_contour_map(wks, tc_plane33(it,:,:), opt333)
+                contour_tc2 = gsn_csm_contour(wks, tc_plane22(it,:,:), opt222)
+                vector = gsn_csm_vector(wks, u_plane(it,:,:), v_plane(it,:,:), opts)
+                overlay(contour_tc3, contour_tc2)
+                overlay(contour_tc3, vector)
+                plot = contour_tc3 
               else if (NCL3VARONOFF.eq.1 .and. NCL1VARONOFF.ne.1 .and. NCL2VARONOFF.eq.1 .and. NCLwindonoff.ne.1) then
-                plot = wrf_map_overlays(aaa,wks,(/contour_tc,contour_tc3/),pltres,mpres)
+                opt333@tiMainString = all_steps(it) ;+ " - " + tc_plane33@level + " hpa"
+                opt333@lbTitleString = tc3@long_name + " (" + tc3@units + ")"
+                opt333@lbTitleFontHeightF = .015
+                opt333@lbTopMarginF = 0.1
+                opt333@lbTopMarginF = 0.2
+                opt333@lbBottomMarginF = 0.4
+                contour_tc3 = gsn_csm_contour_map(wks, tc_plane33(it,:,:), opt333)
+                contour_tc2 = gsn_csm_contour(wks, tc_plane22(it,:,:), opt222)
+                overlay(contour_tc3, contour_tc2)
+                plot = contour_tc3
               else if (NCL3VARONOFF.eq.1 .and. NCL1VARONOFF.ne.1 .and. NCL2VARONOFF.ne.1 .and. NCLwindonoff.eq.1) then
-                plot = wrf_map_overlays(aaa,wks,(/contour_tc,vector/),pltres,mpres)
+                opt333@gsnMaximize = True
+                opt333@tiMainString = all_steps(it) ;+ " - " + tc_plane33@level + " hpa"
+                opt333@lbTitleString = tc3@long_name + " (" + tc3@units + ")"
+                opt333@lbTitleFontHeightF = .015
+                opt333@lbTopMarginF = 0.1
+                opt333@lbTopMarginF = 0.2
+                opt333@lbBottomMarginF = 0.4
+                opts@vcRefAnnoOrthogonalPosF = -0.48  ; 2 titles
+                contour_tc3 = gsn_csm_contour_map(wks, tc_plane33(it,:,:), opt333)
+                vector = gsn_csm_vector(wks, u_plane(it,:,:), v_plane(it,:,:), opts)
+                overlay(contour_tc3, vector)
+                plot = contour_tc3
               else if (NCL3VARONOFF.eq.1 .and. NCL1VARONOFF.ne.1 .and. NCL2VARONOFF.ne.1 .and. NCLwindonoff.ne.1) then
-                plot = contour_tc ;wrf_map_overlays(aaa,wks,(/contour_tc/),pltres,mpres)
+                opt333@gsnMaximize = True
+                opt333@tiMainString = all_steps(it) ;+ " - " + tc_plane33@level + " hpa"
+                opt333@lbTitleString = tc3@long_name + " (" + tc3@units + ")"
+                opt333@lbTitleFontHeightF = .015
+                opt333@lbTopMarginF = 0.1
+                opt333@lbTopMarginF = 0.2
+                opt333@lbBottomMarginF = 0.4
+                plot = gsn_csm_contour_map(wks, tc_plane33(it,:,:), opt333)
               else if (NCL3VARONOFF.ne.1 .and. NCL1VARONOFF.eq.1 .and. NCL2VARONOFF.eq.1 .and. NCLwindonoff.eq.1) then
-                plot = wrf_map_overlays(aaa,wks,(/contour_tc2,contour_tc3,vector/),pltres,mpres)
+                opt111@tiMainString = all_steps(it) ;+ " - " + tc_plane11@level + " hpa"
+                opts@vcRefAnnoOrthogonalPosF = -0.1  ; 2 titles
+                opt111@gsnMaximize = True
+                contour_tc1 = gsn_csm_contour_map(wks,tc_plane11(it,:,:),opt111)
+                contour_tc2 = gsn_csm_contour(wks, tc_plane22(it,:,:), opt222)
+                vector = gsn_csm_vector(wks, u_plane(it,:,:), v_plane(it,:,:), opts)
+                overlay(contour_tc1, contour_tc2)
+                overlay(contour_tc1, vector)
+                plot = contour_tc1
               else if (NCL3VARONOFF.ne.1 .and. NCL1VARONOFF.eq.1 .and. NCL2VARONOFF.eq.1 .and. NCLwindonoff.ne.1) then
-                plot = wrf_map_overlays(aaa,wks,(/contour_tc2,contour_tc3/),pltres,mpres)
+                opt111@tiMainString = all_steps(it) ;+ " - " + tc_plane11@level + " hpa"
+                opt111@gsnMaximize = True
+                contour_tc1 = gsn_csm_contour_map(wks,tc_plane11(it,:,:),opt111)
+                contour_tc2 = gsn_csm_contour(wks, tc_plane22(it,:,:), opt222)
+                overlay(contour_tc1, contour_tc2)
+                plot = contour_tc1
               else if (NCL3VARONOFF.ne.1 .and. NCL1VARONOFF.eq.1 .and. NCL2VARONOFF.ne.1 .and. NCLwindonoff.eq.1) then
-                plot = wrf_map_overlays(aaa,wks,(/contour_tc2,vector/),pltres,mpres)
+                opt111@tiMainString = all_steps(it) ;+ " - " + tc_plane11@level + " hpa"
+                opts@vcRefAnnoOrthogonalPosF = -0.1  ; 1 titles
+                opt111@gsnMaximize = True
+                contour_tc1 = gsn_csm_contour_map(wks, tc_plane11(it,:,:), opt111)
+                vector = gsn_csm_vector(wks, u_plane(it,:,:), v_plane(it,:,:), opts)
+                overlay(contour_tc1, vector)
+                plot = contour_tc1
               else if (NCL3VARONOFF.ne.1 .and. NCL1VARONOFF.eq.1 .and. NCL2VARONOFF.ne.1 .and. NCLwindonoff.ne.1) then
-                ; plot = wrf_map_overlays(aaa,wks,(/contour_tc2/),pltres,mpres)
-                plot = contour_tc2
+                opt111@tiMainString = all_steps(it) ;+ " - " + tc_plane11@level + " hpa"
+                opt111@gsnMaximize = True
+                plot = gsn_csm_contour_map(wks, tc_plane11(it,:,:), opt111)
               else if (NCL3VARONOFF.ne.1 .and. NCL1VARONOFF.ne.1 .and. NCL2VARONOFF.eq.1 .and. NCLwindonoff.eq.1) then
-                plot = wrf_map_overlays(aaa,wks,(/contour_tc3,vector/),pltres,mpres)
+                opt222@tiMainString = all_steps(it) ;+ " - " + tc_plane11@level + " hpa"
+                opts@vcRefAnnoOrthogonalPosF = -0.1  ; 1 titles
+                opt222@gsnMaximize = True
+                contour_tc2 = gsn_csm_contour_map(wks, tc_plane22(it,:,:), opt222)
+                vector = gsn_csm_vector(wks, u_plane(it,:,:), v_plane(it,:,:), opts)
+                overlay(contour_tc2, vector)
+                plot = contour_tc2
               else if (NCL3VARONOFF.ne.1 .and. NCL1VARONOFF.ne.1 .and. NCL2VARONOFF.eq.1 .and. NCLwindonoff.ne.1) then
-                plot = wrf_map_overlays(aaa,wks,(/contour_tc3/),pltres,mpres)
+                opt222@tiMainString = all_steps(it) ;+ " - " + tc_plane11@level + " hpa"
+                opt222@gsnMaximize = True
+                plot = gsn_csm_contour_map(wks, tc_plane22(it,:,:), opt222)
               else if (NCL3VARONOFF.ne.1 .and. NCL1VARONOFF.ne.1 .and. NCL2VARONOFF.ne.1 .and. NCLwindonoff.eq.1) then
-                plot = wrf_map_overlays(aaa,wks,(/vector/),pltres,mpres)
+                opts@tiMainString = all_steps(it) ;+ " - " + u_plane@level + " hpa"
+                opts@vcRefAnnoOrthogonalPosF = -0.19
+                opts@gsnMaximize = True
+                opts@mpMinLatF         = min_lat
+                opts@mpMaxLatF         = max_lat
+                opts@mpMinLonF         = min_lon
+                opts@mpMaxLonF         = max_lon
+                opts@gsnAddCyclic = False
+                opts@mpOutlineBoundarySets = "AllBoundaries"
+                opts@mpGeophysicalLineThicknessF = nclborder_thick
+                opts@mpNationalLineThicknessF = nclborder_thick
+                opts@mpGeophysicalLineColor = nclborder
+                opts@mpNationalLineColor = nclborder
+                opts@mpLandFillColor = "transparent"
+                opts@mpShapeMode = "FreeAspect"
+                opts@vcRefAnnoOrthogonalPosF = -0.14
+                if (ocean_onoff .eq. 1) then
+                  opts@mpFillOn               = True
+                  opts@mpOceanFillColor       = "deepskyblue"
+                  opts@mpInlandWaterFillColor = "deepskyblue"
+                  opts@mpFillDrawOrder        = "PreDraw" ;"PostDraw"          
+                end if
+                plot = gsn_csm_vector_map(wks, u_plane(it,:,:), v_plane(it,:,:), opts)
               end if
               end if
               end if
@@ -1010,31 +1131,29 @@ if ( any(yy.eq.NCLCNVAR3) .and. any(yy.eq.NCLCNVAR1) .and. any(yy.eq.NCLCNVAR2) 
                 if (point_onoff.eq.1) then
                   dum1(kk) = gsn_add_polymarker(wks, plot, NCLloclons, NCLloclats, pmres)
                 end if
-                
                 if (label_onoff.eq.1) then
                   dum2 = gsn_add_text(wks,plot,NCLlocnames,NCLloclons,NCLloclats-(80*NCLlabelsize),tres)
                 end if
-                  
                 if (ncl_shape_onoff.eq.1) then
-                  over_plot(kk) = gsn_add_shapefile_polylines(wks,plot,ncl_shape_path,shpres)
+                  over_plot(kk) = gsn_add_shapefile_polylines(wks, plot, ncl_shape_path, shpres)
                 end if
-
               end if
 
-                if (.not.paneloption) then
-                  draw(plot)
-                  frame(wks)
-                else
-                  arrayplots(kk) = plot
-                  delete(plot)
-                end if
+              if (.not.paneloption) then
+                draw(plot)
+                frame(wks)
+              else
+                arrayplots(kk) = plot
+                delete(plot)
+              end if
                 
-                kk = kk + 1
+              kk = kk + 1
           end do        ; END OF TIME LOOP
 
           if (paneloption) then
             rowcol = NCLpanelrows*NCLpanelcolumns - 1
-            tot_elements_minus = (ntimes - time_first)/ncltstep
+            ; tot_elements_minus = (ntimes - time_first)/ncltstep
+            tot_elements_minus = ntimes - time_first
             i = 0
             do i = 0, tot_elements_minus
               if ((i+rowcol+1).gt.tot_elements_minus) then
@@ -1044,125 +1163,235 @@ if ( any(yy.eq.NCLCNVAR3) .and. any(yy.eq.NCLCNVAR1) .and. any(yy.eq.NCLCNVAR2) 
               i = i + rowcol
             end do
           end if
-    
+
           else ;;Averaging code timeif122
 
-              do it = time_first, ntimes, ncltstep
-                  
+            do it = time_first, ntimes, ncltstep
+              if ((it+ncltstep) .gt. ntimes) then
+                break
+              end if
               print("Working on time range (average): " + all_steps(it) + " to " + all_steps(it+ncltstep) )
-              if (NCLtitle.ne.1) then
-                pltres@CommonTitle = True
-                pltres@PlotTitle   = all_steps(it) + " to " + all_steps(it+ncltstep)
-                ;pltres@FontHeightF = 0.0227
-                if (panel_onoff.eq.1) then
-                  tstart = str_split(all_steps(it), ":")
-                  tend = str_split(all_steps(it+ncltstep), ":")
-                  pltres@PlotTitle = tstart(0) + " to " + tend(0)
+                ; if (NCLtitle.ne.1) then
+              pltres@CommonTitle = True
+              pltres@PlotTitle = all_steps(it) + " to " + all_steps(it+ncltstep)
+              ;pltres@FontHeightF = 0.0227
+              ; if (panel_onoff.eq.1) then
+                ; tstart = str_split(all_steps(it), ":")
+                ; tend = str_split(all_steps(it+ncltstep), ":")
+                ; pltres@PlotTitle = tstart(0) + " to " + tend(0)
+              ; end if
+              if (NCL3VARONOFF.eq.1 .and. NCL1VARONOFF.eq.1 .and. NCL2VARONOFF.eq.1 .and. NCLwindonoff.eq.1) then
+                opt333@tiMainString = "Average from " + all_steps(it) + " to " + all_steps(it+ncltstep)
+                opt333@lbTitleString    = tc3@long_name + " (" + tc3@units + ")"
+                opt333@lbTitleFontHeightF = .015
+                opt333@lbTopMarginF = 0.1
+                opt333@lbTopMarginF = 0.2
+                opt333@lbBottomMarginF = 0.4
+                opts@vcRefAnnoOrthogonalPosF = -0.48  ; 2 titles
+                contour_tc3 = gsn_csm_contour_map(wks, tc_plane33(it,:,:), opt333)
+                opt111@gsnLeftString = tc1@long_name + "~C~" + " "
+                opt111@gsnRightString = tc1@units + "~C~" + " "
+                contour_tc1 = gsn_csm_contour(wks, tc_plane11(it,:,:), opt111)
+                contour_tc2 = gsn_csm_contour(wks, tc_plane22(it,:,:), opt222)
+                vector = gsn_csm_vector(wks, u_plane(it,:,:), v_plane(it,:,:), opts)
+                overlay(contour_tc3, contour_tc1)
+                overlay(contour_tc3, contour_tc2)
+                overlay(contour_tc3, vector)
+                plot = contour_tc3
+              else if (NCL3VARONOFF.eq.1 .and. NCL1VARONOFF.eq.1 .and. NCL2VARONOFF.eq.1 .and. NCLwindonoff.ne.1) then
+                opt333@tiMainString = "Average from " + all_steps(it) + " to " + all_steps(it+ncltstep)
+                opt333@lbTitleString = tc3@long_name + " (" + tc3@units + ")"
+                opt333@lbTitleFontHeightF = .015
+                opt333@lbTopMarginF = 0.1
+                opt333@lbTopMarginF = 0.2
+                opt333@lbBottomMarginF = 0.4
+                contour_tc3 = gsn_csm_contour_map(wks, tc_plane33(it,:,:), opt333)
+                opt111@gsnLeftString = tc1@long_name + "~C~" + " "
+                opt111@gsnRightString = tc1@units + "~C~" + " "
+                contour_tc1 = gsn_csm_contour(wks, tc_plane11(it,:,:), opt111)
+                contour_tc2 = gsn_csm_contour(wks, tc_plane22(it,:,:), opt222)
+                overlay(contour_tc3, contour_tc1)
+                overlay(contour_tc3, contour_tc2)
+                plot = contour_tc3
+              else if (NCL3VARONOFF.eq.1 .and. NCL1VARONOFF.eq.1 .and. NCL2VARONOFF.ne.1 .and. NCLwindonoff.eq.1) then
+                opt333@tiMainString = "Average from " + all_steps(it) + " to " + all_steps(it+ncltstep)
+                opt333@lbTitleString = tc3@long_name + " (" + tc3@units + ")"
+                opt333@lbTitleFontHeightF = .015
+                opt333@lbTopMarginF = 0.1
+                opt333@lbTopMarginF = 0.2
+                opt333@lbBottomMarginF = 0.4
+                opts@vcRefAnnoOrthogonalPosF = -0.465  ; 2 titles
+                contour_tc3 = gsn_csm_contour_map(wks, tc_plane33(it,:,:), opt333)
+                contour_tc1 = gsn_csm_contour(wks, tc_plane11(it,:,:), opt111)
+                vector = gsn_csm_vector(wks, u_plane(it,:,:), v_plane(it,:,:), opts)
+                overlay(contour_tc3, contour_tc1)
+                overlay(contour_tc3, vector)
+                plot = contour_tc3       
+              else if (NCL3VARONOFF.eq.1 .and. NCL1VARONOFF.eq.1 .and. NCL2VARONOFF.ne.1 .and. NCLwindonoff.ne.1) then
+                opt333@tiMainString = "Average from " + all_steps(it) + " to " + all_steps(it+ncltstep)
+                contour_tc3 = gsn_csm_contour_map(wks, tc_plane33(it,:,:), opt333)
+                contour_tc1 = gsn_csm_contour(wks, tc_plane11(it,:,:), opt111)
+                overlay(contour_tc3, contour_tc1)
+                plot = contour_tc3
+              else if (NCL3VARONOFF.eq.1 .and. NCL1VARONOFF.ne.1 .and. NCL2VARONOFF.eq.1 .and. NCLwindonoff.eq.1) then
+                opt333@tiMainString = "Average from " + all_steps(it) + " to " + all_steps(it+ncltstep)
+                opt333@lbTitleString = tc3@long_name + " (" + tc3@units + ")"
+                opt333@lbTitleFontHeightF = .017
+                opt333@lbTopMarginF = 0.1
+                opt333@lbTopMarginF = 0.2
+                opt333@lbBottomMarginF = 0.4
+                opts@vcRefAnnoOrthogonalPosF = -0.485  ; 2 titles
+                contour_tc3 = gsn_csm_contour_map(wks, tc_plane33(it,:,:), opt333)
+                contour_tc2 = gsn_csm_contour(wks, tc_plane22(it,:,:), opt222)
+                vector = gsn_csm_vector(wks, u_plane(it,:,:), v_plane(it,:,:), opts)
+                overlay(contour_tc3, contour_tc2)
+                overlay(contour_tc3, vector)
+                plot = contour_tc3 
+              else if (NCL3VARONOFF.eq.1 .and. NCL1VARONOFF.ne.1 .and. NCL2VARONOFF.eq.1 .and. NCLwindonoff.ne.1) then
+                opt333@tiMainString = "Average from " + all_steps(it) + " to " + all_steps(it+ncltstep)
+                opt333@lbTitleString = tc3@long_name + " (" + tc3@units + ")"
+                opt333@lbTitleFontHeightF = .015
+                opt333@lbTopMarginF = 0.1
+                opt333@lbTopMarginF = 0.2
+                opt333@lbBottomMarginF = 0.4
+                contour_tc3 = gsn_csm_contour_map(wks, tc_plane33(it,:,:), opt333)
+                contour_tc2 = gsn_csm_contour(wks, tc_plane22(it,:,:), opt222)
+                overlay(contour_tc3, contour_tc2)
+                plot = contour_tc3
+              else if (NCL3VARONOFF.eq.1 .and. NCL1VARONOFF.ne.1 .and. NCL2VARONOFF.ne.1 .and. NCLwindonoff.eq.1) then
+                opt333@gsnMaximize = True
+                opt333@tiMainString = "Average from " + all_steps(it) + " to " + all_steps(it+ncltstep)
+                opt333@lbTitleString = tc3@long_name + " (" + tc3@units + ")"
+                opt333@lbTitleFontHeightF = .015
+                opt333@lbTopMarginF = 0.1
+                opt333@lbTopMarginF = 0.2
+                opt333@lbBottomMarginF = 0.4
+                opts@vcRefAnnoOrthogonalPosF = -0.48  ; 2 titles
+                contour_tc3 = gsn_csm_contour_map(wks, tc_plane33(it,:,:), opt333)
+                vector = gsn_csm_vector(wks, u_plane(it,:,:), v_plane(it,:,:), opts)
+                overlay(contour_tc3, vector)
+                plot = contour_tc3
+              else if (NCL3VARONOFF.eq.1 .and. NCL1VARONOFF.ne.1 .and. NCL2VARONOFF.ne.1 .and. NCLwindonoff.ne.1) then
+                opt333@gsnMaximize = True
+                opt333@tiMainString = "Average from " + all_steps(it) + " to " + all_steps(it+ncltstep)
+                opt333@lbTitleString = tc3@long_name + " (" + tc3@units + ")"
+                opt333@lbTitleFontHeightF = .015
+                opt333@lbTopMarginF = 0.1
+                opt333@lbTopMarginF = 0.2
+                opt333@lbBottomMarginF = 0.4
+                plot = gsn_csm_contour_map(wks, tc_plane33(it,:,:), opt333)
+              else if (NCL3VARONOFF.ne.1 .and. NCL1VARONOFF.eq.1 .and. NCL2VARONOFF.eq.1 .and. NCLwindonoff.eq.1) then
+                opt111@tiMainString = "Average from " + all_steps(it) + " to " + all_steps(it+ncltstep)
+                opts@vcRefAnnoOrthogonalPosF = -0.1  ; 2 titles
+                opt111@gsnMaximize = True
+                contour_tc1 = gsn_csm_contour_map(wks,tc_plane11(it,:,:),opt111)
+                contour_tc2 = gsn_csm_contour(wks, tc_plane22(it,:,:), opt222)
+                vector = gsn_csm_vector(wks, u_plane(it,:,:), v_plane(it,:,:), opts)
+                overlay(contour_tc1, contour_tc2)
+                overlay(contour_tc1, vector)
+                plot = contour_tc1
+              else if (NCL3VARONOFF.ne.1 .and. NCL1VARONOFF.eq.1 .and. NCL2VARONOFF.eq.1 .and. NCLwindonoff.ne.1) then
+                opt111@tiMainString = "Average from " + all_steps(it) + " to " + all_steps(it+ncltstep)
+                opt111@gsnMaximize = True
+                contour_tc1 = gsn_csm_contour_map(wks,tc_plane11(it,:,:),opt111)
+                contour_tc2 = gsn_csm_contour(wks, tc_plane22(it,:,:), opt222)
+                overlay(contour_tc1, contour_tc2)
+                plot = contour_tc1
+              else if (NCL3VARONOFF.ne.1 .and. NCL1VARONOFF.eq.1 .and. NCL2VARONOFF.ne.1 .and. NCLwindonoff.eq.1) then
+                opt111@tiMainString = "Average from " + all_steps(it) + " to " + all_steps(it+ncltstep)
+                opts@vcRefAnnoOrthogonalPosF = -0.1  ; 1 titles
+                opt111@gsnMaximize = True
+                contour_tc1 = gsn_csm_contour_map(wks, tc_plane11(it,:,:), opt111)
+                vector = gsn_csm_vector(wks, u_plane(it,:,:), v_plane(it,:,:), opts)
+                overlay(contour_tc1, vector)
+                plot = contour_tc1
+              else if (NCL3VARONOFF.ne.1 .and. NCL1VARONOFF.eq.1 .and. NCL2VARONOFF.ne.1 .and. NCLwindonoff.ne.1) then
+                opt111@tiMainString = "Average from " + all_steps(it) + " to " + all_steps(it+ncltstep)
+                opt111@gsnMaximize = True
+                plot = gsn_csm_contour_map(wks, tc_plane11(it,:,:), opt111)
+              else if (NCL3VARONOFF.ne.1 .and. NCL1VARONOFF.ne.1 .and. NCL2VARONOFF.eq.1 .and. NCLwindonoff.eq.1) then
+                opt222@tiMainString = "Average from " + all_steps(it) + " to " + all_steps(it+ncltstep)
+                opts@vcRefAnnoOrthogonalPosF = -0.1  ; 1 titles
+                opt222@gsnMaximize = True
+                contour_tc2 = gsn_csm_contour_map(wks, tc_plane22(it,:,:), opt222)
+                vector = gsn_csm_vector(wks, u_plane(it,:,:), v_plane(it,:,:), opts)
+                overlay(contour_tc2, vector)
+                plot = contour_tc2
+              else if (NCL3VARONOFF.ne.1 .and. NCL1VARONOFF.ne.1 .and. NCL2VARONOFF.eq.1 .and. NCLwindonoff.ne.1) then
+                opt222@tiMainString = "Average from " + all_steps(it) + " to " + all_steps(it+ncltstep)
+                opt222@gsnMaximize = True
+                plot = gsn_csm_contour_map(wks, tc_plane22(it,:,:), opt222)
+              else if (NCL3VARONOFF.ne.1 .and. NCL1VARONOFF.ne.1 .and. NCL2VARONOFF.ne.1 .and. NCLwindonoff.eq.1) then
+                opts@tiMainString = "Average from " + all_steps(it) + " to " + all_steps(it+ncltstep)
+                opts@vcRefAnnoOrthogonalPosF = -0.19
+                opts@gsnMaximize = True
+                opts@mpMinLatF         = min_lat
+                opts@mpMaxLatF         = max_lat
+                opts@mpMinLonF         = min_lon
+                opts@mpMaxLonF         = max_lon
+                opts@gsnAddCyclic = False
+                opts@mpOutlineBoundarySets = "AllBoundaries"
+                opts@mpGeophysicalLineThicknessF = nclborder_thick
+                opts@mpNationalLineThicknessF = nclborder_thick
+                opts@mpGeophysicalLineColor = nclborder
+                opts@mpNationalLineColor = nclborder
+                opts@mpLandFillColor = "transparent"
+                opts@mpShapeMode = "FreeAspect"
+                opts@vcRefAnnoOrthogonalPosF = -0.14
+                if (ocean_onoff .eq. 1) then
+                  opts@mpFillOn               = True
+                  opts@mpOceanFillColor       = "deepskyblue"
+                  opts@mpInlandWaterFillColor = "deepskyblue"
+                  opts@mpFillDrawOrder        = "PreDraw" ;"PostDraw"          
+                end if
+                plot = gsn_csm_vector_map(wks, u_plane(it,:,:), v_plane(it,:,:), opts)
+              end if
+              end if
+              end if
+              end if
+              end if
+              end if
+              end if
+              end if
+              end if
+              end if
+              end if
+              end if
+              end if
+              end if
+              end if
+              if (ncl_shape_onoff.eq.1 .or. point_onoff.eq.1) then
+                if (point_onoff.eq.1) then
+                  dum1(kk) = gsn_add_polymarker(wks, plot, NCLloclons, NCLloclats, pmres)
+                end if
+                if (label_onoff.eq.1) then
+                  dum2 = gsn_add_text(wks,plot,NCLlocnames,NCLloclons,NCLloclats-(80*NCLlabelsize),tres)
+                end if
+                if (ncl_shape_onoff.eq.1) then
+                  over_plot(kk) = gsn_add_shapefile_polylines(wks,plot,ncl_shape_path,shpres)
                 end if
               end if
-              
-                if (NCL3VARONOFF.eq.1) then
-                  opt1@TimeLabel = all_steps(it) + " to " + all_steps(it+ncltstep)
-                  contour_tc = wrf_contour(aaa,wks,dim_avg_n_Wrap(tc_plane33(it:(it+ncltstep),:,:),0),opt1)
+              if (.not.paneloption) then
+                draw(plot)
+                frame(wks)
+                else
+                arrayplots(kk) = plot
+                delete(plot)
+              end if
+              kk = kk + 1
+            end do        ; END OF TIME LOOP
+            if (paneloption) then
+              rowcol = NCLpanelrows*NCLpanelcolumns - 1
+              tot_elements_minus = (ntimes - time_first)/ncltstep
+              i = 0
+              do i = 0, tot_elements_minus
+                if ((i+rowcol+1).gt.tot_elements_minus) then
+                  rowcol = mod(tot_elements_minus, (rowcol+1))
                 end if
-                
-                if (NCL1VARONOFF.eq.1) then
-                  opt2@TimeLabel = all_steps(it) + " to " + all_steps(it+ncltstep)
-                  contour_tc2 = wrf_contour(aaa,wks,dim_avg_n_Wrap(tc_plane11(it:(it+ncltstep),:,:),0),opt2)
-                end if
-
-                if (NCL2VARONOFF.eq.1) then
-                  opt3@TimeLabel = all_steps(it) + " to " + all_steps(it+ncltstep)
-                  contour_tc3 = wrf_contour(aaa,wks,dim_avg_n_Wrap(tc_plane22(it:(it+ncltstep),:,:),0),opt3)
-                end if
-
-                if (NCLwindonoff .eq. 1)
-                  opts@FieldTitle = "Wind Velocity"
-                  vector = wrf_vector(aaa,wks,dim_avg_n_Wrap(u_plane(it:(it+ncltstep),:,:),0),dim_avg_n_Wrap(v_plane(it:(it+ncltstep),:,:),0),opts)
-                end if
-
-                if (NCL3VARONOFF.eq.1 .and. NCL1VARONOFF.eq.1 .and. NCL2VARONOFF.eq.1 .and. NCLwindonoff.eq.1) then
-                  plot = wrf_map_overlays(aaa,wks,(/contour_tc,contour_tc2,contour_tc3,vector/),pltres,mpres)
-                else if (NCL3VARONOFF.eq.1 .and. NCL1VARONOFF.eq.1 .and. NCL2VARONOFF.eq.1 .and. NCLwindonoff.ne.1) then
-                  plot = wrf_map_overlays(aaa,wks,(/contour_tc,contour_tc2,contour_tc3/),pltres,mpres)
-                else if (NCL3VARONOFF.eq.1 .and. NCL1VARONOFF.eq.1 .and. NCL2VARONOFF.ne.1 .and. NCLwindonoff.eq.1) then
-                  plot = wrf_map_overlays(aaa,wks,(/contour_tc,contour_tc2,vector/),pltres,mpres)
-                else if (NCL3VARONOFF.eq.1 .and. NCL1VARONOFF.eq.1 .and. NCL2VARONOFF.ne.1 .and. NCLwindonoff.ne.1) then
-                  plot = wrf_map_overlays(aaa,wks,(/contour_tc,contour_tc2/),pltres,mpres)
-                else if (NCL3VARONOFF.eq.1 .and. NCL1VARONOFF.ne.1 .and. NCL2VARONOFF.eq.1 .and. NCLwindonoff.eq.1) then
-                  plot = wrf_map_overlays(aaa,wks,(/contour_tc,contour_tc3,vector/),pltres,mpres)
-                else if (NCL3VARONOFF.eq.1 .and. NCL1VARONOFF.ne.1 .and. NCL2VARONOFF.eq.1 .and. NCLwindonoff.ne.1) then
-                  plot = wrf_map_overlays(aaa,wks,(/contour_tc,contour_tc3/),pltres,mpres)
-                else if (NCL3VARONOFF.eq.1 .and. NCL1VARONOFF.ne.1 .and. NCL2VARONOFF.ne.1 .and. NCLwindonoff.eq.1) then
-                  plot = wrf_map_overlays(aaa,wks,(/contour_tc,vector/),pltres,mpres)
-                else if (NCL3VARONOFF.eq.1 .and. NCL1VARONOFF.ne.1 .and. NCL2VARONOFF.ne.1 .and. NCLwindonoff.ne.1) then
-                  plot = wrf_map_overlays(aaa,wks,(/contour_tc/),pltres,mpres)
-                else if (NCL3VARONOFF.ne.1 .and. NCL1VARONOFF.eq.1 .and. NCL2VARONOFF.eq.1 .and. NCLwindonoff.eq.1) then
-                  plot = wrf_map_overlays(aaa,wks,(/contour_tc2,contour_tc3,vector/),pltres,mpres)
-                else if (NCL3VARONOFF.ne.1 .and. NCL1VARONOFF.eq.1 .and. NCL2VARONOFF.eq.1 .and. NCLwindonoff.ne.1) then
-                  plot = wrf_map_overlays(aaa,wks,(/contour_tc2,contour_tc3/),pltres,mpres)
-                else if (NCL3VARONOFF.ne.1 .and. NCL1VARONOFF.eq.1 .and. NCL2VARONOFF.ne.1 .and. NCLwindonoff.eq.1) then
-                  plot = wrf_map_overlays(aaa,wks,(/contour_tc2,vector/),pltres,mpres)
-                else if (NCL3VARONOFF.ne.1 .and. NCL1VARONOFF.eq.1 .and. NCL2VARONOFF.ne.1 .and. NCLwindonoff.ne.1) then
-                  plot = wrf_map_overlays(aaa,wks,(/contour_tc2/),pltres,mpres)
-                else if (NCL3VARONOFF.ne.1 .and. NCL1VARONOFF.ne.1 .and. NCL2VARONOFF.eq.1 .and. NCLwindonoff.eq.1) then
-                  plot = wrf_map_overlays(aaa,wks,(/contour_tc3,vector/),pltres,mpres)
-                else if (NCL3VARONOFF.ne.1 .and. NCL1VARONOFF.ne.1 .and. NCL2VARONOFF.eq.1 .and. NCLwindonoff.ne.1) then
-                  plot = wrf_map_overlays(aaa,wks,(/contour_tc3/),pltres,mpres)
-                else if (NCL3VARONOFF.ne.1 .and. NCL1VARONOFF.ne.1 .and. NCL2VARONOFF.ne.1 .and. NCLwindonoff.eq.1) then
-                  plot = wrf_map_overlays(aaa,wks,(/vector/),pltres,mpres)
-                end if
-                end if
-                end if
-                end if
-                end if
-                end if
-                end if
-                end if
-                end if
-                end if
-                end if
-                end if
-                end if
-                end if
-                end if
-
-                if (ncl_shape_onoff.eq.1 .or. point_onoff.eq.1) then
-                  
-                  if (point_onoff.eq.1) then
-                    dum1(kk) = gsn_add_polymarker(wks, plot, NCLloclons, NCLloclats, pmres)
-                  end if
-                  
-                  if (label_onoff.eq.1) then
-                    dum2 = gsn_add_text(wks,plot,NCLlocnames,NCLloclons,NCLloclats-(80*NCLlabelsize),tres)
-                  end if
-                    
-                  if (ncl_shape_onoff.eq.1) then
-                    over_plot(kk) = gsn_add_shapefile_polylines(wks,plot,ncl_shape_path,shpres)
-                  end if
-
-                end if
-                      if (.not.paneloption) then
-                        draw(plot)
-                        frame(wks)
-                      else
-                        arrayplots(kk) = plot
-                        delete(plot)
-                      end if
-                      kk = kk + 1
-              end do        ; END OF TIME LOOP
-                if (paneloption) then
-                  rowcol = NCLpanelrows*NCLpanelcolumns - 1
-                  tot_elements_minus = (ntimes - time_first)/ncltstep
-                  i = 0
-                  do i = 0, tot_elements_minus
-                    if ((i+rowcol+1).gt.tot_elements_minus) then
-                      rowcol = mod(tot_elements_minus, (rowcol+1))
-                    end if
-                    gsn_panel(wks,(/arrayplots(i:(i+rowcol))/),(/NCLpanelrows,NCLpanelcolumns/),pnlres)
-                    i = i + rowcol
-                  end do
-                end if
+                gsn_panel(wks,(/arrayplots(i:(i+rowcol))/),(/NCLpanelrows,NCLpanelcolumns/),pnlres)
+                i = i + rowcol
+              end do
+            end if
       end if ;code timeif122
 
       else

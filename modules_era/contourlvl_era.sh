@@ -10,11 +10,11 @@ rm $postwrf_dir/totalequation.txt $postwrf_dir/variables.txt $postwrf_dir/equnit
 }
 
 wrftemp=( $( ls $postwrf_dir/postwrf_era_* ) )
-wrfout_with_suff=`basename ${wrftemp[0]}` #In case of mulitfiles, pick the first file for naming
+wrfout_with_suff=`basename ${wrftemp[0]}` #In case of multifiles, pick the first file for naming
 wrfout2=${wrfout_with_suff%.*}
 cnpostname=$(echo $wrfout2 | cut -d "_" -f2-3)
 
-if [ ${average_onoff} != "1" ]; then
+# if [ ${average_onoff} != "1" ]; then
   echo "All times inside" $cnpostname "are as follows:"
   ncl -nQ modules_era/timestep_era.ncl
   echo "Specify the time range (first and last time indexes) to be plotted:"
@@ -32,7 +32,7 @@ if [ ${average_onoff} != "1" ]; then
     tlast_ind="last_index_era"
   fi
   export tlast_ind
-fi
+# fi
 
 if [ ${THIRDVAR_ONOFF} == "1" ]; then
   echo -e "\n Specify The Method Of Drawing Contours (1 or 2) for $CNVAR3:"

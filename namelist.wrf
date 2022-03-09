@@ -4,7 +4,7 @@ Extract_On-Off                   = 0
 
 WRF_variable_name                = rh/100, pvo
 Location_names                   = aaaname, bbbname
-Location_latitudes               = 45.28, 47
+Location_latitudes               = 45.28, 50
 Location_longitudes              = 59.73, 63
 
 +Vertical_profile_plot_on_off    = 0
@@ -26,7 +26,7 @@ CONTOUR_ON_OFF                 = 0
  1st_Variable_label_size        = 0.5
 
 !!! Variable_2 by (broken) line contours !!!
-2nd_Variable_on_off             = 1
+2nd_Variable_on_off             = 0
  2nd_Variable_name              = tk
  2nd_Variable_pressure_level    = 700
  2nd_Variable_intervals         = 0
@@ -36,7 +36,7 @@ CONTOUR_ON_OFF                 = 0
  2nd_Variable_brokenline_on_off = 1
 
 !!! Variable_3 by filled (colored) contours !!!
-3rd_Variable_on_off             = 1
+3rd_Variable_on_off             = 0
  3rd_Variable_name              = dust_pm10
  3rd_Variable_pressure_level    = 0,
 
@@ -51,8 +51,8 @@ Location_point_mark_on_off      = 0
  Location_labels_on_off         = 0
  Location_labels_size           = 0.1
  Location_labels_color          = black
-Shapefile_on-off                = 0
- Shapefile_path                 = /home/a_nikfal/postwrf/shapefiles/anzali_swamp.shp
+Shapefile_on-off                = 1
+ Shapefile_path                 = /home/anikfal/sebal/shapefiles/all.shp
 -----------------------------------------------------------------------------
 
 
@@ -164,41 +164,41 @@ ERA5_ON_OFF                      = 1
 
 !!! Variable_1 by line contours !!!
 1st_ERA5_Var_on_off              = 1
- 1st_ERA5_Var_name               = z
+ 1st_ERA5_Var_name               = t
  1st_ERA5_Var_pressure_level     = 700
  1st_ERA5_Var_intervals          = 5
- 1st_ERA5_Var_line_color         = black
+ 1st_ERA5_Var_line_color         = red
  1st_ERA5_Var_line_thickness     = 0.5
- 1st_ERA5_Var_label_size         = 0.5
+ 1st_ERA5_Var_label_size         = 0.3
 
 !!! Variable_2 by (broken) line contours !!!
-2nd_ERA5_Var_on_off              = 0
- 2nd_ERA5_Var_name               = tk
- 2nd_ERA5_Var_pressure_level     = 700
+2nd_ERA5_Var_on_off              = 1
+ 2nd_ERA5_Var_name               = z
+ 2nd_ERA5_Var_pressure_level     = 500
  2nd_ERA5_Var_intervals          = 0
- 2nd_ERA5_Var_line_color         = red
+ 2nd_ERA5_Var_line_color         = blue
  2nd_ERA5_Var_line_thickness     = 0.5
- 2nd_ERA5_Var_label_size         = 0.4
+ 2nd_ERA5_Var_label_size         = 0.3
  2nd_ERA5_Var_brokenline_on_off  = 1
 
 !!! Variable_3 by filled (colored) contours !!!
 3rd_ERA5_Var_on_off              = 0
- 3rd_ERA5_Var_name               = z
+ 3rd_ERA5_Var_name               = vo
  3rd_ERA5_Var_pressure_level     = 0
 
-Wind_ERA5_on_off                 = 0
- Wind_ERA5_pressure_level        = 300
- Wind_ERA5_speed (m/s)           = 10
+Wind_ERA5_on_off                 = 1
+ Wind_ERA5_pressure_level        = 455
+ Wind_ERA5_speed (m/s)           = 7
  Wind_ERA5_density               = 0.5
- Wind_ERA5_color                 = blue
+ Wind_ERA5_color                 = black
  Wind_ERA5_thickness             = 0.5
 
-ERA5_point_mark_on_off           = 0
+ERA5_point_mark_on_off           = 1
  ERA5_labels_on_off              = 1
- ERA5_labels_size                = 0.5
+ ERA5_labels_size                = 0.3
  ERA5_labels_color               = black
-ERA5_Shapefile_on_off            = 0
- ERA5_Shapefile_path             = /home/a_nikfal/postwrf/shapefiles/anzali_swamp.shp
+ERA5_Shapefile_on_off            = 1
+ ERA5_shapefile_path             = /home/anikfal/shapefiles/anzali_swamp.shp
 
 ERA5_SubDomain_on_off            = 0
  Min_lat                         = 35
@@ -211,15 +211,15 @@ ERA5_SubDomain_on_off            = 0
 ============================= GENERAL SETTINGS ==============================
 =============================================================================
 spin-up_time (hours)             = 0
-averaging_on_off                 = 0
- average_time (hours)            = 6
-panel_plot__on_off               = 0
- panel_plot__rows_number         = 1
+averaging_on_off                 = 1
+ average_time (hours)            = 12
+panel_plot__on_off               = 1
+ panel_plot__rows_number         = 2
  panel_plot__columns_number      = 3
 smooth_maps_on_off               = 1
 map_borderline_color             = black
 map_borderline_thickness         = 0.5
-map_filled_ocean_on_off          = 0
+map_filled_ocean_on_off          = 1
 map_gridlines_on_off             = 0
 plot_titles_on_off               = 1
 -----------------------------------------------------------------------------
