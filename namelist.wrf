@@ -1,14 +1,14 @@
 ======================= DATA EXTRACTION (ON SURFACE) ========================
 =============================================================================
-Extract_On-Off                  = 0
+Extract_On-Off                   = 0
 
-WRF_variable_name               = pvo, T2, rh
-Location_names                  = Loc1, Loc2, Loc3
-Location_latitudes              = 33, 29, 25
-Location_longitudes             = 45, 47, 46
+WRF_variable_name                = dust_total
+Location_names                  = Tashkent, Aktau, Khujand, Turkmenabat, Dushanbeh, Almaty, Shymkent, Bishkek, chimkent
+Location_latitudes              = 41.3, 43.65, 40.28, 39.03, 38.53, 43.27, 42.31, 42.87, 42.34
+Location_longitudes             = 69.26, 51.15, 69.63, 63.56, 68.78, 76.89, 69.59, 74.61, 69.59
 
-+Vertical_profile_plot_on_off   = 1
-+Vprofile_X_axis_decimals       = 3
++Vertical_profile_plot_on_off    = 0
+ +Vprofile_X_axis_decimals       = 3
 -----------------------------------------------------------------------------
 
 
@@ -17,72 +17,72 @@ Location_longitudes             = 45, 47, 46
 CONTOUR_ON_OFF                 = 0
 
 !!! Variable_1 by line contours !!!
-1st_Variable_on_off            = 1
-1st_Variable_name              = tc
-1st_Variable_pressure_level    = 700
-1st_Variable_intervals         = 5
-1st_Variable_line_color        = black
-1st_Variable_line_thickness    = 0.7
-1st_Variable_label_size        = 0.7
+1st_Variable_on_off             = 0
+ 1st_Variable_name              = T2
+ 1st_Variable_pressure_level    = 0
+ 1st_Variable_intervals         = 10
+ 1st_Variable_line_color        = red
+ 1st_Variable_line_thickness    = 0.5
+ 1st_Variable_label_size        = 0.5
 
 !!! Variable_2 by (broken) line contours !!!
-2nd_Variable_on_off            = 0
-2nd_Variable_name              = tk*rh
-2nd_Variable_pressure_level    = 700
-2nd_Variable_intervals         = 0
-2nd_Variable_line_color        = red
-2nd_Variable_line_thickness    = 0.5
-2nd_Variable_label_size        = 0.4
-2nd_Variable_brokenline_on_off = 1
+2nd_Variable_on_off             = 0
+ 2nd_Variable_name              = tk
+ 2nd_Variable_pressure_level    = 700
+ 2nd_Variable_intervals         = 0
+ 2nd_Variable_line_color        = red
+ 2nd_Variable_line_thickness    = 0.5
+ 2nd_Variable_label_size        = 0.4
+ 2nd_Variable_brokenline_on_off = 1
 
 !!! Variable_3 by filled (colored) contours !!!
-3rd_Variable_on_off            = 1
-3rd_Variable_name              = td2
-3rd_Variable_pressure_level    = 0,
+3rd_Variable_on_off             = 1
+ 3rd_Variable_name              = LAI
+ 3rd_Variable_pressure_level    = 0,
 
-Wind_Vectors_on_off            = 1
-Wind_Vectors_pressure_level    = 300
-Wind_Vectors_speed (m/s)       = 10
-Wind_Vectors_density           = 0.5
-Wind_Vectors_color             = blue
-Wind_Vectors_thickness         = 0.5
+Wind_Vectors_on_off             = 0
+ Wind_Vectors_pressure_level    = 700
+ Wind_Vectors_speed (m/s)       = 5
+ Wind_Vectors_density           = 0.5
+ Wind_Vectors_color             = black
+ Wind_Vectors_thickness         = 0.5
 
-Location_point_mark_on_off     = 0
-Location_labels_on_off         = 0
-Location_labels_size           = 0.5
-Location_labels_color          = black
-Shapefile_on-off               = 0
-Shapefile_path                 = /home/a_nikfal/postwrf/shapefiles/anzali_swamp.shp
+Location_point_mark_on_off      = 1
+ Location_labels_on_off         = 1
+ Location_labels_size           = 0.2
+ Location_labels_color          = black
+Shapefile_on-off                = 0
+ Shapefile_path                 = /home/anikfal/sebal/shapefiles/all.shp
 -----------------------------------------------------------------------------
 
 
 ============================= CROSS SECTION PLOT ============================
 =============================================================================
-CROSSSECTION_ON-OFF            = 0
+CROSSSECTION_ON-OFF             = 0
 
-CrossSection_path_on_off       = 1
-Topographic_map_on_off         = 1
+CrossSection_path_on_off        = 1
+Topographic_map_on_off          = 1
 
 !!! 3D Variable_1 by line contours !!!
-1st_var_on_off                 = 1
-1st_var_name                   = (ua^2 + va^2)^0.5
-1st_var_intervals              = 10
-1st_var_line_color             = black
-1st_var_line_thickness         = 0.5
-1st_var_label_size             = 0.5
+1st_var_on_off                  = 0
+ 1st_var_name                   = (ua^2 + va^2)^0.5
+ 1st_var_intervals              = 10
+ 1st_var_line_color             = black
+ 1st_var_line_thickness         = 0.5
+ 1st_var_label_size             = 0.5
 
 !!! 3D Variable_2 by (broken) line contours !!!
-2nd_var_on_off                 = 1
-2nd_var_name                   = tc
-2nd_var_intervals              = 20
-2nd_var_line_color             = red
-2nd_var_line_thickness         = 0.5
-2nd_var_label_size             = 0.5
-2nd_var_brokenline_on_off      = 1
+2nd_var_on_off                  = 1
+ 2nd_var_name                   = tc
+ 2nd_var_intervals              = 20
+ 2nd_var_line_color             = red
+ 2nd_var_line_thickness         = 0.5
+ 2nd_var_label_size             = 0.5
+ 2nd_var_brokenline_on_off      = 1
 
 !!! 3D Variable_3 by filled (colored) contours !!!
-3rd_var_on_off                 = 1
-3rd_var_name                   = QVAPOR
+3rd_var_on_off                  = 1
+ 3rd_var_name                   = QCLOUD
 -----------------------------------------------------------------------------
 
 
@@ -91,85 +91,135 @@ Topographic_map_on_off         = 1
 STATISTICAL_DIAGRAMS_ON_OFF      = 0
 
 Timeseries_ON_OFF                = 0
-Timeseries_Line_on_off           = 1
-Timeseries_Marker_on_off         = 1
+ Timeseries_Line_on_off          = 1
+ Timeseries_Marker_on_off        = 1
 
 Scatterplot_ON_OFF               = 1
 
 Taylor_diagram_ON_OFF            = 0
-Taylor_labels_size               = 0.5
-Taylor_markers_size              = 0.5
+ Taylor_labels_size              = 0.5
+ Taylor_markers_size             = 0.5
 -----------------------------------------------------------------------------
 
 
 ================================ DOMAIN PLOT ================================
 =============================================================================
-Domain_On-Off                    = 1
+Domain_On-Off                    = 0
 
-namelist.wps_path (schematic)    = /home/a_nikfal/WRF4.2.2/WPS/namelist.wps
-background_color (schematic)     = forestgreen
-lables_On-Off (schematic)        = 0
+namelist.wps_path (schematic)   = /home/anikfal/WRF4.2.2/WPS/namelist.wps
+background_color (schematic)    = forestgreen
+lables_On-Off (schematic)       = 0
 
-+Domain_on_off (topography)      = 0
-+number_of_domains (topography)  = 1
-+box_color                       = white
++Domain_on_off (topography)      = 1
+ +number_of_domains (topography) = 2
+ +box_color                      = white
 -----------------------------------------------------------------------------
 
 
 ============================= WIND ROSE DIAGRAM =============================
 =============================================================================
-windrose_On-Off                 = 0
-wind_location_name              = Berlin
-wind_location_latitude          = 52.520
-wind_location_longitude         = 13.405
+windrose_On-Off                  = 0
+ wind_location_name              = shiraz
+ wind_location_latitude          = 29.5
+ wind_location_longitude         = 52.5
 -----------------------------------------------------------------------------
 
 
 ============================== SKEWT DIAGRAM ================================
 =============================================================================
-skewT_On-Off                    = 0
-skewt_location_name             = Paris
-skewt_location_latitude         = 48.857
-skewt_location_longitude        = 2.352
+skewT_On-Off                     = 0
+ skewt_location_name             = shiraz
+ skewt_location_latitude         = 29.5
+ skewt_location_longitude        = 52.5
 -----------------------------------------------------------------------------
 
 
 ============================ CONVERT TO GEOTIFF =============================
 =============================================================================
-Geotiff_ON_OFF                  = 0
-Variable_name_to_Geotiff        = (rh+tk)^0.5
-Geotiff_pressure_level       	= 500
+Geotiff_ON_OFF                   = 0
+ Variable_name_to_Geotiff        = (rh+tk)^0.5
+ Geotiff_pressure_level       	 = 500
 -----------------------------------------------------------------------------
 
 
 ========================= RTTOV MODEL INPUT/OUTPUT ==========================
 =============================================================================
-RTTOV_On-Off                    = 0
+RTTOV_On-Off                     = 0
 
-WRF2RTTOV_profiles_OnOff        = 0
-aerosol_profile_OnOff           = 0
+WRF2RTTOV_profiles_OnOff         = 0
+ aerosol_profile_OnOff           = 0
 
-RTTOV_OUTPUT_OnOff              = 1
-rttov_output_prefix             = output_example_
-Brightness_temperature          = 1
-Reflectance                     = 0
-Radiance                        = 0
-Surface_emissivity              = 0
+RTTOV_OUTPUT_OnOff               = 1
+ rttov_output_prefix             = output_example_
+ Brightness_temperature          = 1
+ Reflectance                     = 0
+ Radiance                        = 0
+ Surface_emissivity              = 0
+-----------------------------------------------------------------------------
+
+
+============================= ERA5 CONTOUR PLOT =============================
+=============================================================================
+ERA5_ON_OFF                      = 1
+
+!!! Variable_1 by line contours !!!
+1st_ERA5_Var_on_off              = 1
+ 1st_ERA5_Var_name               = z
+ 1st_ERA5_Var_pressure_level     = 688
+ 1st_ERA5_Var_intervals          = 5
+ 1st_ERA5_Var_line_color         = green
+ 1st_ERA5_Var_line_thickness     = 0.5
+ 1st_ERA5_Var_label_size         = 0.3
+
+!!! Variable_2 by (broken) line contours !!!
+2nd_ERA5_Var_on_off              = 1
+ 2nd_ERA5_Var_name               = t
+ 2nd_ERA5_Var_pressure_level     = 500
+ 2nd_ERA5_Var_intervals          = 0
+ 2nd_ERA5_Var_line_color         = blue
+ 2nd_ERA5_Var_line_thickness     = 0.8
+ 2nd_ERA5_Var_label_size         = 0.3
+ 2nd_ERA5_Var_brokenline_on_off  = 1
+
+!!! Variable_3 by filled (colored) contours !!!
+3rd_ERA5_Var_on_off              = 1
+ 3rd_ERA5_Var_name               = (z-z)/98.1
+ 3rd_ERA5_Var_pressure_level     = 500, 1000
+
+Wind_ERA5_on_off                 = 1
+ Wind_ERA5_pressure_level        = 300
+ Wind_ERA5_speed (m/s)           = 10
+ Wind_ERA5_density               = 0.5
+ Wind_ERA5_color                 = yellow
+ Wind_ERA5_thickness             = 0.8
+
+ERA5_point_mark_on_off           = 1
+ ERA5_labels_on_off              = 1
+ ERA5_labels_size                = 0.3
+ ERA5_labels_color               = black
+ERA5_Shapefile_on_off            = 0
+ ERA5_shapefile_path             = /home/anikfal/shapefiles/anzali_swamp.shp
+
+ERA5_SubDomain_on_off            = 0
+ Min_lat                         = 30
+ Max_lat                         = 50
+ Min_lon                         = 60
+ Max_lon                         = 70
 -----------------------------------------------------------------------------
 
 
 ============================= GENERAL SETTINGS ==============================
 =============================================================================
-spin-up_time (hours)            = 0
-averaging_on_off                = 0
-average_time (hours)            = 6
-panel_plot__on_off              = 0
-panel_plot__rows_number         = 1
-panel_plot__columns_number      = 3
-smooth_maps_on_off              = 1
-map_borderline_color            = black
-map_borderline_thickness        = 0.5
-map_filled_ocean_on_off         = 1
-map_gridlines_on_off            = 1
-plot_titles_on_off              = 1
+spin-up_time (hours)             = 6
+averaging_on_off                 = 0
+ average_time (hours)            = 12
+panel_plot__on_off               = 1
+ panel_plot__rows_number         = 2
+ panel_plot__columns_number      = 3
+smooth_maps_on_off               = 1
+map_borderline_color             = black
+map_borderline_thickness         = 0.5
+map_filled_ocean_on_off          = 1
+map_gridlines_on_off             = 0
+plot_titles_on_off               = 1
 -----------------------------------------------------------------------------

@@ -186,7 +186,7 @@ if (validvar) then ;validvar 5003
 rh = varlist[0]  ;;;added_new_line_by_sed
 
 ;;;equation from namelist.wrf
-tc2 = (rh/100)  ;;;added_new_line_by_sed
+tc2 = rh/100  ;;;added_new_line_by_sed
 system("cd $postwrf_dir/modules && ./extract_getinput.sh")
 system("ln -sf $postwrf_dir/modules/eqname .")
  eqname = asciiread("eqname", -1, "string")
@@ -201,6 +201,13 @@ system("ln -sf $postwrf_dir/modules/eqname .")
   times = wrf_user_getvar(a,"times",-1)
   pp  = wrf_user_getvar(a, "pressure",-1)
   locs = wrf_user_ll_to_ij(a,lons,lats,True)
+  if (dimsizes(dimsizes(locs)) .eq. 1) then ; In case of only
+    new_loc = new((/2,1/), "integer")
+    new_loc(0,0) = locs(0)
+    new_loc(1,0) = locs(1)
+    locs := new_loc
+    delete(new_loc)
+  end if
   loccount = dimsizes(locnames)
   res                   = True
   res@trYReverse        = True                       ; reverse Y-axis

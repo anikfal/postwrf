@@ -175,12 +175,13 @@ end if
 
 
         ;;shell script333
+tk = varlist[1]  ;;;added_new_line_by_sed333
 rh = varlist[0]  ;;;added_new_line_by_sed333
 delete(varlist)
 delete(varlist2)
 
   ;equation from namelist.wrf333
-tc_plane3 = (rh/100)  ;;;added_new_line_by_sed333
+tc_plane3 = (rh+tk)^0.5  ;;;added_new_line_by_sed333
 
 if (ncl_smooth.eq.1) then
   wrf_smooth_2d(tc_plane3,3)
