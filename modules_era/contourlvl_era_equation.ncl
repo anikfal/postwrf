@@ -72,15 +72,9 @@ end if
  NCLgridline_onoff = tointeger(getenv("gridline_onoff"))
  NCLaverage_onoff = tointeger(getenv("average_onoff"))
  NCLaverage_time = tointeger(getenv("averagetime"))
- NCLtitle = tointeger(getenv("titile_option"))
  panel_onoff = tointeger(getenv("panelplot"))
  NCLpanelrows = tointeger(getenv("panelrows"))
  NCLpanelcolumns = tointeger(getenv("panelcolumns"))
-
-  opt_notitle = True
-  opt_notitle@NoHeaderFooter = True
-  opt_notitle@InitTime = False
-  opt_notitle@ValidTime = False
 
     filename = getenv("outname")
   type = getenv("imgfmt")
@@ -95,152 +89,6 @@ end if
       totstepsminus = totstepsminus - time_first
     end if
 
-yy  = asciiread(".AllWRFVariables", -1, "string")
-
-if_polynom  = False
-if_polynom3 = False
-if_polynom2 = False
-if_polynom1 = False
-if_valid   = True
-
-if ( NCL3VARONOFF.ne.1 ) then
-  NCLCNVAR3=yy(0)
-  else
-  varplus = str_match(NCLCNVAR3,"+")
-  varminus = str_match(NCLCNVAR3,"-")
-  varmult = str_match(NCLCNVAR3,"*")
-  vardiv = str_match(NCLCNVAR3,"/")
-  varexp = str_match(NCLCNVAR3,"^")
-  varopenp = str_match(NCLCNVAR3,"(")
-  varclosep = str_match(NCLCNVAR3,")")
-  if( .not.ismissing(varplus) .or. .not.ismissing(varminus) .or. .not.ismissing(varmult) \
-    .or. .not.ismissing(vardiv) .or. .not.ismissing(varexp) .or. .not.ismissing(varopenp) \
-    .or. .not.ismissing(varclosep) ) then ;;if one is filled
-    if_polynom = True
-    if_polynom3 = if_polynom
-    homedir = getenv("postwrf_dir")
-    asciiwrite (homedir+"/modules_era/totalequation.txt" , NCLCNVAR3)
-    asciiwrite (homedir+"/modules_era/totalequationCN3.txt" , NCLCNVAR3)
-    system("cd $postwrf_dir/modules_era && ./separation.sh") ;;variable.txt
-    system("ln -sf $postwrf_dir/modules_era/variables.txt .")
-    system("ln -sf $postwrf_dir/modules_era/totalequation.txt .")
-    polynom3 = asciiread("variables.txt", -1, "string")
-    asciiwrite (homedir+"/modules_era/variablesCN3.txt" , polynom3)
-    system("ln -sf $postwrf_dir/modules_era/variablesCN3.txt .")
-    vardims = dimsizes(polynom3)
-    do ii = 0, vardims-1 ;;check if polynomial variables are valid
-      if ( all(yy.ne.polynom3(ii)) ) then
-        print("Found invalid variable name")
-        delete(NCLCNVAR3)
-        NCLCNVAR3 = ""
-        NCL1VARONOFF = 0 ;;No need for the next var (VAR1)
-        NCL2VARONOFF = 0
-        if_valid = False
-        break
-      end if
-    end do
-  end if
-end if
-
-if ( NCL1VARONOFF.ne.1 ) then ;if is off, then no need to test the validity of variable
-  NCLCNVAR1=yy(0)
-  else
-  varplus = str_match(NCLCNVAR1,"+")
-  varminus = str_match(NCLCNVAR1,"-")
-  varmult = str_match(NCLCNVAR1,"*")
-  vardiv = str_match(NCLCNVAR1,"/")
-  varexp = str_match(NCLCNVAR1,"^")
-  varopenp = str_match(NCLCNVAR1,"(")
-  varclosep = str_match(NCLCNVAR1,")")
-  if( .not.ismissing(varplus) .or. .not.ismissing(varminus) .or. .not.ismissing(varmult) \
-    .or. .not.ismissing(vardiv) .or. .not.ismissing(varexp) .or. .not.ismissing(varopenp) \
-    .or. .not.ismissing(varclosep) ) then ;;if one is filled
-    if_polynom = True
-    if_polynom1 = if_polynom
-    homedir = getenv("postwrf_dir")
-    asciiwrite (homedir+"/modules_era/totalequation.txt" , NCLCNVAR1)
-    asciiwrite (homedir+"/modules_era/totalequationCN1.txt" , NCLCNVAR1)
-    system("cd $postwrf_dir/modules_era && ./separation.sh") ;;variable.txt
-    system("ln -sf $postwrf_dir/modules_era/variables.txt .")
-    system("ln -sf $postwrf_dir/modules_era/totalequation.txt .")
-    polynom1 = asciiread("variables.txt", -1, "string")
-    asciiwrite (homedir+"/modules_era/variablesCN1.txt" , polynom1)
-    system("ln -sf $postwrf_dir/modules_era/variablesCN1.txt .")
-    vardims = dimsizes(polynom1)
-    do ii = 0, vardims-1 ;;check if polynomial variables are valid
-      if ( all(yy.ne.polynom1(ii)) ) then
-        print("Found invalid variable name")
-        delete(NCLCNVAR1)
-        NCLCNVAR1 = ""
-        NCL2VARONOFF = 0  ;;var3 is passed, so no need for setting its value
-        if_valid = False
-        break
-      end if
-    end do
-  end if
-end if
-
-if ( NCL2VARONOFF.ne.1 ) then
-  NCLCNVAR2=yy(0)
-  else
-  varplus = str_match(NCLCNVAR2,"+")
-  varminus = str_match(NCLCNVAR2,"-")
-  varmult = str_match(NCLCNVAR2,"*")
-  vardiv = str_match(NCLCNVAR2,"/")
-  varexp = str_match(NCLCNVAR2,"^")
-  varopenp = str_match(NCLCNVAR2,"(")
-  varclosep = str_match(NCLCNVAR2,")")
-  if( .not.ismissing(varplus) .or. .not.ismissing(varminus) .or. .not.ismissing(varmult) \
-    .or. .not.ismissing(vardiv) .or. .not.ismissing(varexp) .or. .not.ismissing(varopenp) \
-    .or. .not.ismissing(varclosep) ) then ;;if one is filled
-    if_polynom = True
-    if_polynom2 = if_polynom
-    homedir = getenv("postwrf_dir")
-    asciiwrite (homedir+"/modules_era/totalequation.txt" , NCLCNVAR2)
-    asciiwrite (homedir+"/modules_era/totalequationCN2.txt" , NCLCNVAR2)
-    system("cd $postwrf_dir/modules_era && ./separation.sh") ;;variable.txt
-    system("ln -sf $postwrf_dir/modules_era/variables.txt .")
-    system("ln -sf $postwrf_dir/modules_era/totalequation.txt .")
-    polynom2 = asciiread("variables.txt", -1, "string")
-    asciiwrite (homedir+"/modules_era/variablesCN2.txt" , polynom2)
-    system("ln -sf $postwrf_dir/modules_era/variablesCN2.txt .")
-    vardims = dimsizes(polynom2)
-    do ii = 0, vardims-1 ;;check if polynomial variables are valid
-      if ( all(yy.ne.polynom2(ii)) ) then
-        print("Found invalid variable name")
-        delete(NCLCNVAR2)
-        NCLCNVAR2 = ""
-        NCL2VARONOFF = 0  ;;var3 is passed, so no need for setting its value
-        if_valid = False
-        break
-      end if
-    end do
-  end if
-end if
-
-if (if_polynom .and. if_valid) then ;;if not valid, do not exit, showing message of not valid
-  poly_var = (/if_polynom1, if_polynom2, if_polynom3/)
-  asciiwrite (homedir+"/modules_era/polynom_status.txt", poly_var)
-  if (if_polynom3) then
-    print("Please wait. NCL is processing ...")
-    print("")
-    system("cd $postwrf_dir/modules_era && ./contourlvl_sed3.sh") ;;sed
-  end if
-  if (if_polynom2) then
-    print("Please wait. NCL is processing ...")
-    print("")
-    system("cd $postwrf_dir/modules_era && ./contourlvl_sed2.sh") ;;sed
-  end if
-  if (if_polynom1) then
-    print("Please wait. NCL is processing ...")
-    print("")
-    system("cd $postwrf_dir/modules_era && ./contourlvl_sed1.sh") ;;sed
-  end if
-  system("cd $postwrf_dir/modules_era && ncl -Q contourlvl_era_equation.ncl")
-  exit()
-end if
-
-if ( any(yy.eq.NCLCNVAR3) .and. any(yy.eq.NCLCNVAR1) .and. any(yy.eq.NCLCNVAR2) ) then  ;code att2
       levs = aaa->level
       levdim = dimsizes(levs)-1
       highestPressureLev = levs(0)
@@ -258,14 +106,18 @@ if ( any(yy.eq.NCLCNVAR3) .and. any(yy.eq.NCLCNVAR1) .and. any(yy.eq.NCLCNVAR2) 
         min_lon = tointeger(getenv("era_minlon"))
         max_lon = tointeger(getenv("era_maxlon"))
       end if
+      homedir = getenv("postwrf_dir")
+      polynoms_status = asciiread(homedir+"/modules_era/polynom_status.txt", -1, "string")
       
       if (NCL3VARONOFF .eq. 1) then ; code pprggvar1
-        NCLPLEV3 = tointeger(getenv("CNLEV30")) ;pressure_levelsS
         cnmode = getenv("contvar")
         cnmin = getenv("Min")
         cnmax = getenv("Max")
         contourcolorpal = getenv("colpal")
        
+       if_polynom3 = polynoms_status(2)
+      if (if_polynom3.eq."False")  ;;code ifpoly3
+        NCLPLEV3 = tointeger(getenv("CNLEV30")) ;pressure_levelsS
           if (NCLCNVAR3 .eq. "wind_s") then
               uu10  = short2flt(aaa->u)
               vv10  = short2flt(aaa->v)
@@ -316,8 +168,100 @@ if ( any(yy.eq.NCLCNVAR3) .and. any(yy.eq.NCLCNVAR1) .and. any(yy.eq.NCLCNVAR2) 
                 tc_plane33 = tc3(:, {NCLPLEV3}, :, :)
             end if
         end if
-        tc3@long_name := tc3@long_name + " at " + NCLPLEV3 + " hpa"
+        
+        else ;;code ifpoly3
+        NCLvarnames = asciiread("variablesCN3.txt", -1, "string")
+        totvarsnum = dimsizes(NCLvarnames) - 1
 
+        ncl_CNLEV3_num = tointeger(getenv("CNLEV3_num"))
+        NCLPLEV3 = new(ncl_CNLEV3_num, "integer")
+        i = 0
+        do while(i.lt.ncl_CNLEV3_num)
+          NCLPLEV3(i) = tointeger(getenv("CNLEV3"+i))
+          i=i+1
+        end do
+        oneP1 = False
+        if (ncl_CNLEV3_num.eq.(totvarsnum+1)) then
+          NCLPLEV3 = new(ncl_CNLEV3_num, "integer")
+          i = 0
+          do while(i.lt.ncl_CNLEV3_num)
+            NCLPLEV3(i) = tointeger(getenv("CNLEV3"+i))
+            i=i+1
+          end do
+          else
+            if (ncl_CNLEV3_num.eq.1) then
+              delete(NCLPLEV3)
+              NCLPLEV3 = new((totvarsnum+1), "integer")
+              NCLPLEV3 = tointeger(getenv("CNLEV30"))
+              oneP1 = True
+              else
+              print("Error: Number of pressure levels do not match the number of variables in < "\
+              + asciiread(homedir+"/modules_era/totalequationCN30.txt", -1, "string")  + " >" )
+              print("       You could put only one pressure for all the variables in the polynomial")
+              exit()
+            end if
+        end if
+        varlist2 = NewList("lifo")
+        
+        do ii = 0, totvarsnum ;;code do_poly3
+          if (NCLvarnames(ii) .eq. "wind_s") then
+              uu10  = short2flt(aaa->u)
+              vv10  = short2flt(aaa->v)
+              ListAppend(varlist2, wind_speed(uu10, vv10))
+              varlist2[ii]@description = "wind speed"
+              varlist2[ii]@units = "m s-1"
+           else if (NCLvarnames(ii) .eq. "wind_d") then
+              uu10  = short2flt(aaa->u)
+              vv10  = short2flt(aaa->v)
+              ListAppend(varlist2, wind_direction(uu10, vv10, 0))
+              varlist2[ii]@description = "wind direction"
+              varlist2[ii]@units = "Degrees from north"
+            else
+            ListAppend(varlist2, short2flt(aaa->$NCLvarnames(ii)$))
+          ; end if
+          end if
+          end if
+        end do ;;code do_poly3
+        delete(NCLvarnames)
+
+        varlist = NewList("lifo") ;;main list and checking the dims
+        do ii = 0, totvarsnum ;;code docheck22
+          if (dimsizes(dimsizes(varlist2[ii])).eq.3) then
+              ListAppend(varlist,varlist2[ii])
+            else ;if dimsize equals 4
+              if (NCLPLEV3(ii).eq.0) then ;surface pressure
+                  ListAppend(varlist,varlist2[ii](:,0,:,:))
+                else
+                  ListAppend(varlist, varlist2[ii](:, {NCLPLEV3(ii)}, :, :))
+              end if
+          end if
+        end do ;;code docheck22
+
+        ;;shell script333
+zb = varlist[1]  ;;;added_new_line_by_sed333
+za = varlist[0]  ;;;added_new_line_by_sed333
+
+  ;equation from namelist.wrf333
+tc_plane33 = (za-zb)/98.1  ;;;added_new_line_by_sed333
+
+copy_VarCoords(varlist[0], tc_plane33)
+
+system("cd $postwrf_dir/modules_era && ./contourlvl_getinput3.sh")
+system("ln -sf $postwrf_dir/modules_era/eqname $postwrf_dir")
+eqname3 = asciiread("eqname", -1, "string")
+system("ln -sf $postwrf_dir/modules_era/equnit $postwrf_dir")
+equnit3 = asciiread("equnit", -1, "string")
+if (ncl_CNLEV3_num.gt.1) then
+  tc_plane33@long_name = eqname3 + " at multi atm levels"
+  else
+  tc_plane33@long_name = eqname3 + " at " + varlist[0]@level + " hpa"
+end if
+tc_plane33@units = equnit3
+delete(varlist)
+delete(varlist2)
+
+        end if ;;code ifpoly3
+        
         opt333                   = True
         opt333@gsnDraw           = False  ; do not draw plot yet (need False for paneling)
         opt333@gsnFrame          = False  ; do not frame plot yet (need False for paneling)
@@ -332,7 +276,7 @@ if ( any(yy.eq.NCLCNVAR3) .and. any(yy.eq.NCLCNVAR1) .and. any(yy.eq.NCLCNVAR2) 
         opt333@lbLabelStride     = 2      ; only print value for every other contour in label bar
         opt333@cnLineLabelDensityF = 1.5
         opt333@mpLandFillColor      = "transparent"
-        opt333@mpShapeMode  = "FreeAspect"        
+        opt333@mpShapeMode  = "FreeAspect" ;"FixedAspectFitBB"
         if (ocean_onoff .eq. 1) then
           opt333@mpFillOn             = True
           opt333@mpOceanFillColor = "deepskyblue"
@@ -405,12 +349,13 @@ if ( any(yy.eq.NCLCNVAR3) .and. any(yy.eq.NCLCNVAR1) .and. any(yy.eq.NCLCNVAR2) 
             opt333@cnMaxLevelValF = cnmax3
           end if
         end if ; if for code abc123
+
       end if ;code pprggvar1
 
       ;;;;;####################################################################
       ;processing VAR1
-      if (NCL1VARONOFF.eq.1) then  ;processing VAR2
-        NCLPLEV1 = tointeger(getenv("CNLEV10")) ;pressure_level22
+      if (NCL1VARONOFF.eq.1) then  ;processing VAR1
+        opt111                   = True
         NCLINTV1 = tofloat(getenv("CNINTV1"))
         NCLCOLOR1 = getenv("CNCOLOR1") ;NCLcolor22
         NCLTHICK1 = tofloat(getenv("CNTHICK1")) ;NCLthick22
@@ -419,14 +364,15 @@ if ( any(yy.eq.NCLCNVAR3) .and. any(yy.eq.NCLCNVAR1) .and. any(yy.eq.NCLCNVAR2) 
         else
           NCLTHICK1 = 2
         end if
-
         NCLLABEL1 = tofloat(getenv("CNLABEL1")) ;NCLlabel22
         if (NCLLABEL1.le.1 .and. NCLLABEL1.ge.0) then
           NCLLABEL1 = 0.01 + NCLLABEL1*0.02
         else
           NCLLABEL1 = 0.02
         end if
-        
+      if_polynom1 = polynoms_status(0)
+      if (if_polynom1.eq."False")  ;;code ifpoly1
+        NCLPLEV1 = tointeger(getenv("CNLEV10")) ;pressure_level22
         if (NCLCNVAR1 .eq. "wind_s") then
             uu10  = short2flt(aaa->u)
             vv10  = short2flt(aaa->v)
@@ -456,7 +402,117 @@ if ( any(yy.eq.NCLCNVAR3) .and. any(yy.eq.NCLCNVAR1) .and. any(yy.eq.NCLCNVAR2) 
           end if
         end if
 
-        opt111                   = True
+        
+        mydim2 = dimsizes(dimsizes(tc1))  
+        if (mydim2.eq.3) then
+          tc_plane11 = tc1
+          tc_plane11@PlotLevelID = "surface"
+          else ;if dimsize equals 4
+          if (NCLPLEV1.eq.0) then ;surface pressure
+                NCLPLEV1 = lowestPressureLev
+                tc_plane11 = tc1(:, {NCLPLEV1}, :, :)
+            else
+              if (NCLPLEV1 .lt. highestPressureLev) then
+                print("Pressure level has been set to " + highestPressureLev)
+                NCLPLEV1 = highestPressureLev
+                else if (NCLPLEV1 .gt. lowestPressureLev) then
+                  print("Pressure level has been set to " + lowestPressureLev)
+                  NCLPLEV1 = lowestPressureLev
+                end if
+              end if
+              tc_plane11 = tc1(:, {NCLPLEV1}, :, :)
+          end if
+        end if
+        tc1@long_name := tc1@long_name + " at " + NCLPLEV1 + " hpa"
+        opt111@gsnLeftString = tc1@long_name
+
+else ;;code ifpoly1
+  NCLvarnames = asciiread("variablesCN1.txt", -1, "string")
+  totvarsnum = dimsizes(NCLvarnames) - 1
+  ncl_CNLEV1_num = tointeger(getenv("CNLEV1_num"))
+  NCLPLEV1 = new(ncl_CNLEV1_num, "integer")
+  i = 0
+  do while(i.lt.ncl_CNLEV1_num)
+    NCLPLEV1(i) = tointeger(getenv("CNLEV1"+i))
+    i=i+1
+  end do
+  oneP1 = False
+  if (ncl_CNLEV1_num.eq.(totvarsnum+1)) then
+    NCLPLEV1 = new(ncl_CNLEV1_num, "integer")
+    i = 0
+    do while(i.lt.ncl_CNLEV1_num)
+      NCLPLEV1(i) = tointeger(getenv("CNLEV1"+i))
+      i=i+1
+    end do
+    else
+      if (ncl_CNLEV1_num.eq.1) then
+        delete(NCLPLEV1)
+        NCLPLEV1 = new((totvarsnum+1), "integer")
+        NCLPLEV1 = tointeger(getenv("CNLEV10"))
+        oneP1 = True
+        else
+        print("Error: Number of pressure levels do not match the number of variables in < "\
+        + asciiread(homedir+"/modules_era/totalequationCN10.txt", -1, "string")  + " >" )
+        print("       You could put only one pressure for all the variables in the polynomial")
+        exit()
+      end if
+  end if
+  varlist2 = NewList("lifo")
+    do ii = 0, totvarsnum ;;code do_poly1
+    if (NCLvarnames(ii) .eq. "wind_s") then
+        uu10  = short2flt(aaa->u)
+        vv10  = short2flt(aaa->v)
+        ListAppend(varlist2, wind_speed(uu10, vv10))
+        varlist2[ii]@description = "wind speed"
+        varlist2[ii]@units = "m s-1"
+      else if (NCLvarnames(ii) .eq. "wind_d") then
+        uu10  = short2flt(aaa->u)
+        vv10  = short2flt(aaa->v)
+        ListAppend(varlist2, wind_direction(uu10, vv10, 0))
+        varlist2[ii]@description = "wind direction"
+        varlist2[ii]@units = "Degrees from north"
+      else
+      ListAppend(varlist2, short2flt(aaa->$NCLvarnames(ii)$))
+    end if
+    end if
+  end do ;;code do_poly1
+  delete(NCLvarnames)
+
+  varlist = NewList("lifo") ;;main list and checking the dims
+  do ii = 0, totvarsnum ;;code docheck22
+    if (dimsizes(dimsizes(varlist2[ii])).eq.3) then
+        ListAppend(varlist,varlist2[ii])
+      else ;if dimsize equals 4
+        if (NCLPLEV1(ii).eq.0) then ;surface pressure
+            ListAppend(varlist,varlist2[ii](:,0,:,:))
+          else
+            ListAppend(varlist, varlist2[ii](:, {NCLPLEV1(ii)}, :, :))
+        end if
+    end if
+  end do ;;code docheck22
+
+        ;;shell script111
+z = varlist[0]  ;;;added_new_line_by_sed111
+
+  ;equation from namelist.wrf111
+tc_plane11 = (z/2)*2  ;;;added_new_line_by_sed111
+
+copy_VarCoords(varlist[0], tc_plane11)
+
+system("cd $postwrf_dir/modules_era && ./contourlvl_getinput1.sh")
+system("ln -sf $postwrf_dir/modules_era/eqname $postwrf_dir")
+eqname1 = asciiread("eqname", -1, "string")
+system("ln -sf $postwrf_dir/modules_era/equnit $postwrf_dir")
+equnit1 = asciiread("equnit", -1, "string")
+if (ncl_CNLEV1_num.gt.1) then
+  tc_plane11@long_name = eqname1 + " at multi atm levels"
+  else
+  tc_plane11@long_name = eqname1 + " at " + varlist[0]@level + " hpa"
+end if
+tc_plane11@units = equnit1
+delete(varlist)
+delete(varlist2)
+end if ;;code ifpoly1
         opt111@gsnDraw           = False  ; do not draw plot yet (need False for paneling)
         opt111@gsnFrame          = False  ; do not frame plot yet (need False for paneling)
         opt111@cnFillOn          = False   ; fill contours
@@ -526,28 +582,6 @@ if ( any(yy.eq.NCLCNVAR3) .and. any(yy.eq.NCLCNVAR1) .and. any(yy.eq.NCLCNVAR2) 
             delete(opt111@mpGridAndLimbOn)
           end if
         end if
-        mydim2 = dimsizes(dimsizes(tc1))  
-        if (mydim2.eq.3) then
-          tc_plane11 = tc1
-          tc_plane11@PlotLevelID = "surface"
-          else ;if dimsize equals 4
-          if (NCLPLEV1.eq.0) then ;surface pressure
-                NCLPLEV1 = lowestPressureLev
-                tc_plane11 = tc1(:, {NCLPLEV1}, :, :)
-            else
-              if (NCLPLEV1 .lt. highestPressureLev) then
-                print("Pressure level has been set to " + highestPressureLev)
-                NCLPLEV1 = highestPressureLev
-                else if (NCLPLEV1 .gt. lowestPressureLev) then
-                  print("Pressure level has been set to " + lowestPressureLev)
-                  NCLPLEV1 = lowestPressureLev
-                end if
-              end if
-              tc_plane11 = tc1(:, {NCLPLEV1}, :, :)
-          end if
-        end if
-        tc1@long_name := tc1@long_name + " at " + NCLPLEV1 + " hpa"
-        opt111@gsnLeftString = tc1@long_name
 
         if (ncl_smooth.eq.1) then
           tc_plane11 := smth9_Wrap(tc_plane11, 0.5, -0.25, False)
@@ -578,15 +612,14 @@ if ( any(yy.eq.NCLCNVAR3) .and. any(yy.eq.NCLCNVAR1) .and. any(yy.eq.NCLCNVAR2) 
         opt111@cnMinLevelValF = lower_bound1
         opt111@cnMaxLevelCount = 255
       end if ;end of VAR1
-
       ;;;;;####################################################################
       ;processing VAR2
-      if (NCL2VARONOFF.eq.1) then  ;processing VAR3
-        NCLPLEV2 = tointeger(getenv("CNLEV20")) ;pressure_level33
-        NCLINTV2 = tofloat(getenv("CNINTV2")) ;NCLintv33
-        NCLCOLOR2 = getenv("CNCOLOR2") ;NCLcolor33
-        NCLTHICK2 = tofloat(getenv("CNTHICK2")) ;NCLthick33
-        NCLBROKEN2 = tointeger(getenv("CNBROKEN2")) ;NCLbroken33
+      if (NCL2VARONOFF.eq.1) then  ;processing VAR2
+
+        NCLINTV2 = tofloat(getenv("CNINTV2"))
+        NCLCOLOR2 = getenv("CNCOLOR2")
+        NCLTHICK2 = tofloat(getenv("CNTHICK2"))
+        NCLBROKEN2 = tointeger(getenv("CNBROKEN2"))
 
         if (NCLTHICK2.le.1 .and. NCLTHICK2.ge.0) then
           NCLTHICK2 = 1 + NCLTHICK2*3
@@ -594,13 +627,16 @@ if ( any(yy.eq.NCLCNVAR3) .and. any(yy.eq.NCLCNVAR1) .and. any(yy.eq.NCLCNVAR2) 
           NCLTHICK2 = 2
         end if
 
-        NCLLABEL2 = tofloat(getenv("CNLABEL2")) ;NCLlabel33
+        NCLLABEL2 = tofloat(getenv("CNLABEL2"))
         if (NCLLABEL2.le.1 .and. NCLLABEL2.ge.0) then
           NCLLABEL2 = 0.01 + NCLLABEL2*0.02
         else
           NCLLABEL2 = 0.02
         end if
 
+        if_polynom2 = polynoms_status(1)
+        if (if_polynom2.eq."False")  ;;code ifpoly2
+        NCLPLEV2 = tointeger(getenv("CNLEV20"))
         if (NCLCNVAR2 .eq. "wind_s") then
             uu10  := short2flt(aaa->u)
             vv10  := short2flt(aaa->v)
@@ -629,7 +665,115 @@ if ( any(yy.eq.NCLCNVAR3) .and. any(yy.eq.NCLCNVAR1) .and. any(yy.eq.NCLCNVAR2) 
           end if
           end if
         end if
+        
+        mydim3 = dimsizes(dimsizes(tc2))  
+        if (mydim3.eq.3) then
+          tc_plane22 = tc2
+          tc_plane22@PlotLevelID = "surface"
+          else ;if dimsize equals 4
+          if (NCLPLEV2.eq.0) then ;surface pressure
+              NCLPLEV2 = lowestPressureLev
+              tc_plane22 = tc2(:, {NCLPLEV2}, :, :)              
+            else
+              if (NCLPLEV2 .lt. highestPressureLev) then
+                print("Pressure level has been set to " + highestPressureLev)
+                NCLPLEV2 = highestPressureLev
+                else if (NCLPLEV2 .gt. lowestPressureLev) then
+                  print("Pressure level has been set to " + lowestPressureLev)
+                  NCLPLEV2 = lowestPressureLev
+                end if
+              end if
+              tc_plane22 = tc2(:, {NCLPLEV2}, :, :)
+          end if
+        end if
+else ;;code ifpoly2
+  NCLvarnames = asciiread("variablesCN2.txt", -1, "string")
+  totvarsnum = dimsizes(NCLvarnames) - 1
+  ncl_CNLEV2_num = tointeger(getenv("CNLEV2_num"))
+  NCLPLEV2 = new(ncl_CNLEV2_num, "integer")
+  i = 0
+  do while(i.lt.ncl_CNLEV2_num)
+    NCLPLEV2(i) = tointeger(getenv("CNLEV2"+i))
+    i=i+1
+  end do
+  oneP1 = False
+  if (ncl_CNLEV2_num.eq.(totvarsnum+1)) then
+    NCLPLEV2 = new(ncl_CNLEV2_num, "integer")
+    i = 0
+    do while(i.lt.ncl_CNLEV2_num)
+      NCLPLEV2(i) = tointeger(getenv("CNLEV2"+i))
+      i=i+1
+    end do
+    else
+      if (ncl_CNLEV2_num.eq.1) then
+        delete(NCLPLEV2)
+        NCLPLEV2 = new((totvarsnum+1), "integer")
+        NCLPLEV2 = tointeger(getenv("CNLEV20"))
+        oneP1 = True
+        else
+        print("Error: Number of pressure levels do not match the number of variables in < "\
+        + asciiread(homedir+"/modules_era/totalequationCN20.txt", -1, "string")  + " >" )
+        print("       You could put only one pressure for all the variables in the polynomial")
+        exit()
+      end if
+  end if
+  varlist2 = NewList("lifo")
+    do ii = 0, totvarsnum ;;code do_poly2
+    if (NCLvarnames(ii) .eq. "wind_s") then
+        uu10  = short2flt(aaa->u)
+        vv10  = short2flt(aaa->v)
+        ListAppend(varlist2, wind_speed(uu10, vv10))
+        varlist2[ii]@description = "wind speed"
+        varlist2[ii]@units = "m s-1"
+      else if (NCLvarnames(ii) .eq. "wind_d") then
+        uu10  = short2flt(aaa->u)
+        vv10  = short2flt(aaa->v)
+        ListAppend(varlist2, wind_direction(uu10, vv10, 0))
+        varlist2[ii]@description = "wind direction"
+        varlist2[ii]@units = "Degrees from north"
+      else
+      ListAppend(varlist2, short2flt(aaa->$NCLvarnames(ii)$))
+    end if
+    end if
+  end do ;;code do_poly2
+  delete(NCLvarnames)
 
+  varlist = NewList("lifo") ;;main list and checking the dims
+  do ii = 0, totvarsnum ;;code docheck22
+    if (dimsizes(dimsizes(varlist2[ii])).eq.3) then
+        ListAppend(varlist,varlist2[ii])
+      else ;if dimsize equals 4
+        if (NCLPLEV2(ii).eq.0) then ;surface pressure
+            ListAppend(varlist,varlist2[ii](:,0,:,:))
+          else
+            ListAppend(varlist, varlist2[ii](:, {NCLPLEV2(ii)}, :, :))
+        end if
+    end if
+  end do ;;code docheck22
+
+        ;;shell script222
+tb = varlist[1]  ;;;added_new_line_by_sed222
+ta = varlist[0]  ;;;added_new_line_by_sed222
+
+  ;equation from namelist.wrf222
+tc_plane22 = (ta/2)+2*tb  ;;;added_new_line_by_sed222
+
+copy_VarCoords(varlist[0], tc_plane22)
+
+system("cd $postwrf_dir/modules_era && ./contourlvl_getinput2.sh")
+system("ln -sf $postwrf_dir/modules_era/eqname $postwrf_dir")
+eqname2 = asciiread("eqname", -1, "string")
+system("ln -sf $postwrf_dir/modules_era/equnit $postwrf_dir")
+equnit2 = asciiread("equnit", -1, "string")
+if (ncl_CNLEV2_num.gt.1) then
+  tc_plane22@long_name = eqname2 + " at multi atm levels"
+  else
+  tc_plane22@long_name = eqname2 + " at " + varlist[0]@level + " hpa"
+end if
+tc_plane22@units = equnit2
+delete(varlist)
+delete(varlist2)
+end if ;;code ifpoly2
         opt222                   = True
         opt222@gsnDraw           = False  ; do not draw plot yet (need False for paneling)
         opt222@gsnFrame          = False  ; do not frame plot yet (need False for paneling)
@@ -700,28 +844,6 @@ if ( any(yy.eq.NCLCNVAR3) .and. any(yy.eq.NCLCNVAR1) .and. any(yy.eq.NCLCNVAR2) 
             delete(opt222@mpGridAndLimbOn)
           end if
         end if
-        mydim3 = dimsizes(dimsizes(tc2))  
-        if (mydim3.eq.3) then
-          tc_plane22 = tc2
-          tc_plane22@PlotLevelID = "surface"
-          else ;if dimsize equals 4
-          if (NCLPLEV2.eq.0) then ;surface pressure
-              NCLPLEV2 = lowestPressureLev
-              tc_plane22 = tc2(:, {NCLPLEV2}, :, :)              
-            else
-              if (NCLPLEV2 .lt. highestPressureLev) then
-                print("Pressure level has been set to " + highestPressureLev)
-                NCLPLEV2 = highestPressureLev
-                else if (NCLPLEV2 .gt. lowestPressureLev) then
-                  print("Pressure level has been set to " + lowestPressureLev)
-                  NCLPLEV2 = lowestPressureLev
-                end if
-              end if
-              tc_plane22 = tc2(:, {NCLPLEV2}, :, :)
-          end if
-        end if
-        tc2@long_name := tc2@long_name + " at " + NCLPLEV2 + " hpa"
-        opt222@gsnLeftString = tc2@long_name
 
         if (ncl_smooth.eq.1) then
           tc_plane22 := smth9_Wrap(tc_plane22, 0.5, -0.25, False)
@@ -751,7 +873,7 @@ if ( any(yy.eq.NCLCNVAR3) .and. any(yy.eq.NCLCNVAR1) .and. any(yy.eq.NCLCNVAR2) 
         opt222@cnMaxLevelValF = upper_bound2
         opt222@cnMinLevelValF = lower_bound2
         opt222@cnMaxLevelCount = 255
-      end if ;end of VAR3
+      end if ;end of VAR2
 
       if (NCLwindonoff .eq. 1)
         NCLwindlev = tointeger(getenv("nclwindlev"))
@@ -779,6 +901,7 @@ if ( any(yy.eq.NCLCNVAR3) .and. any(yy.eq.NCLCNVAR1) .and. any(yy.eq.NCLCNVAR2) 
         end if
         u_plane@long_name = "Wind speed"
         opts = True
+
         opts@vcRefMagnitudeF = NCLwindsize
         opts@gsnDraw = False
         opts@gsnFrame = False
@@ -855,6 +978,7 @@ if ( any(yy.eq.NCLCNVAR3) .and. any(yy.eq.NCLCNVAR1) .and. any(yy.eq.NCLCNVAR2) 
         paneloption = False
 
         else ;;Panel 
+
         
         paneloption = True
         arrayplots = new (totstepsminus+1, graphic)
@@ -867,7 +991,7 @@ if ( any(yy.eq.NCLCNVAR3) .and. any(yy.eq.NCLCNVAR1) .and. any(yy.eq.NCLCNVAR2) 
         pnlres@lbBoxMinorExtentF          = 0.13
 
         if (NCL3VARONOFF.eq.1 .and. cnmode.eq."Manual") then
-          pnlres@txString                   = "colored contours: " + tc3@description + " (" + tc3@units + " )"
+          pnlres@txString                   = "colored contours: " + tc_plane33@long_name + " (" + tc_plane33@units + ")"         ;tc3@description + " (" + tc3@units + " )"
           pnlres@gsnPanelLabelBar = True
           opt333@lbLabelBarOn = False
         end if
@@ -891,15 +1015,16 @@ if ( any(yy.eq.NCLCNVAR3) .and. any(yy.eq.NCLCNVAR1) .and. any(yy.eq.NCLCNVAR2) 
 
               if (NCL3VARONOFF.eq.1 .and. NCL1VARONOFF.eq.1 .and. NCL2VARONOFF.eq.1 .and. NCLwindonoff.eq.1) then
                 opt333@tiMainString = all_steps(it)
-                opt333@lbTitleString    = tc3@long_name + " (" + tc3@units + ")"
+                opt333@lbTitleString = tc_plane33@long_name + " (" + tc_plane33@units + ")"
+                
                 opt333@lbTitleFontHeightF = .015
                 opt333@lbTopMarginF = 0.1
                 opt333@lbTopMarginF = 0.2
                 opt333@lbBottomMarginF = 0.4
                 opts@vcRefAnnoOrthogonalPosF = -0.48  ; 2 titles
                 contour_tc3 = gsn_csm_contour_map(wks, tc_plane33(it,:,:), opt333)
-                opt111@gsnLeftString = tc1@long_name + "~C~" + " "
-                opt111@gsnRightString = tc1@units + "~C~" + " "
+                opt111@gsnLeftString = tc_plane11@long_name + "~C~" + " "
+                opt111@gsnRightString = tc_plane11@units + "~C~" + " "
                 contour_tc1 = gsn_csm_contour(wks, tc_plane11(it,:,:), opt111)
                 contour_tc2 = gsn_csm_contour(wks, tc_plane22(it,:,:), opt222)
                 vector = gsn_csm_vector(wks, u_plane(it,:,:), v_plane(it,:,:), opts)
@@ -909,7 +1034,7 @@ if ( any(yy.eq.NCLCNVAR3) .and. any(yy.eq.NCLCNVAR1) .and. any(yy.eq.NCLCNVAR2) 
                 plot = contour_tc3
               else if (NCL3VARONOFF.eq.1 .and. NCL1VARONOFF.eq.1 .and. NCL2VARONOFF.eq.1 .and. NCLwindonoff.ne.1) then
                 opt333@tiMainString = all_steps(it)
-                opt333@lbTitleString = tc3@long_name + " (" + tc3@units + ")"
+                opt333@lbTitleString = tc_plane33@long_name + " (" + tc_plane33@units + ")"
                 opt333@lbTitleFontHeightF = .015
                 opt333@lbTopMarginF = 0.1
                 opt333@lbTopMarginF = 0.2
@@ -924,7 +1049,7 @@ if ( any(yy.eq.NCLCNVAR3) .and. any(yy.eq.NCLCNVAR1) .and. any(yy.eq.NCLCNVAR2) 
                 plot = contour_tc3
               else if (NCL3VARONOFF.eq.1 .and. NCL1VARONOFF.eq.1 .and. NCL2VARONOFF.ne.1 .and. NCLwindonoff.eq.1) then
                 opt333@tiMainString = all_steps(it)
-                opt333@lbTitleString = tc3@long_name + " (" + tc3@units + ")"
+                opt333@lbTitleString = tc_plane33@long_name + " (" + tc_plane33@units + ")"
                 opt333@lbTitleFontHeightF = .015
                 opt333@lbTopMarginF = 0.1
                 opt333@lbTopMarginF = 0.2
@@ -944,7 +1069,7 @@ if ( any(yy.eq.NCLCNVAR3) .and. any(yy.eq.NCLCNVAR1) .and. any(yy.eq.NCLCNVAR2) 
                 plot = contour_tc3
               else if (NCL3VARONOFF.eq.1 .and. NCL1VARONOFF.ne.1 .and. NCL2VARONOFF.eq.1 .and. NCLwindonoff.eq.1) then
                 opt333@tiMainString = all_steps(it)
-                opt333@lbTitleString = tc3@long_name + " (" + tc3@units + ")"
+                opt333@lbTitleString = tc_plane33@long_name + " (" + tc_plane33@units + ")"
                 opt333@lbTitleFontHeightF = .017
                 opt333@lbTopMarginF = 0.1
                 opt333@lbTopMarginF = 0.2
@@ -958,7 +1083,7 @@ if ( any(yy.eq.NCLCNVAR3) .and. any(yy.eq.NCLCNVAR1) .and. any(yy.eq.NCLCNVAR2) 
                 plot = contour_tc3 
               else if (NCL3VARONOFF.eq.1 .and. NCL1VARONOFF.ne.1 .and. NCL2VARONOFF.eq.1 .and. NCLwindonoff.ne.1) then
                 opt333@tiMainString = all_steps(it)
-                opt333@lbTitleString = tc3@long_name + " (" + tc3@units + ")"
+                opt333@lbTitleString = tc_plane33@long_name + " (" + tc_plane33@units + ")"
                 opt333@lbTitleFontHeightF = .015
                 opt333@lbTopMarginF = 0.1
                 opt333@lbTopMarginF = 0.2
@@ -970,7 +1095,7 @@ if ( any(yy.eq.NCLCNVAR3) .and. any(yy.eq.NCLCNVAR1) .and. any(yy.eq.NCLCNVAR2) 
               else if (NCL3VARONOFF.eq.1 .and. NCL1VARONOFF.ne.1 .and. NCL2VARONOFF.ne.1 .and. NCLwindonoff.eq.1) then
                 opt333@gsnMaximize = True
                 opt333@tiMainString = all_steps(it)
-                opt333@lbTitleString = tc3@long_name + " (" + tc3@units + ")"
+                opt333@lbTitleString = tc_plane33@long_name + " (" + tc_plane33@units + ")"
                 opt333@lbTitleFontHeightF = .015
                 opt333@lbTopMarginF = 0.1
                 opt333@lbTopMarginF = 0.2
@@ -983,7 +1108,7 @@ if ( any(yy.eq.NCLCNVAR3) .and. any(yy.eq.NCLCNVAR1) .and. any(yy.eq.NCLCNVAR2) 
               else if (NCL3VARONOFF.eq.1 .and. NCL1VARONOFF.ne.1 .and. NCL2VARONOFF.ne.1 .and. NCLwindonoff.ne.1) then
                 opt333@gsnMaximize = True
                 opt333@tiMainString = all_steps(it)
-                opt333@lbTitleString = tc3@long_name + " (" + tc3@units + ")"
+                opt333@lbTitleString = tc_plane33@long_name + " (" + tc_plane33@units + ")"
                 opt333@lbTitleFontHeightF = .015
                 opt333@lbTopMarginF = 0.1
                 opt333@lbTopMarginF = 0.2
@@ -1113,9 +1238,10 @@ if ( any(yy.eq.NCLCNVAR3) .and. any(yy.eq.NCLCNVAR1) .and. any(yy.eq.NCLCNVAR2) 
                 break
               end if
               print("Working on time range (average): " + all_steps(it) + " to " + all_steps(it+ncltstep) )
+
               if (NCL3VARONOFF.eq.1 .and. NCL1VARONOFF.eq.1 .and. NCL2VARONOFF.eq.1 .and. NCLwindonoff.eq.1) then
                 opt333@tiMainString = "Average from " + all_steps(it) + " to " + all_steps(it+ncltstep)
-                opt333@lbTitleString    = tc3@long_name + " (" + tc3@units + ")"
+                opt333@lbTitleString    = tc_plane33@long_name + " (" + tc_plane33@units + ")"
                 opt333@lbTitleFontHeightF = .015
                 opt333@lbTopMarginF = 0.1
                 opt333@lbTopMarginF = 0.2
@@ -1133,7 +1259,7 @@ if ( any(yy.eq.NCLCNVAR3) .and. any(yy.eq.NCLCNVAR1) .and. any(yy.eq.NCLCNVAR2) 
                 plot = contour_tc3
               else if (NCL3VARONOFF.eq.1 .and. NCL1VARONOFF.eq.1 .and. NCL2VARONOFF.eq.1 .and. NCLwindonoff.ne.1) then
                 opt333@tiMainString = "Average from " + all_steps(it) + " to " + all_steps(it+ncltstep)
-                opt333@lbTitleString = tc3@long_name + " (" + tc3@units + ")"
+                opt333@lbTitleString = tc_plane33@long_name + " (" + tc_plane33@units + ")"
                 opt333@lbTitleFontHeightF = .015
                 opt333@lbTopMarginF = 0.1
                 opt333@lbTopMarginF = 0.2
@@ -1148,7 +1274,7 @@ if ( any(yy.eq.NCLCNVAR3) .and. any(yy.eq.NCLCNVAR1) .and. any(yy.eq.NCLCNVAR2) 
                 plot = contour_tc3
               else if (NCL3VARONOFF.eq.1 .and. NCL1VARONOFF.eq.1 .and. NCL2VARONOFF.ne.1 .and. NCLwindonoff.eq.1) then
                 opt333@tiMainString = "Average from " + all_steps(it) + " to " + all_steps(it+ncltstep)
-                opt333@lbTitleString = tc3@long_name + " (" + tc3@units + ")"
+                opt333@lbTitleString = tc_plane33@long_name + " (" + tc_plane33@units + ")"
                 opt333@lbTitleFontHeightF = .015
                 opt333@lbTopMarginF = 0.1
                 opt333@lbTopMarginF = 0.2
@@ -1168,7 +1294,7 @@ if ( any(yy.eq.NCLCNVAR3) .and. any(yy.eq.NCLCNVAR1) .and. any(yy.eq.NCLCNVAR2) 
                 plot = contour_tc3
               else if (NCL3VARONOFF.eq.1 .and. NCL1VARONOFF.ne.1 .and. NCL2VARONOFF.eq.1 .and. NCLwindonoff.eq.1) then
                 opt333@tiMainString = "Average from " + all_steps(it) + " to " + all_steps(it+ncltstep)
-                opt333@lbTitleString = tc3@long_name + " (" + tc3@units + ")"
+                opt333@lbTitleString = tc_plane33@long_name + " (" + tc_plane33@units + ")"
                 opt333@lbTitleFontHeightF = .017
                 opt333@lbTopMarginF = 0.1
                 opt333@lbTopMarginF = 0.2
@@ -1182,7 +1308,7 @@ if ( any(yy.eq.NCLCNVAR3) .and. any(yy.eq.NCLCNVAR1) .and. any(yy.eq.NCLCNVAR2) 
                 plot = contour_tc3 
               else if (NCL3VARONOFF.eq.1 .and. NCL1VARONOFF.ne.1 .and. NCL2VARONOFF.eq.1 .and. NCLwindonoff.ne.1) then
                 opt333@tiMainString = "Average from " + all_steps(it) + " to " + all_steps(it+ncltstep)
-                opt333@lbTitleString = tc3@long_name + " (" + tc3@units + ")"
+                opt333@lbTitleString = tc_plane33@long_name + " (" + tc_plane33@units + ")"
                 opt333@lbTitleFontHeightF = .015
                 opt333@lbTopMarginF = 0.1
                 opt333@lbTopMarginF = 0.2
@@ -1194,7 +1320,7 @@ if ( any(yy.eq.NCLCNVAR3) .and. any(yy.eq.NCLCNVAR1) .and. any(yy.eq.NCLCNVAR2) 
               else if (NCL3VARONOFF.eq.1 .and. NCL1VARONOFF.ne.1 .and. NCL2VARONOFF.ne.1 .and. NCLwindonoff.eq.1) then
                 opt333@gsnMaximize = True
                 opt333@tiMainString = "Average from " + all_steps(it) + " to " + all_steps(it+ncltstep)
-                opt333@lbTitleString = tc3@long_name + " (" + tc3@units + ")"
+                opt333@lbTitleString = tc_plane33@long_name + " (" + tc_plane33@units + ")"
                 opt333@lbTitleFontHeightF = .015
                 opt333@lbTopMarginF = 0.1
                 opt333@lbTopMarginF = 0.2
@@ -1207,7 +1333,7 @@ if ( any(yy.eq.NCLCNVAR3) .and. any(yy.eq.NCLCNVAR1) .and. any(yy.eq.NCLCNVAR2) 
               else if (NCL3VARONOFF.eq.1 .and. NCL1VARONOFF.ne.1 .and. NCL2VARONOFF.ne.1 .and. NCLwindonoff.ne.1) then
                 opt333@gsnMaximize = True
                 opt333@tiMainString = "Average from " + all_steps(it) + " to " + all_steps(it+ncltstep)
-                opt333@lbTitleString = tc3@long_name + " (" + tc3@units + ")"
+                opt333@lbTitleString = tc_plane33@long_name + " (" + tc_plane33@units + ")"
                 opt333@lbTitleFontHeightF = .015
                 opt333@lbTopMarginF = 0.1
                 opt333@lbTopMarginF = 0.2
@@ -1275,7 +1401,7 @@ if ( any(yy.eq.NCLCNVAR3) .and. any(yy.eq.NCLCNVAR1) .and. any(yy.eq.NCLCNVAR2) 
                   opts@mpFillOn               = True
                   opts@mpOceanFillColor       = "deepskyblue"
                   opts@mpInlandWaterFillColor = "deepskyblue"
-                  opts@mpFillDrawOrder        = "PreDraw"     
+                  opts@mpFillDrawOrder        = "PreDraw"
                 end if
                 plot = gsn_csm_vector_map(wks, u_plane(it,:,:), v_plane(it,:,:), opts)
               end if
@@ -1326,11 +1452,4 @@ if ( any(yy.eq.NCLCNVAR3) .and. any(yy.eq.NCLCNVAR1) .and. any(yy.eq.NCLCNVAR2) 
               end do
             end if
       end if ;code timeif122
-
-      else
-      print("")
-      print("Error: one or more contour variables in namelist.wrf are not valid for " + myfilename)
-
-end if ; code att2 
-
 end

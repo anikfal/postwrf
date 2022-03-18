@@ -939,7 +939,7 @@ if (NCLwindonoff .eq. 1)
   else
     opts@vcMinDistanceF = 0.03
   end if
-    opts@vcRefAnnoOrthogonalPosF = -0.24         ; Moves reference vector box inside the 
+    opts@vcRefAnnoOrthogonalPosF = -0.15  ;-0.24         ; Moves reference vector box inside the 
     opts@vcRefAnnoOn       = True
     opts@vcGlyphStyle     = "CurlyVector"
 end if

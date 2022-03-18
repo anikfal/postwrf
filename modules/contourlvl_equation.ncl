@@ -239,19 +239,19 @@ NCLprovince_name_lower = str_lower(NCLprovince_name)
             NCLPLEV3(i) = tointeger(getenv("CNLEV3"+i))
             i=i+1
           end do
-        else
-          if (ncl_CNLEV3_num.eq.1) then
-            delete(NCLPLEV3)
-            NCLPLEV3 = new((totvarsnum+1), "integer")
-            NCLPLEV3 = tointeger(getenv("CNLEV30"))
-            oneP1 = True
           else
-            print("Error: Number of pressure levels do not match the number of variables in < "\
-             + asciiread(homedir+"/modules/totalequationCN30.txt", -1, "string")  + " >" )
-            print("       You could put only one pressure for all the variables in the polynomial")
-            ;print("Correct the number of pressure levels and try again")
-            exit()
-          end if
+            if (ncl_CNLEV3_num.eq.1) then
+              delete(NCLPLEV3)
+              NCLPLEV3 = new((totvarsnum+1), "integer")
+              NCLPLEV3 = tointeger(getenv("CNLEV30"))
+              oneP1 = True
+              else
+              print("Error: Number of pressure levels do not match the number of variables in < "\
+              + asciiread(homedir+"/modules/totalequationCN30.txt", -1, "string")  + " >" )
+              print("       You could put only one pressure for all the variables in the polynomial")
+              ;print("Correct the number of pressure levels and try again")
+              exit()
+            end if
         end if
 
 
@@ -349,16 +349,16 @@ NCLprovince_name_lower = str_lower(NCLprovince_name)
 
         varlist = NewList("lifo") ;;main list and checking the dims
         do ii = 0, totvarsnum ;;code docheck22
-        if (dimsizes(dimsizes(varlist2[ii])).eq.3) then
-            ListAppend(varlist,varlist2[ii])
-          else ;if dimsize equals 4
-            if (NCLPLEV3(ii).eq.0) then ;surface pressure
-                ListAppend(varlist,varlist2[ii](:,0,:,:))
-              else
-                p  = wrf_user_getvar(a, "pressure",-1) ; pressure is our vertical coordinate
-                ListAppend(varlist,wrf_user_intrp3d(varlist2[ii],p,"h",NCLPLEV3(ii),0.,False))
-            end if
-        end if
+          if (dimsizes(dimsizes(varlist2[ii])).eq.3) then
+              ListAppend(varlist,varlist2[ii])
+            else ;if dimsize equals 4
+              if (NCLPLEV3(ii).eq.0) then ;surface pressure
+                  ListAppend(varlist,varlist2[ii](:,0,:,:))
+                else
+                  p  = wrf_user_getvar(a, "pressure",-1) ; pressure is our vertical coordinate
+                  ListAppend(varlist,wrf_user_intrp3d(varlist2[ii],p,"h",NCLPLEV3(ii),0.,False))
+              end if
+          end if
         end do ;;code docheck22
 
         ;;shell script333
@@ -613,7 +613,7 @@ tc_plane3@units = equnit3
 ; ;;;;;####################################################################
 ;processing VAR1
 if (NCL1VARONOFF.eq.1) then  ;processing VAR1
-  ;NCLPLEV1 = tointeger(getenv("CNLEV1")) ;pressure_level11
+  ;NCLPLEV1 = tointeger(getenv("CNLEV1")) ;pressure_level11s
   ;NCLPLEV1 = (/0, 500, 300/)
   NCLINTV1 = tofloat(getenv("CNINTV1")) ;NCLintv22
   NCLCOLOR1 = getenv("CNCOLOR1") ;NCLcolor22

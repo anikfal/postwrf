@@ -2,10 +2,10 @@
 =============================================================================
 Extract_On-Off                   = 0
 
-WRF_variable_name                = rh/100, pvo
-Location_names                   = aaaname, bbbname
-Location_latitudes               = 45.28, 50
-Location_longitudes              = 59.73, 63
+WRF_variable_name                = dust_total
+Location_names                  = Tashkent, Aktau, Khujand, Turkmenabat, Dushanbeh, Almaty, Shymkent, Bishkek, chimkent
+Location_latitudes              = 41.3, 43.65, 40.28, 39.03, 38.53, 43.27, 42.31, 42.87, 42.34
+Location_longitudes             = 69.26, 51.15, 69.63, 63.56, 68.78, 76.89, 69.59, 74.61, 69.59
 
 +Vertical_profile_plot_on_off    = 0
  +Vprofile_X_axis_decimals       = 3
@@ -17,11 +17,11 @@ Location_longitudes              = 59.73, 63
 CONTOUR_ON_OFF                 = 0
 
 !!! Variable_1 by line contours !!!
-1st_Variable_on_off             = 1
- 1st_Variable_name              = rh
+1st_Variable_on_off             = 0
+ 1st_Variable_name              = T2
  1st_Variable_pressure_level    = 0
- 1st_Variable_intervals         = 20
- 1st_Variable_line_color        = blue
+ 1st_Variable_intervals         = 10
+ 1st_Variable_line_color        = red
  1st_Variable_line_thickness    = 0.5
  1st_Variable_label_size        = 0.5
 
@@ -36,22 +36,22 @@ CONTOUR_ON_OFF                 = 0
  2nd_Variable_brokenline_on_off = 1
 
 !!! Variable_3 by filled (colored) contours !!!
-3rd_Variable_on_off             = 0
- 3rd_Variable_name              = dust_pm10
+3rd_Variable_on_off             = 1
+ 3rd_Variable_name              = LAI
  3rd_Variable_pressure_level    = 0,
 
 Wind_Vectors_on_off             = 0
- Wind_Vectors_pressure_level    = 850
+ Wind_Vectors_pressure_level    = 700
  Wind_Vectors_speed (m/s)       = 5
  Wind_Vectors_density           = 0.5
  Wind_Vectors_color             = black
  Wind_Vectors_thickness         = 0.5
 
-Location_point_mark_on_off      = 0
- Location_labels_on_off         = 0
- Location_labels_size           = 0.1
+Location_point_mark_on_off      = 1
+ Location_labels_on_off         = 1
+ Location_labels_size           = 0.2
  Location_labels_color          = black
-Shapefile_on-off                = 1
+Shapefile_on-off                = 0
  Shapefile_path                 = /home/anikfal/sebal/shapefiles/all.shp
 -----------------------------------------------------------------------------
 
@@ -106,12 +106,12 @@ Taylor_diagram_ON_OFF            = 0
 =============================================================================
 Domain_On-Off                    = 0
 
-namelist.wps_path (schematic)   = /home/anikfal/sebal/SEBAL_FULL_JAN2022/WRF_MODEL/WPS/namelist.wps
+namelist.wps_path (schematic)   = /home/anikfal/WRF4.2.2/WPS/namelist.wps
 background_color (schematic)    = forestgreen
 lables_On-Off (schematic)       = 0
 
-+Domain_on_off (topography)      = 0
- +number_of_domains (topography) = 1
++Domain_on_off (topography)      = 1
+ +number_of_domains (topography) = 2
  +box_color                      = white
 -----------------------------------------------------------------------------
 
@@ -164,45 +164,45 @@ ERA5_ON_OFF                      = 1
 
 !!! Variable_1 by line contours !!!
 1st_ERA5_Var_on_off              = 1
- 1st_ERA5_Var_name               = t
- 1st_ERA5_Var_pressure_level     = 700
+ 1st_ERA5_Var_name               = z
+ 1st_ERA5_Var_pressure_level     = 688
  1st_ERA5_Var_intervals          = 5
- 1st_ERA5_Var_line_color         = red
+ 1st_ERA5_Var_line_color         = green
  1st_ERA5_Var_line_thickness     = 0.5
  1st_ERA5_Var_label_size         = 0.3
 
 !!! Variable_2 by (broken) line contours !!!
 2nd_ERA5_Var_on_off              = 1
- 2nd_ERA5_Var_name               = z
+ 2nd_ERA5_Var_name               = t
  2nd_ERA5_Var_pressure_level     = 500
  2nd_ERA5_Var_intervals          = 0
  2nd_ERA5_Var_line_color         = blue
- 2nd_ERA5_Var_line_thickness     = 0.5
+ 2nd_ERA5_Var_line_thickness     = 0.8
  2nd_ERA5_Var_label_size         = 0.3
  2nd_ERA5_Var_brokenline_on_off  = 1
 
 !!! Variable_3 by filled (colored) contours !!!
-3rd_ERA5_Var_on_off              = 0
- 3rd_ERA5_Var_name               = vo
- 3rd_ERA5_Var_pressure_level     = 0
+3rd_ERA5_Var_on_off              = 1
+ 3rd_ERA5_Var_name               = (z-z)/98.1
+ 3rd_ERA5_Var_pressure_level     = 500, 1000
 
 Wind_ERA5_on_off                 = 1
- Wind_ERA5_pressure_level        = 455
- Wind_ERA5_speed (m/s)           = 7
+ Wind_ERA5_pressure_level        = 300
+ Wind_ERA5_speed (m/s)           = 10
  Wind_ERA5_density               = 0.5
- Wind_ERA5_color                 = black
- Wind_ERA5_thickness             = 0.5
+ Wind_ERA5_color                 = yellow
+ Wind_ERA5_thickness             = 0.8
 
 ERA5_point_mark_on_off           = 1
  ERA5_labels_on_off              = 1
  ERA5_labels_size                = 0.3
  ERA5_labels_color               = black
-ERA5_Shapefile_on_off            = 1
+ERA5_Shapefile_on_off            = 0
  ERA5_shapefile_path             = /home/anikfal/shapefiles/anzali_swamp.shp
 
 ERA5_SubDomain_on_off            = 0
- Min_lat                         = 35
- Max_lat                         = 45
+ Min_lat                         = 30
+ Max_lat                         = 50
  Min_lon                         = 60
  Max_lon                         = 70
 -----------------------------------------------------------------------------
@@ -210,8 +210,8 @@ ERA5_SubDomain_on_off            = 0
 
 ============================= GENERAL SETTINGS ==============================
 =============================================================================
-spin-up_time (hours)             = 0
-averaging_on_off                 = 1
+spin-up_time (hours)             = 6
+averaging_on_off                 = 0
  average_time (hours)            = 12
 panel_plot__on_off               = 1
  panel_plot__rows_number         = 2
