@@ -316,7 +316,7 @@ if ( any(yy.eq.NCLCNVAR3) .and. any(yy.eq.NCLCNVAR1) .and. any(yy.eq.NCLCNVAR2) 
                 tc_plane33 = tc3(:, {NCLPLEV3}, :, :)
             end if
         end if
-        tc3@long_name := tc3@long_name + " at " + NCLPLEV3 + " hpa"
+        tc3@long_name := tc3@long_name + " at " + tc_plane33@level + " hpa"
 
         opt333                   = True
         opt333@gsnDraw           = False  ; do not draw plot yet (need False for paneling)
@@ -546,7 +546,7 @@ if ( any(yy.eq.NCLCNVAR3) .and. any(yy.eq.NCLCNVAR1) .and. any(yy.eq.NCLCNVAR2) 
               tc_plane11 = tc1(:, {NCLPLEV1}, :, :)
           end if
         end if
-        tc1@long_name := tc1@long_name + " at " + NCLPLEV1 + " hpa"
+        tc1@long_name := tc1@long_name + " at " + tc_plane11@level + " hpa"
         opt111@gsnLeftString = tc1@long_name
 
         if (ncl_smooth.eq.1) then
@@ -720,7 +720,7 @@ if ( any(yy.eq.NCLCNVAR3) .and. any(yy.eq.NCLCNVAR1) .and. any(yy.eq.NCLCNVAR2) 
               tc_plane22 = tc2(:, {NCLPLEV2}, :, :)
           end if
         end if
-        tc2@long_name := tc2@long_name + " at " + NCLPLEV2 + " hpa"
+        tc2@long_name := tc2@long_name + " at " + tc_plane22@level + " hpa"
         opt222@gsnLeftString = tc2@long_name
 
         if (ncl_smooth.eq.1) then
@@ -865,9 +865,9 @@ if ( any(yy.eq.NCLCNVAR3) .and. any(yy.eq.NCLCNVAR1) .and. any(yy.eq.NCLCNVAR2) 
         pnlres@gsnPanelLabelBar           = False    ; Turn on common labelbar
         pnlres@lbLabelAutoStride          = True    ; Spacing of lbar labels.
         pnlres@lbBoxMinorExtentF          = 0.13
+        pnlres@txString                   = tc3@long_name + " (" + tc3@units + " )"
 
         if (NCL3VARONOFF.eq.1 .and. cnmode.eq."Manual") then
-          pnlres@txString                   = "colored contours: " + tc3@description + " (" + tc3@units + " )"
           pnlres@gsnPanelLabelBar = True
           opt333@lbLabelBarOn = False
         end if
@@ -938,6 +938,10 @@ if ( any(yy.eq.NCLCNVAR3) .and. any(yy.eq.NCLCNVAR1) .and. any(yy.eq.NCLCNVAR2) 
                 plot = contour_tc3       
               else if (NCL3VARONOFF.eq.1 .and. NCL1VARONOFF.eq.1 .and. NCL2VARONOFF.ne.1 .and. NCLwindonoff.ne.1) then
                 opt333@tiMainString = all_steps(it)
+                opt333@lbTitleString = tc3@long_name + " (" + tc3@units + ")"
+                opt333@lbTitleFontHeightF = .015
+                opt333@lbTopMarginF = 0.1
+                opt333@lbTopMarginF = 0.2
                 contour_tc3 = gsn_csm_contour_map(wks, tc_plane33(it,:,:), opt333)
                 contour_tc1 = gsn_csm_contour(wks, tc_plane11(it,:,:), opt111)
                 overlay(contour_tc3, contour_tc1)
@@ -984,6 +988,7 @@ if ( any(yy.eq.NCLCNVAR3) .and. any(yy.eq.NCLCNVAR1) .and. any(yy.eq.NCLCNVAR2) 
                 opt333@gsnMaximize = True
                 opt333@tiMainString = all_steps(it)
                 opt333@lbTitleString = tc3@long_name + " (" + tc3@units + ")"
+                ; opt333@lbTitleString = tc_plane33@long_name + " (" + tc_plane33@units + ")"
                 opt333@lbTitleFontHeightF = .015
                 opt333@lbTopMarginF = 0.1
                 opt333@lbTopMarginF = 0.2
@@ -993,7 +998,7 @@ if ( any(yy.eq.NCLCNVAR3) .and. any(yy.eq.NCLCNVAR1) .and. any(yy.eq.NCLCNVAR2) 
                 opt111@tiMainString = all_steps(it)
                 opts@vcRefAnnoOrthogonalPosF = -0.1  ; 2 titles
                 opt111@gsnMaximize = True
-                contour_tc1 = gsn_csm_contour_map(wks,tc_plane11(it,:,:),opt111)
+                contour_tc1 = gsn_csm_contour_map(wks, tc_plane11(it,:,:), opt111)
                 contour_tc2 = gsn_csm_contour(wks, tc_plane22(it,:,:), opt222)
                 vector = gsn_csm_vector(wks, u_plane(it,:,:), v_plane(it,:,:), opts)
                 overlay(contour_tc1, contour_tc2)
@@ -1107,6 +1112,7 @@ if ( any(yy.eq.NCLCNVAR3) .and. any(yy.eq.NCLCNVAR1) .and. any(yy.eq.NCLCNVAR2) 
           end if
 
           else ;;Averaging code timeif122
+          pnlres@txString                   = "Average " + tc3@long_name + " (" + tc3@units + " )"
 
             do it = time_first, time_last, ncltstep
               if ((it+ncltstep) .gt. time_last) then

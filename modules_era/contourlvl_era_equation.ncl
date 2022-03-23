@@ -168,6 +168,7 @@ end if
                 tc_plane33 = tc3(:, {NCLPLEV3}, :, :)
             end if
         end if
+        tc_plane33@long_name = tc_plane33@long_name + " at " + tc_plane33@level + " hpa"
         
         else ;;code ifpoly3
         NCLvarnames = asciiread("variablesCN3.txt", -1, "string")
@@ -238,11 +239,10 @@ end if
         end do ;;code docheck22
 
         ;;shell script333
-zb = varlist[1]  ;;;added_new_line_by_sed333
-za = varlist[0]  ;;;added_new_line_by_sed333
+vo = varlist[0]  ;;;added_new_line_by_sed333
 
   ;equation from namelist.wrf333
-tc_plane33 = (za-zb)/98.1  ;;;added_new_line_by_sed333
+tc_plane33 = vo+1  ;;;added_new_line_by_sed333
 
 copy_VarCoords(varlist[0], tc_plane33)
 
@@ -423,8 +423,9 @@ delete(varlist2)
               tc_plane11 = tc1(:, {NCLPLEV1}, :, :)
           end if
         end if
-        tc1@long_name := tc1@long_name + " at " + NCLPLEV1 + " hpa"
-        opt111@gsnLeftString = tc1@long_name
+        ; tc1@long_name := tc1@long_name + " at " + NCLPLEV1 + " hpa"
+        tc_plane11@long_name = tc_plane11@long_name + " at " + tc_plane11@level + " hpa"
+        ; opt111@gsnLeftString = tc1@long_name
 
 else ;;code ifpoly1
   NCLvarnames = asciiread("variablesCN1.txt", -1, "string")
@@ -492,10 +493,11 @@ else ;;code ifpoly1
   end do ;;code docheck22
 
         ;;shell script111
-z = varlist[0]  ;;;added_new_line_by_sed111
+t = varlist[1]  ;;;added_new_line_by_sed111
+r = varlist[0]  ;;;added_new_line_by_sed111
 
   ;equation from namelist.wrf111
-tc_plane11 = (z/2)*2  ;;;added_new_line_by_sed111
+tc_plane11 = r+t  ;;;added_new_line_by_sed111
 
 copy_VarCoords(varlist[0], tc_plane11)
 
@@ -686,6 +688,7 @@ end if ;;code ifpoly1
               tc_plane22 = tc2(:, {NCLPLEV2}, :, :)
           end if
         end if
+        tc_plane22@long_name = tc_plane22@long_name + " at " + tc_plane22@level + " hpa"
 else ;;code ifpoly2
   NCLvarnames = asciiread("variablesCN2.txt", -1, "string")
   totvarsnum = dimsizes(NCLvarnames) - 1
@@ -752,11 +755,11 @@ else ;;code ifpoly2
   end do ;;code docheck22
 
         ;;shell script222
-tb = varlist[1]  ;;;added_new_line_by_sed222
-ta = varlist[0]  ;;;added_new_line_by_sed222
+r = varlist[1]  ;;;added_new_line_by_sed222
+t = varlist[0]  ;;;added_new_line_by_sed222
 
   ;equation from namelist.wrf222
-tc_plane22 = (ta/2)+2*tb  ;;;added_new_line_by_sed222
+tc_plane22 = t+r  ;;;added_new_line_by_sed222
 
 copy_VarCoords(varlist[0], tc_plane22)
 
@@ -979,7 +982,6 @@ end if ;;code ifpoly2
 
         else ;;Panel 
 
-        
         paneloption = True
         arrayplots = new (totstepsminus+1, graphic)
         pnlres                            = True
@@ -989,9 +991,9 @@ end if ;;code ifpoly2
         pnlres@gsnPanelLabelBar           = False    ; Turn on common labelbar
         pnlres@lbLabelAutoStride          = True    ; Spacing of lbar labels.
         pnlres@lbBoxMinorExtentF          = 0.13
+        pnlres@txString                   = tc_plane33@long_name + " (" + tc_plane33@units + ")"
 
         if (NCL3VARONOFF.eq.1 .and. cnmode.eq."Manual") then
-          pnlres@txString                   = "colored contours: " + tc_plane33@long_name + " (" + tc_plane33@units + ")"         ;tc3@description + " (" + tc3@units + " )"
           pnlres@gsnPanelLabelBar = True
           opt333@lbLabelBarOn = False
         end if
@@ -1016,7 +1018,6 @@ end if ;;code ifpoly2
               if (NCL3VARONOFF.eq.1 .and. NCL1VARONOFF.eq.1 .and. NCL2VARONOFF.eq.1 .and. NCLwindonoff.eq.1) then
                 opt333@tiMainString = all_steps(it)
                 opt333@lbTitleString = tc_plane33@long_name + " (" + tc_plane33@units + ")"
-                
                 opt333@lbTitleFontHeightF = .015
                 opt333@lbTopMarginF = 0.1
                 opt333@lbTopMarginF = 0.2
@@ -1063,6 +1064,10 @@ end if ;;code ifpoly2
                 plot = contour_tc3       
               else if (NCL3VARONOFF.eq.1 .and. NCL1VARONOFF.eq.1 .and. NCL2VARONOFF.ne.1 .and. NCLwindonoff.ne.1) then
                 opt333@tiMainString = all_steps(it)
+                opt333@lbTitleFontHeightF = .015
+                opt333@lbTopMarginF = 0.1
+                opt333@lbTopMarginF = 0.2
+                opt333@lbTitleString = tc_plane33@long_name + " (" + tc_plane33@units + ")"
                 contour_tc3 = gsn_csm_contour_map(wks, tc_plane33(it,:,:), opt333)
                 contour_tc1 = gsn_csm_contour(wks, tc_plane11(it,:,:), opt111)
                 overlay(contour_tc3, contour_tc1)
@@ -1232,6 +1237,7 @@ end if ;;code ifpoly2
           end if
 
           else ;;Averaging code timeif122
+          pnlres@txString                   = "Average " + tc_plane33@long_name + " (" + tc_plane33@units + ")"
 
             do it = time_first, time_last, ncltstep
               if ((it+ncltstep) .gt. time_last) then
