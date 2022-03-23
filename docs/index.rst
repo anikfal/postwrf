@@ -32,16 +32,17 @@ PostWRF codes are publically available at:
 .. toctree::
     :maxdepth: 2
 
-    pw_overview
-    pw_install
-    pw_extraction
-    pw_geotiff
-    pw_contour
-    pw_cross
-    pw_domain
-    pw_diagram
-    pw_statistical
-    pw_rttov
+    overview
+    install
+    extraction
+    geotiff
+    contour
+    cross
+    domain
+    diagram
+    statistical
+    rttov
+    era_contour
 .. Indices and tables
 .. ==================
 
