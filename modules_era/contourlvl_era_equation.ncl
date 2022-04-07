@@ -239,10 +239,11 @@ end if
         end do ;;code docheck22
 
         ;;shell script333
-vo = varlist[0]  ;;;added_new_line_by_sed333
+zb = varlist[1]  ;;;added_new_line_by_sed333
+za = varlist[0]  ;;;added_new_line_by_sed333
 
   ;equation from namelist.wrf333
-tc_plane33 = vo+1  ;;;added_new_line_by_sed333
+tc_plane33 = (za-zb)/98.1  ;;;added_new_line_by_sed333
 
 copy_VarCoords(varlist[0], tc_plane33)
 

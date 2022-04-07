@@ -133,7 +133,7 @@ export Max
 if [[ ${imgfmt} == "x11" ]]; then
   ln -sf $postwrf_dir/.AllWRFVariables $postwrf_dir/modules_era
   ln -sf $postwrf_dir/postwrf_era_* $postwrf_dir/modules_era
-  ln -sf $postwrf_dir/modules_era/read_wrfouts.ncl .
+  # ln -sf $postwrf_dir/modules_era/read_wrfouts.ncl .
   ncl -nQ $postwrf_dir/modules_era/contourlvl_era.ncl
 else
   mkdir -p outputs_$wrfout2
@@ -144,7 +144,7 @@ else
   ln -sf $postwrf_dir/postwrf_era_* $postwrf_dir/modules_era
   ln -sf $postwrf_dir/postwrf_era_* .
   ln -sf $postwrf_dir/modules_era/contourlvl_era.ncl .
-  ln -sf $postwrf_dir/modules_era/read_wrfouts.ncl .
+  # ln -sf $postwrf_dir/modules_era/read_wrfouts.ncl .
   ncl -nQ $postwrf_dir/modules_era/contourlvl_era.ncl
   mv $postwrf_dir/modules_era/*.pdf . 2>/dev/null
   mv $postwrf_dir/modules_era/*.png . 2>/dev/null

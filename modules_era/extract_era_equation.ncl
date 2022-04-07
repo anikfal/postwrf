@@ -10,9 +10,13 @@ begin
 
 load "read_wrfouts.ncl"
 
+interpolvar = getenv("interpolvar")
+myequation = asciiread("totalequation.txt", -1, "string")
+NCLvarnames = asciiread("variables.txt", -1, "string")
+NCLaverage_onoff = tointeger(getenv("average_onoff"))
 NCLspinup = tointeger(getenv("spinup"))
 NCLaverage_onoff = tointeger(getenv("average_onoff"))
-all_steps = wrf_user_getvar(a, "XTIME", -1)
+all_steps=wrf_user_getvar(a, "XTIME", -1)
 hourstep = (all_steps(1) - all_steps(0))/60
 if (NCLspinup.ge.hourstep) then
  start_timestep = tointeger(NCLspinup/hourstep)
@@ -20,20 +24,9 @@ else
  start_timestep = 0
 end if
 
-interpolvar = getenv("interpolvar")
-times = wrf_user_getvar(a,"times",-1)  ; get all times in the file
-;First line
-lines = tointeger(getenv("nclvars"))
-NCLvarnames = new(lines,"string")
-i=0
-do while(i.le.(lines-1))
- NCLvarnames(i) = getenv("nclwrfvar"+i)
- i=i+1
-end do
-delete(lines)
-
 ;Second Line
-linesmain = tointeger(getenv("ncllocs"))
+lines2 = getenv("ncllocs")
+linesmain = tointeger(lines2)
 NCLlocnames = new(linesmain,"string")
 i=0
 do while(i.le.(linesmain-1))
@@ -41,9 +34,11 @@ do while(i.le.(linesmain-1))
  i=i+1
 end do
 totlocs=dimsizes(NCLlocnames)
+delete(lines2)
 
 ;Third Line
-lines = tointeger(getenv("ncllats"))
+lines2 = getenv("ncllats")
+lines = tointeger(lines2)
 NCLloclats2 = new(lines,"string")
 i=0
 do while(i.le.(lines-1))
@@ -51,10 +46,12 @@ do while(i.le.(lines-1))
  i=i+1
 end do
 NCLloclats=stringtofloat(NCLloclats2)
+delete(lines2)
 delete(lines)
 
 ;Fourth Line
-lines = tointeger(getenv("ncllons"))
+lines2 = getenv("ncllons")
+lines = tointeger(lines2)
 NCLloclons2 = new(lines,"string")
 i=0
 do while(i.le.(lines-1))
@@ -63,14 +60,17 @@ do while(i.le.(lines-1))
 end do
 ;tofloat(NCLloclons)
 NCLloclons=stringtofloat(NCLloclons2)
+delete(lines2)
 delete(lines)
 delete(i)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;; Continue
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-lat2d = wrf_user_getvar(a, "XLAT", 0)
-lon2d = wrf_user_getvar(a, "XLONG", 0)
-cr = inttochar(10)
+  lat2d = wrf_user_getvar(a, "XLAT", 0)
+  lon2d = wrf_user_getvar(a, "XLONG", 0)
+  cr = inttochar(10)
+  mdims = dimsizes(wrf_user_getvar(a, "U", -1)) ; get some dimension sizes for the file
+  nd = dimsizes(mdims)
 loc1=new(2,"float")
 loc2=loc1
 loc1(0)=min(lon2d)
@@ -78,8 +78,6 @@ loc1(1)=min(lat2d)
 loc2(0)=max(lon2d)
 loc2(1)=max(lat2d)
   print("")
-  print("Range of Domain Latitudes (south-north): " + decimalPlaces(loc1(1),2,True) + " to " + decimalPlaces(loc2(1),2,True))
-  print("Range of Domain Longitudes (west-east) : " + decimalPlaces(loc1(0),2,True) + " to " + decimalPlaces(loc2(0),2,True) + cr)
 
 ii=0
 outlocs=""
@@ -95,19 +93,13 @@ outlocs@_FillValue=""
   print("Warning: Location(s) " + outlocs + "are out of domain boundaries." )
  end if
 totvars = dimsizes(NCLvarnames)
+varlist2 = NewList("lifo")
 yy  = asciiread(".AllWRFVariables", -1, "string")
+times = wrf_user_getvar(a,"times",-1)
+
+validvar = True
 ii=0
-
-do while(ii.le.(totvars-1)) ;code ttjj
-
-varplus = str_match(NCLvarnames(ii),"+")
-varminus = str_match(NCLvarnames(ii),"-")
-varmult = str_match(NCLvarnames(ii),"*")
-vardiv = str_match(NCLvarnames(ii),"/")
-varexp = str_match(NCLvarnames(ii),"^")
-varopenp = str_match(NCLvarnames(ii),"(")
-varclosep = str_match(NCLvarnames(ii),")")
-if( ismissing(varplus) .and. ismissing(varminus) .and. ismissing(varmult) .and. ismissing(vardiv) .and. ismissing(varexp) .and. ismissing(varopenp) .and. ismissing(varclosep) ) then  ;sssif
+do while(ii.lt.totvars) ;code aaff
 
 if ( any(yy.eq.NCLvarnames(ii)) ) then ;abcdif
 
@@ -116,77 +108,80 @@ if ( any(yy.eq.NCLvarnames(ii)) ) then ;abcdif
      tc3@_FillValue=-1
      tc3@description = "CAPE"
      tc3@units = "J/kg"
-     tc2 = tc3(0,:,:,:)
+     tclcl = tc3(0,:,:,:)
+     ListAppend(varlist2,tclcl)
 
  else if (NCLvarnames(ii) .eq. "cin_surface") then
      tc3  = wrf_user_getvar(a,"cape_2d",-1)
      tc3@_FillValue=-1
      tc3@description = "CIN"
      tc3@units = "J/kg"
-     tc2 = tc3(1,:,:,:)
+     tccinsur = tc3(1,:,:,:)
+     ListAppend(varlist2,tccinsur)
 
  else if (NCLvarnames(ii) .eq. "cin_3d") then
      tc3  = wrf_user_getvar(a,"cape_3d",-1)
      tc3@_FillValue=-1
      tc3@description = "CIN"
      tc3@units = "J/kg"
-     tc2 = tc3(1,:,:,:,:)
+     tccin3d = tc3(1,:,:,:,:)
+     ListAppend(varlist2,tccin3d)
 
  else if (NCLvarnames(ii) .eq. "cape_3d") then
      tc3  = wrf_user_getvar(a,"cape_3d",-1)
      tc3@_FillValue=-1
-     tc3@description = "CIN"
+     tc3@description = "CAPE"
      tc3@units = "J/kg"
-     tc2 = tc3(0,:,:,:,:)
+     tccape3d = tc3(0,:,:,:,:)
+     ListAppend(varlist2,tccape3d)
 
  else if (NCLvarnames(ii) .eq. "lcl") then
      tc3  = wrf_user_getvar(a,"cape_2d",-1)
      tc3@description = "Lifting Condensation Level"
      tc3@units = "m"
-     tc2 = tc3(2,:,:,:)
+     tclcl = tc3(2,:,:,:)
+     ListAppend(varlist2,tclcl)
 
  else if (NCLvarnames(ii) .eq. "lfc") then
-     tc3  = wrf_user_getvar(a,"cape_2d",-1)
+     tc3  := wrf_user_getvar(a,"cape_2d",-1)
      tc3@description = "Level of Free Convection"
      tc3@units = "m"
-     tc2 = tc3(2,:,:,:)
+     tclfc = tc3(3,:,:,:)
+     ListAppend(varlist2,tclfc)
 
  else if (NCLvarnames(ii) .eq. "dust_total") then
-     tc2 = wrf_user_getvar(a, "DUST_1", -1) + wrf_user_getvar(a, "DUST_2", -1) + wrf_user_getvar(a, "DUST_3", -1) \
-     + wrf_user_getvar(a, "DUST_4", -1) + wrf_user_getvar(a, "DUST_5", -1)
-     tc2@description = "Total dust concentration"
-     tc2@units = "Micro_gram/kg_dry_air"
+     ListAppend(varlist2,wrf_user_getvar(a, "DUST_1", -1) + wrf_user_getvar(a, "DUST_2", -1) + wrf_user_getvar(a, "DUST_3", -1)+ wrf_user_getvar(a, "DUST_4", -1) + wrf_user_getvar(a, "DUST_5", -1))
+     varlist2[ii]@description = "Total dust concentration"
+     varlist2[ii]@units = "Micro_gram/kg_dry_air"
 
  else if (NCLvarnames(ii) .eq. "dust_pm2.5") then
-     tc2 = wrf_user_getvar(a, "DUST_1", -1) + 0.3125*wrf_user_getvar(a, "DUST_2", -1)
-     tc2@description = "Dust equal to PM2.5"
-     tc2@units = "Micro_gram/kg_dry_air"
+     ListAppend(varlist2,wrf_user_getvar(a, "DUST_1", -1) + 0.3125*wrf_user_getvar(a, "DUST_2", -1))
+     varlist2[ii]@description = "Dust equal to PM2.5 concentration"
+     varlist2[ii]@units = "Micro_gram/kg_dry_air"
 
  else if (NCLvarnames(ii) .eq. "dust_pm10") then
-     tc2 = wrf_user_getvar(a, "DUST_1", -1) + wrf_user_getvar(a, "DUST_2", -1) + wrf_user_getvar(a, "DUST_3", -1) \
-     + 0.87*wrf_user_getvar(a, "DUST_4", -1)
-     tc2@description = "Dust equal to PM10"
-     tc2@units = "Micro_gram/kg_dry_air"
+     ListAppend(varlist2,wrf_user_getvar(a, "DUST_1", -1) + wrf_user_getvar(a, "DUST_2", -1) + wrf_user_getvar(a, "DUST_3", -1)+ 0.87*wrf_user_getvar(a, "DUST_4", -1))
+     varlist2[ii]@description = "Dust equal to PM10 concentration"
+     varlist2[ii]@units = "Micro_gram/kg_dry_air"
 
 else if (NCLvarnames(ii) .eq. "wind_s") then
      uu10  = wrf_user_getvar(a,"U10",-1)
      vv10  = wrf_user_getvar(a,"V10",-1)
-     tc2 = wind_speed(uu10,vv10)
-     tc2@description = "10m wind speed"
-     tc2@units = "m s-1"
+     ListAppend(varlist2,wind_speed(uu10,vv10))
+     varlist2[ii]@description = "10m wind speed"
+     varlist2[ii]@units = "m s-1"
 
  else if (NCLvarnames(ii) .eq. "wind_d") then
   if (.not.isdefined("uu10")) then
      uu10  = wrf_user_getvar(a,"U10",-1)
      vv10  = wrf_user_getvar(a,"V10",-1)
   end if
-     tc2 = wind_direction(uu10,vv10,0)
-     tc2@description = "10m wind direction"
-     tc2@units = "Degrees from north"
-
+     ListAppend(varlist2,wind_direction(uu10,vv10,0))
+     varlist2[ii]@description = "10m wind direction"
+     varlist2[ii]@units = "Degrees from north"
   else
 
-  tc2  = wrf_user_getvar(a,NCLvarnames(ii),-1)    ; 3D temperature
+   ListAppend(varlist2,wrf_user_getvar(a,NCLvarnames(ii),-1))
 
 end if
 end if
@@ -199,12 +194,38 @@ end if
 end if
 end if
 end if
+
+else
+validvar = False
+end if ;abcdif
+
+ii = ii+1
+end do ;code aaff
+
+varlist = NewList("lifo") ;;main list and checking the dims
+do ii = 0, totvars-1 ;;code docheck22
+if (dimsizes(dimsizes(varlist2[ii])).eq.3) then
+    ListAppend(varlist,varlist2[ii])
+  else ;if dimsize equals 4
+    ListAppend(varlist,varlist2[ii](:,0,:,:))
+end if
+end do ;;code docheck22
+
+if (validvar) then
 
 ;;;shell script
-;shellvar = wrf_user_getvar(a,NClwrfvars(ii),-1)  ;;;added_new_line_by_sed
-;shellvar = wrf_user_getvar(a,NClwrfvars(ii),-1)  ;;;added_new_line_by_sed
-;shellvar = wrf_user_getvar(a,NClwrfvars(ii),-1)  ;;;added_new_line_by_sed
+rh = varlist[0]  ;;;added_new_line_by_sed
 
+
+;;;equation from namelist.wrf
+tc2 = (rh/100)  ;;;added_new_line_by_sed
+system("cd $postwrf_dir/modules && ./extract_getinput.sh")
+system("ln -sf ../modules/eqname .")
+ eqname = asciiread("eqname", -1, "string")
+ system("ln -sf ../modules/equnit .")
+ equnit = asciiread("equnit", -1, "string")
+tc2@description = eqname
+tc2@units = equnit
 
   lat = NCLloclats
   lon = NCLloclons
@@ -212,82 +233,76 @@ end if
   vardims = dimsizes(dimsizes(tc2))
 
 if (NCLaverage_onoff.ne.1) then  ;average_OFF code qwe
-    if (vardims .eq. 3) then
-      xTemp = new((/LocNum,dimsizes(tc2(start_timestep:,0,0))/),typeof(tc2))
-    else if (vardims .eq. 4) then
-      xTemp = new((/LocNum,dimsizes(tc2(start_timestep:,0,0,0))/),typeof(tc2))
-    end if
-    end if 
 
-    if (NCLvarnames(ii) .eq. "cape_surface" .or. NCLvarnames(ii) .eq. "cin_surface" .or. NCLvarnames(ii) .eq. "cin_3d" .or. NCLvarnames(ii) .eq. "cape_3d") then
-    xTemp@_FillValue=tc2@_FillValue
-    end if
+ if (dimsizes(dimsizes(tc2)) .eq. 3) then
+  xTemp = new((/LocNum,dimsizes(tc2(start_timestep:,0,0))/),typeof(tc2))
+ else if (dimsizes(dimsizes(tc2)) .eq. 4) then
+  xTemp = new((/LocNum,dimsizes(tc2(start_timestep:,0,0,0))/),typeof(tc2))
+ end if
+ end if 
 
-    xTemp!0="Point Locations"
-    xTemp!1="Times"
-    xTemp = 0
-    n=0
-    if (interpolvar .eq. "NearestPoint")
-    nm = getind_latlon2d (lat2d,lon2d, lat, lon)
-    do while(n.le.(LocNum-1))
-      if (vardims .eq. 3) then
-      xTemp(n,:) = xTemp(n,:) + tc2(start_timestep:,nm(n,0),nm(n,1))
-      else if (vardims .eq. 4) then
-      xTemp(n,:) = xTemp(n,:) + tc2(start_timestep:,0,nm(n,0),nm(n,1))
-      end if
-      end if
-    n=n+1
-    end do
+ xTemp!0="Point Locations"
+ xTemp!1="Times"
+ xTemp = 0
+ n=0
+if (interpolvar .eq. "NearestPoint")
+ nm = getind_latlon2d (lat2d,lon2d, lat, lon)
+ do while(n.le.(LocNum-1))
+  if (dimsizes(dimsizes(tc2)) .eq. 3) then
+   xTemp(n,:) = xTemp(n,:) + tc2(start_timestep:,nm(n,0),nm(n,1))
+  else if (dimsizes(dimsizes(tc2)) .eq. 4) then
+   xTemp(n,:) = xTemp(n,:) + tc2(start_timestep:,0,nm(n,0),nm(n,1))
+  end if
+  end if
+ n=n+1
+ end do
+else if (interpolvar .eq. "Bilinear")
+do while(n.le.(LocNum-1))
+ if (dimsizes(dimsizes(tc2)) .eq. 3) then
+   interp =  rcm2points (lat2d, lon2d, tc2, lat, lon, 2)
+   xTemp(n,:) = xTemp(n,:) + interp(start_timestep:,n)
+ else if (dimsizes(dimsizes(tc2)) .eq. 4) then
+  interp =  rcm2points (lat2d, lon2d, tc2(:,0,:,:), lat, lon, 2)
+  xTemp(n,:) = xTemp(n,:) + interp(start_timestep:,n)
+ end if
+ end if
+ n=n+1
+end do
+else if (interpolvar .eq. "IDW")
+do while(n.le.(LocNum-1))
+ if (dimsizes(dimsizes(tc2)) .eq. 3) then
+   interp =  rcm2points (lat2d, lon2d, tc2, lat, lon, 0)
+   xTemp(n,:) = xTemp(n,:) + interp(start_timestep:,n)
+ else if (dimsizes(dimsizes(tc2)) .eq. 4) then
+  interp =  rcm2points (lat2d, lon2d, tc2(:,0,:,:), lat, lon, 0)
+  xTemp(n,:) = xTemp(n,:) + interp(start_timestep:,n)
+ end if
+ end if
+ n=n+1
+end do
+end if
+end if
+end if
 
-    else if (interpolvar .eq. "Bilinear")
-      do while(n.le.(LocNum-1))
-      if (vardims .eq. 3) then
-        interp =  rcm2points (lat2d, lon2d, tc2, lat, lon, 2)
-        xTemp(n,:) = xTemp(n,:) + interp(start_timestep:,n)
-      else if (vardims .eq. 4) then
-        interp =  rcm2points (lat2d, lon2d, tc2(:,0,:,:), lat, lon, 2)
-        xTemp(n,:) = xTemp(n,:) + interp(start_timestep:,n)
-      end if
-      end if
-      n=n+1
-      end do
-    else if (interpolvar .eq. "IDW")
-      do while(n.le.(LocNum-1))
-      if (vardims .eq. 3) then
-        interp =  rcm2points (lat2d, lon2d, tc2, lat, lon, 0)
-        xTemp(n,:) = xTemp(n,:) + interp(start_timestep:,n)
-      else if (vardims .eq. 4) then
-        interp =  rcm2points (lat2d, lon2d, tc2(:,0,:,:), lat, lon, 0)
-        xTemp(n,:) = xTemp(n,:) + interp(start_timestep:,n)
-      end if
-      end if
-      n=n+1
-      end do
-    end if
-    end if
-    end if
+  TimeSteps = dimsizes(times)
+  header=(/"----------------------------------------------------------------------------", \
+           " WRF output variable: " + myequation + " (" + tc2@description + ") - " +  "units: " + tc2@units + "",\
+           "----------------------------------------------------------------------------"/)
 
-      header=(/"----------------------------------------------------------------------------", \
-              " WRF output variable: " + NCLvarnames(ii) + " (" + tc2@description + ") - " +  "unit_scale: " + tc2@units + "",\
-              "----------------------------------------------------------------------------"/)
-    hlist=[/header/]
-    tablename="values-"+NCLvarnames(ii)+"-"+interpolvar
-      write_table( tablename, "w", hlist, "%s" ) ; Write header on the table
-      timecap=times(start_timestep:)
+  hlist=[/header/]
+  tablename="values-"+tc2@description+"-"+interpolvar
+  write_table( tablename, "w", hlist, "%s" ) ; Write header on the table
 
-      nameformat="%19s"
+timecap=times(start_timestep:)
+nameformat="%19s"
 
-else  ;average_ON code qwe
-
+else ;average_ON code qwe
   totstepsminus = dimsizes(times)-1
   NCLaverage_time = tointeger(getenv("averagetime"))
   ncltstep = tointeger(NCLaverage_time/hourstep)
   totstepsminus = totstepsminus - start_timestep
   ntimes = totstepsminus - mod(totstepsminus, ncltstep) - ncltstep ;equal to the exact steps, multiple of ncltstep
     xTemp = new((/ LocNum, (ntimes+ncltstep)/ncltstep /),typeof(tc2))
-    if (NCLvarnames(ii) .eq. "cape_surface" .or. NCLvarnames(ii) .eq. "cin_surface" .or. NCLvarnames(ii) .eq. "cin_3d" .or. NCLvarnames(ii) .eq. "cape_3d") then
-    xTemp@_FillValue=tc2@_FillValue
-    end if
 
     xTemp!0="Point Locations"
     xTemp!1="Times"
@@ -360,10 +375,10 @@ else  ;average_ON code qwe
     end if
         
       header=(/"---------------------------------------------------------------------------------------------------", \
-              " Average (" + NCLaverage_time + " hours) of the WRF output variable: " + NCLvarnames(ii) + " (" + tc2@description + ") - " +  "unit_scale: " + tc2@units + "",\
+              " Average (" + NCLaverage_time + " hours) of the WRF output variable: " + myequation + " (" + tc2@description + ") - " +  "unit_scale: " + tc2@units + "",\
               "---------------------------------------------------------------------------------------------------"/)
     hlist=[/header/]
-    tablename="average_values-"+NCLvarnames(ii)+"-"+interpolvar
+    tablename="average_values-"+tc2@description+"-"+interpolvar
       write_table( tablename, "w", hlist, "%s" ) ; Write header on the table
       timecap_start=times(start_timestep:(ntimes+start_timestep):ncltstep)
       timecap_end=times((start_timestep+ncltstep):(ntimes+start_timestep+ncltstep):ncltstep)
@@ -376,18 +391,18 @@ else  ;average_ON code qwe
         tstart(it) = start_arr(0)
         tend(it) = end_arr(0)
       end do
-     ; tseparator = tstart
+      tseparator = tstart
       tseparator = " to "
       timecap = tstart + tseparator + tend
 
       nameformat="%30s"
-
-end if  ;average end code qwe
+end if ;average end code qwe
 
 
 timename=(/"Time"/)
 alist = NewList("lifo")
 valueformat="%19s"
+
 ;;;;;;;;;;;;;;;;newwwwwwwwwww
 hnamelist = NewList("lifo")
 ListAppend(hnamelist,timename)
@@ -494,12 +509,12 @@ c98 = city100(97)
 c99 = city100(98)
 c100 = city100(99)
 citylist = [/c1, c2, c3, c4, c5, c6, c7, c8, c9, c10, c11, c12, c13, c14, c15, c16, c17, c18, c19, c20, c21, c22, c23, c24, c25, c26, c27, c28, c29, c30, c31, c32, c33, c34, c35, c36, c37, c38, c39, c40, c41, c42, c43, c44, c45, c46, c47, c48, c49, c50, c51, c52, c53, c54, c55, c56, c57, c58, c59, c60, c61, c62, c63, c64, c65, c66, c67, c68, c69, 70, c71, c72, c73, c74, c75, c76, c77, c78, c79, c80, c81, c82, c83, c84, c85, c86, c87, c88, c89, c90, c91, c92, c93, c94, c95, c96, c97, c98, c99, c100/]
-
 jj=0
 do while(jj.lt.totlocs)
   ListAppend(hnamelist,citylist[jj])
 jj=jj+1
 end do
+
  tt100 = new((/100,dimsizes(xTemp(0,:))/),typeof(tc2),default_fillvalue("float"))
 delete(tc2)
 alist = NewList("lifo")
@@ -625,24 +640,10 @@ end do
 delete(j)
    write_table( tablename, "a", hnamelist, nameformat ) ; Write header on the table
    write_table( tablename, "a", alist, valueformat ) ; Write main data
-else
-print("PostWRF Warning: " + "<" + NCLvarnames(ii) + ">" + " is not among the output variables of " + myfile)
-end if ;abcdif
-print("Variable " + NCLvarnames(ii) + " has been extracted")
+   print("Polynomial variable " + myequation + " has been extracted")
+else ;validvar
 
-else ;;;###########################################
+print("One or more variables in the polynomial <" + myequation  + "> are not valid")
 
- homedir = getenv("postwrf_dir")
- asciiwrite (homedir+"/modules/totalequation.txt" , NCLvarnames(ii))
- system("cd $postwrf_dir/modules && ./separation.sh") ;;variable.txt
- system("cd $postwrf_dir/modules && ./extract_equation.sh") ;;sed
- system("ln -sf $postwrf_dir/modules/extract_equation.ncl .")
- system("ln -sf $postwrf_dir/modules/variables.txt .")
- system("ln -sf $postwrf_dir/modules/totalequation.txt .")
- system("ncl -Q extract_equation.ncl")
-end if ;sssif
-
-ii = ii+1
-end do ;code ttjj
-
+end if
 end

@@ -40,9 +40,6 @@ function countline() {
 #Reading the variables of the section General settings
 source $postwrf_dir/modules_era/global_settings.sh
 
-###############   2nd Section (CONTOUR_MAP)   #######################
-if [[ $era_onoff == 1 ]]; then                                                  #For the fifth line (Contour Variables)
-    #Counting Variables in a line of namelist.wrf
   myvar="Location_names"
   countline
   export ncllocs=$numlinevars #Zero (0) is included in the line numbers
@@ -104,7 +101,30 @@ if [[ $era_onoff == 1 ]]; then                                                  
     varcount=$((varcount + 1))
   done
   unset myvar
-    
+
+  myvar="Variable_names"
+  countline
+  export nclvars=$numlinevars #Zero (0) is included in the line numbers
+  #Extracting Vairables into array
+  varcount=0
+  while [ $varcount -lt $numlinevars ]; do
+    wrfvars[$varcount]=$(sed -n "/$myvar/p" namelist.wrf | awk -F"=" '{print $NF}' | cut -d, -f$((varcount + 1)))
+    wrfvars[$varcount]=$(echo -n "${wrfvars[$varcount]//[[:space:]]/}") #Remove spaces
+    varcount=$((varcount + 1))
+  done
+  unset varcount
+  varcount=0
+  while [ $varcount -lt $numlinevars ]; do
+    declare nclwrfvar$varcount=${wrfvars[$varcount]}
+    export nclwrfvar$varcount
+    varcount=$((varcount + 1))
+  done
+  unset myvar
+
+###############   2nd Section (CONTOUR_MAP)   #######################
+if [[ $era_onoff == 1 ]]; then                                                  #For the fifth line (Contour Variables)
+    #Counting Variables in a line of namelist.wrf
+
   myvar="3rd_ERA5_Var_name"                                                         #nclcontourvars11
   CNVAR3=$(sed -n "/$myvar/p" namelist.wrf | awk -F"=" '{print $NF}' | cut -d, -f1) #only one var is read
   export CNVAR3=$(echo "${CNVAR3// /}")                                             #Remove spaces
@@ -430,14 +450,11 @@ fi
     ###################################################################################
     ####################                 NCL            ###############################
     ###################################################################################
-    # if [[ $extractonoff == 1 ]]; then
-    #   myvar="Vertical_profile_plot_on_off"
-    #   verticalplotonoff=$(sed -n "/$myvar/p" namelist.wrf | awk -F"=" '{print $NF}')
-    #   export verticalplotonoff=$(echo "${verticalplotonoff// /}")
-    #   unset myvar
-    #   ##------------------------------------------------------------------------------------------------
-    #   ./modules_era/extract.sh
-    # fi
+    if [[ $era_extract_onoff == 1 ]]; then
+      echo "Extracting data ..."
+      echo ""
+      ./modules_era/extract_era.sh
+    fi
 
     # Contour (Level) Module==========================================================
     if [[ $era_onoff == 1 ]]; then #code rrr9
@@ -445,20 +462,19 @@ fi
         echo "Plotting contour maps ..."
         echo ""
         ./modules_era/contourlvl_era.sh
-        cd $postwrf_dir
-        unlink variablesCN1.txt 2>/dev/null
-        unlink variablesCN2.txt 2>/dev/null
-        unlink variablesCN3.txt 2>/dev/null
-        unlink eqname 2>/dev/null
-        unlink equnit 2>/dev/null
-        unlink totalequation.txt 2>/dev/null
-        unlink variables.txt 2>/dev/null
       else
         echo -e "\nPostWRF: No contour variable is ON in namelist.wrf ..."
       fi
       unset era_onoff
     fi #code rrr9
-
+cd $postwrf_dir
+unlink variablesCN1.txt 2>/dev/null
+unlink variablesCN2.txt 2>/dev/null
+unlink variablesCN3.txt 2>/dev/null
+unlink eqname 2>/dev/null
+unlink equnit 2>/dev/null
+unlink totalequation.txt 2>/dev/null
+unlink variables.txt 2>/dev/null
 rm -f .wrfvars 2>/dev/null
 rm -f .AllWRFVariables 2>/dev/null
 rm -f postwrf_wrfout* 2>/dev/null

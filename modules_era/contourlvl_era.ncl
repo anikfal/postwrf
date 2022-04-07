@@ -77,23 +77,23 @@ end if
  NCLpanelrows = tointeger(getenv("panelrows"))
  NCLpanelcolumns = tointeger(getenv("panelcolumns"))
 
-  opt_notitle = True
-  opt_notitle@NoHeaderFooter = True
-  opt_notitle@InitTime = False
-  opt_notitle@ValidTime = False
+opt_notitle = True
+opt_notitle@NoHeaderFooter = True
+opt_notitle@InitTime = False
+opt_notitle@ValidTime = False
 
-    filename = getenv("outname")
-  type = getenv("imgfmt")
-   if (type .eq. "animated_gif") then
-    type = "png"
-   end if
+filename = getenv("outname")
+type = getenv("imgfmt")
+if (type .eq. "animated_gif") then
+type = "png"
+end if
 
-    totstepsminus = dimsizes(all_steps)-1
-    if (NCLaverage_onoff.eq.1) then
-      hourstep = all_steps(1) - all_steps(0)
-      ncltstep = tointeger(NCLaverage_time/hourstep)
-      totstepsminus = totstepsminus - time_first
-    end if
+totstepsminus = dimsizes(all_steps)-1
+if (NCLaverage_onoff.eq.1) then
+  hourstep = all_steps(1) - all_steps(0)
+  ncltstep = tointeger(NCLaverage_time/hourstep)
+  totstepsminus = totstepsminus - time_first
+end if
 
 yy  = asciiread(".AllWRFVariables", -1, "string")
 

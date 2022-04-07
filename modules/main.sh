@@ -145,7 +145,7 @@ unset myvar
 
 if [[ $extractonoff == 1 || $contour_onoff == 1 || $domainonoff == 1 || $roseonoff == 1 || $skewtonoff == 1 ]]; then #For the first line (Variables)
   #Counting Variables in a line of namelist.wrf
-  myvar="WRF_variable_name"
+  myvar="Variable_names"
   countline
   export nclvars=$numlinevars #Zero (0) is included in the line numbers
   #Extracting Vairables into array
