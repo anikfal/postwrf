@@ -9,9 +9,6 @@ my_exit() {
        rm $postwrf_dir/totalequation.txt $postwrf_dir/variables.txt $postwrf_dir/equnit 2>/dev/null
 }
 
-# wrftemp=($(ls $postwrf_dir/postwrf_era_*))
-# wrfout2=$(basename ${wrftemp[0]}) #In case of mulitfiles, pick the first file for naming
-
 wrftemp=( $( ls $postwrf_dir/postwrf_era_* ) )
 wrfout_with_suff=`basename ${wrftemp[0]}` #In case of multifiles, pick the first file for naming
 wrfout2=${wrfout_with_suff%.*}
@@ -35,42 +32,17 @@ export tlast_ind
 
 echo -e "\n---------------------------------------------------------------"
 echo -e "Extracting data by bilinear interpolatoin\n"
-# echo -e "Method of grid interpolation: 1, 2, or 3?\n"
-# select interpolvar in "NearestPoint" "Bilinear" "IDW"; do
-#        case $interpolvar in
-#        NearestPoint) ;;
-#        Bilinear) ;;
-#        IDW) ;;
-#        *)
-#               echo "Output Images Will Be 'X11'"
-#               interpolvar="NearestPoint"
-#               ;;
-#        esac
-#        export interpolvar
-#        break
-# done
 mkdir -p outputs_$wrfout2
 ln -sf $postwrf_dir/.AllWRFVariables $postwrf_dir/modules
 cd outputs_$wrfout2
 export outputdir=$(pwd)
-# ln -sf $postwrf_dir/postwrf_wrfout* .
-# mv $postwrf_dir/modules/wrfout_d* .
 ln -sf ../.AllWRFVariables .
 echo -e "\nPostWRF: Extracting variables ...\n"
-# if [[ ${interpolvar} == "IDW" ]]; then
-#        echo -e "\nInerpolation by the method of Inverse Distance Weight (IDW) ...\n"
-# elif [[ ${interpolvar} == "Bilinear" ]]; then
-#        echo -e "\nBilinear Inerpolation ...\n"
-# else
-#        echo -e "\nInerpolation by the method of NearestPoint ...\n"
-# fi
 ln -sf $postwrf_dir/modules_era/extract_era.ncl .
 ln -sf $postwrf_dir/.AllWRFVariables $postwrf_dir/modules_era
 ln -sf $postwrf_dir/.AllWRFVariables .
 ln -sf $postwrf_dir/postwrf_era_* $postwrf_dir/modules_era
 ln -sf $postwrf_dir/postwrf_era_* .
-ln -sf $postwrf_dir/modules_era/contourlvl_era.ncl .
-# ln -sf $postwrf_dir/modules_era/read_wrfouts.ncl .
 ncl -nQ extract_era.ncl
 echo -e "\nPostWRF: Extracting variables finished.\n"
 

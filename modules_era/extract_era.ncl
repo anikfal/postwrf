@@ -4,11 +4,6 @@ load "$NCARG_ROOT/lib/ncarg/nclscripts/wrf/WRFUserARW.ncl"
 
 begin
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;Import from shell
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-; load "read_wrfouts.ncl"
 myfilename = systemfunc("ls postwrf_era_*")
 var = str_match(myfilename,"/" )
 if (ismissing(var)) then
@@ -20,9 +15,7 @@ end if
 
 levs = aaa->level
 levdim = dimsizes(levs)-1
-; highestPressureLev = levs(0)
-; lowestPressureLev = levs(levdim)
-; NCLspinup = tointeger(getenv("spinup"))
+lowestPressureLev = levs(levdim)
 NCLaverage_onoff = tointeger(getenv("average_onoff"))
 NCLaverage_time = tointeger(getenv("averagetime"))
 all_steps = tointeger(cd_calendar(aaa->time, 3))
@@ -34,16 +27,6 @@ if (time_last .eq. "last_index_era") then
   time_last := tointeger(time_last) - 1
 end if
 
-; hourstep = (all_steps(1) - all_steps(0))/60
-; if (NCLspinup.ge.hourstep) then
-;  start_timestep = tointeger(NCLspinup/hourstep)
-; else
-;  start_timestep = 0
-; end if
-
-; interpolvar = getenv("interpolvar")
-; times = wrf_user_getvar(aaa,"times",-1)  ; get all times in the file
-;First line
 lines = tointeger(getenv("nclvars"))
 NCLvarnames = new(lines,"string")
 i=0
@@ -90,8 +73,6 @@ delete(i)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;; Continue
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-; lat2d = wrf_user_getvar(aaa, "XLAT", 0)
-; lon2d = wrf_user_getvar(aaa, "XLONG", 0)
 mylat = aaa->latitude
 mylat := mylat(::-1)
 mylon = aaa->longitude
@@ -164,11 +145,6 @@ end if
 end if
 end if
 
-;;;shell script
-;shellvar = wrf_user_getvar(a,NClwrfvars(ii),-1)  ;;;added_new_line_by_sed
-;shellvar = wrf_user_getvar(a,NClwrfvars(ii),-1)  ;;;added_new_line_by_sed
-;shellvar = wrf_user_getvar(a,NClwrfvars(ii),-1)  ;;;added_new_line_by_sed
-
 lat = NCLloclats
 lon = NCLloclons
 LocNum = dimsizes(lat)
@@ -183,101 +159,67 @@ if (NCLaverage_onoff.ne.1) then  ;average_OFF code qwe
     end if
 
       header=(/"----------------------------------------------------------------------------", \
-              " ERA5 output variable: " + NCLvarnames(ii) + " (" + tc2@long_name + ") - " +  "unit_scale: " + tc2@units + "",\
+              ; " ERA5 output variable: " + NCLvarnames(ii) + " (" + tc2@long_name + ") - " +  "unit_scale: " + tc2@units + "",\
+              " ERA5 output variable: " + NCLvarnames(ii) + " (" + tc2@long_name + ") - " +  "unit_scale: " + tc2@units + "  -  on " + lowestPressureLev + "hpa",\
               "----------------------------------------------------------------------------"/)
     hlist=[/header/]
     tablename="values-"+NCLvarnames(ii) ;+"-"+interpolvar
       write_table( tablename, "w", hlist, "%s" ) ; Write header on the table
-      ; timecap=times(start_timestep:)
       timecap = tostring(all_steps(time_first:time_last))
 
       nameformat="%19s"
 
 else  ;average_ON code qwe
 
-  totstepsminus = dimsizes(all_steps)-1
-  ; if (NCLaverage_onoff.eq.1) then
-    hourstep = all_steps(1) - all_steps(0)
-  ;   ncltstep = tointeger(NCLaverage_time/hourstep)
-  ;   totstepsminus = totstepsminus - time_first
-  ; end if
-
-  ; totstepsminus = dimsizes(times)-1
+  ; totstepsminus = dimsizes(all_steps)-1
+  hourstep = all_steps(1) - all_steps(0)
   NCLaverage_time = tointeger(getenv("averagetime"))
   ncltstep = tointeger(NCLaverage_time/hourstep)
-  totstepsminus = totstepsminus - time_first
+  ; totstepsminus = totstepsminus - time_first
+  totstepsminus = time_last - time_first
   ntimes = totstepsminus - mod(totstepsminus, ncltstep) - ncltstep ;equal to the exact steps, multiple of ncltstep
     xTemp = new((/ (ntimes+ncltstep)/ncltstep, LocNum /), typeof(tc2))
-    ; if (NCLvarnames(ii) .eq. "cape_surface" .or. NCLvarnames(ii) .eq. "cin_surface" .or. NCLvarnames(ii) .eq. "cin_3d" .or. NCLvarnames(ii) .eq. "cape_3d") then
-    ; xTemp@_FillValue=tc2@_FillValue
-    ; end if
-    ; xTemp!0="Point Locations"
-    ; xTemp!1="Times"
-    ; xTemp = 0
     n=0
     if (vardims .eq. 3) then
-        xTemp0 = linint2_points_Wrap(mylon, mylat, tc2(time_first:time_last, ::-1, :), False, lon, lat, 0)
+        ; xTemp0 = linint2_points_Wrap(mylon, mylat, tc2(time_first:time_last, ::-1, :), False, lon, lat, 0)
+        xTemp0 = linint2_points_Wrap(mylon, mylat, tc2(:time_last, ::-1, :), False, lon, lat, 0)
       else if (vardims .eq. 4) then
-        xTemp0 = linint2_points_Wrap(mylon, mylat, tc2(time_first:time_last, levdim, ::-1, :), False, lon, lat, 0)
+        ; xTemp0 = linint2_points_Wrap(mylon, mylat, tc2(time_first:time_last, levdim, ::-1, :), False, lon, lat, 0)
+        xTemp0 = linint2_points_Wrap(mylon, mylat, tc2(:time_last, levdim, ::-1, :), False, lon, lat, 0)
       end if
     end if
-
-    ; nm = getind_latlon2d (lat2d,lon2d, lat, lon)
     end_timestep = ntimes + time_first
     do while(n.le.(LocNum-1))
-      ; if (vardims .eq. 3) then
         kk = 0
-        ; print("time_first, end_timestep, ncltstep: " + time_first + " "  + end_timestep + " " + ncltstep)
-        ; print(xTemp)
-; exit()
         do it = time_first, end_timestep, ncltstep
-        ; print("it: " + it)
-          ; xTemp(n,kk) = dim_avg_n(tc2(it:(it+ncltstep),nm(n,0),nm(n,1)),0)
           xTemp(kk, n) = dim_avg_n(xTemp0(it:(it+ncltstep), n), 0)
           kk = kk + 1
         end do
-      ; else if (vardims .eq. 4) then
-      ;   kk = 0
-      ;   do it = start_timestep, (ntimes+start_timestep), ncltstep
-      ;     xTemp(n,kk) = dim_avg_n(tc2(it:(it+ncltstep),0,nm(n,0),nm(n,1)),0)
-      ;     kk = kk + 1
-      ;   end do
-      ; end if
-      ; end if
       n=n+1
     end do
 
       header=(/"---------------------------------------------------------------------------------------------------", \
-              " Average (" + NCLaverage_time + " hours) of the ERA5 output variable: " + NCLvarnames(ii) + " (" + tc2@long_name + ") - " +  "unit_scale: " + tc2@units + "",\
+              ; " Average (" + NCLaverage_time + " hours) of the ERA5 output variable: " + NCLvarnames(ii) + " (" + tc2@long_name + ") - " +  "unit_scale: " + tc2@units + "",\
+              " Average (" + NCLaverage_time + " hours) of the ERA5 output variable: " + NCLvarnames(ii) + " (" + tc2@long_name + ") - " +  "unit_scale: " + tc2@units + "  -  on " + lowestPressureLev + "hpa",\
               "---------------------------------------------------------------------------------------------------"/)
     hlist=[/header/]
     tablename="average_values-"+NCLvarnames(ii) ;+"-"+interpolvar
       write_table( tablename, "w", hlist, "%s" ) ; Write header on the table
-      ; timecap_start = all_steps(start_timestep:(ntimes+start_timestep):ncltstep)
       timecap_start = all_steps(time_first:(ntimes+time_first):ncltstep)
-      ; timecap_end = all_steps((start_timestep+ncltstep):(ntimes+start_timestep+ncltstep):ncltstep)
       timecap_end = all_steps((time_first+ncltstep):(ntimes+time_first+ncltstep):ncltstep)
       tstart = timecap_start
       tend = tstart
       end_loop = dimsizes(timecap_start)-1
       do it=0, end_loop
-        ; start_arr = str_split(timecap_start(it), ":")
         start_arr = timecap_start(it)
-        ; end_arr = str_split(timecap_end(it), ":")
         end_arr = timecap_end(it)
         tstart(it) = start_arr(0)
-        ; tstart(it) = timecap_start(it)
         tend(it) = end_arr(0)
       end do
-      ; tseparator = tstart
-      ; tseparator = timecap_start(it)
-      ; tseparator = " to "
       timecap = tstart + " to " + tend
-
       nameformat="%24s"
 
 end if  ;average end code qwe
-
 
 timename=(/"Time"/)
 alist = NewList("lifo")
@@ -394,14 +336,12 @@ do while(jj.lt.totlocs)
   ListAppend(hnamelist,citylist[jj])
 jj=jj+1
 end do
-;  tt100 = new((/100,dimsizes(xTemp(0,:))/),typeof(tc2),default_fillvalue("float"))
  tt100 = new((/100,dimsizes(xTemp(:,0))/), typeof(tc2), default_fillvalue("float"))
 delete(tc2)
 alist = NewList("lifo")
 ListAppend(alist, timecap)
 j=0
 do while(j.lt.totlocs)
-;  tt100(j,:) = xTemp(j,:)
  tt100(j,:) = xTemp(:, j)
  j=j+1
 end do
@@ -522,7 +462,6 @@ delete(j)
    write_table( tablename, "a", hnamelist, nameformat ) ; Write header on the table
    write_table( tablename, "a", alist, valueformat ) ; Write main data
 else
-; print("PostWRF Warning: " + "<" + NCLvarnames(ii) + ">" + " is not among the output variables of " + myfile)
 print("PostWRF Warning: " + "<" + NCLvarnames(ii) + ">" + " is not among the output variables")
 end if ;abcdif
 print("Variable " + NCLvarnames(ii) + " has been extracted")
@@ -530,13 +469,13 @@ print("Variable " + NCLvarnames(ii) + " has been extracted")
 else ;;;###########################################
 
  homedir = getenv("postwrf_dir")
- asciiwrite (homedir+"/modules/totalequation.txt" , NCLvarnames(ii))
- system("cd $postwrf_dir/modules && ./separation.sh") ;;variable.txt
- system("cd $postwrf_dir/modules && ./extract_equation.sh") ;;sed
- system("ln -sf $postwrf_dir/modules/extract_equation.ncl .")
- system("ln -sf $postwrf_dir/modules/variables.txt .")
- system("ln -sf $postwrf_dir/modules/totalequation.txt .")
- system("ncl -Q extract_equation.ncl")
+ asciiwrite (homedir+"/modules_era/totalequation.txt" , NCLvarnames(ii))
+ system("cd $postwrf_dir/modules_era && ./separation.sh") ;;variable.txt
+ system("cd $postwrf_dir/modules_era && ./extract_era_equation.sh") ;;sed
+ system("ln -sf $postwrf_dir/modules_era/extract_era_equation.ncl .")
+ system("ln -sf $postwrf_dir/modules_era/variables.txt .")
+ system("ln -sf $postwrf_dir/modules_era/totalequation.txt .")
+ system("ncl -Qn extract_era_equation.ncl")
 end if ;sssif
 
 ii = ii+1

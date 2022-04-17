@@ -10,10 +10,12 @@ PostWRF can be compared to QGIS without graphical user interphase, but for WRF o
 Documentations and user guide: https://postwrf.readthedocs.io/en/master
 
 ## Main capabilities:
-- Data extraction
-- Contour plot
-- Cross-section plot
-- Statistical diagrams
-- RTTOV input/output data generation
-- Data conversion to Geotiff
-- Skew-T and windrose diagrams
+- WRF Data extraction
+- WRF horizontal contour plot
+- WRF cross-section plot
+- WRF statistical diagrams
+- RTTOV input (from WRF) and output data generation
+- WRF data conversion to Geotiff
+- WRF Skew-T and windrose diagrams
+- ERA5 horizontal contour plot
+- ERA5 data extraction
