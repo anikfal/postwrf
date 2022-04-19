@@ -17,7 +17,6 @@ levs = aaa->level
 levdim = dimsizes(levs)-1
 lowestPressureLev = levs(levdim)
 NCLaverage_onoff = tointeger(getenv("average_onoff"))
-; NCLaverage_time = tointeger(getenv("averagetime"))
 all_steps = tointeger(cd_calendar(aaa->time, 3))
 time_last = getenv("tlast_ind")
 time_first = tointeger(getenv("tfirst_ind")) - 1
@@ -27,14 +26,6 @@ if (time_last .eq. "last_index_era") then
   time_last := tointeger(time_last) - 1
 end if
 
-; lines = tointeger(getenv("nclvars"))
-; NCLvarnames = new(lines,"string")
-; i=0
-; do while(i.le.(lines-1))
-;  NCLvarnames(i) = getenv("nclwrfvar"+i)
-;  i=i+1
-; end do
-; delete(lines)
 NCLvarnames = asciiread("variables.txt", -1, "string")
 
 ;Second Line
@@ -66,7 +57,6 @@ do while(i.le.(lines-1))
  NCLloclons2(i) = getenv("nclloclons"+i)
  i=i+1
 end do
-;tofloat(NCLloclons)
 NCLloclons=stringtofloat(NCLloclons2)
 delete(lines)
 delete(i)
@@ -83,9 +73,6 @@ loc1(0)=min(mylon)
 loc1(1)=min(mylat)
 loc2(0)=max(mylon)
 loc2(1)=max(mylat)
-  ; print("")
-  ; print("Range of Domain Latitudes (south-north): " + decimalPlaces(loc1(1),2,True) + " to " + decimalPlaces(loc2(1),2,True))
-  ; print("Range of Domain Longitudes (west-east) : " + decimalPlaces(loc1(0),2,True) + " to " + decimalPlaces(loc2(0),2,True) + cr)
 
 ii=0
 outlocs=""
@@ -101,20 +88,7 @@ outlocs@_FillValue=""
   print("Warning: Location(s) " + outlocs + " are out of domain boundaries." )
  end if
 totvarsnum = dimsizes(NCLvarnames)
-; yy  = asciiread(".AllWRFVariables", -1, "string")
 ii=0
-
-; do while(ii.le.(totvarsnum-1)) ;code ttjj
-
-; varplus = str_match(NCLvarnames(ii),"+")
-; varminus = str_match(NCLvarnames(ii),"-")
-; varmult = str_match(NCLvarnames(ii),"*")
-; vardiv = str_match(NCLvarnames(ii),"/")
-; varexp = str_match(NCLvarnames(ii),"^")
-; varopenp = str_match(NCLvarnames(ii),"(")
-; varclosep = str_match(NCLvarnames(ii),")")
-; if( ismissing(varplus) .and. ismissing(varminus) .and. ismissing(varmult) .and. ismissing(vardiv) .and. ismissing(varexp) .and. ismissing(varopenp) .and. ismissing(varclosep) ) then  ;sssif
-; if ( any(yy.eq.NCLvarnames(ii)) ) then ;abcdif
 
 varlist2 = NewList("lifo")
 
@@ -125,35 +99,16 @@ do ii = 0, totvarsnum-1 ;;code do_poly3
     ListAppend(varlist2, wind_speed(uu10, vv10))
     varlist2[ii]@description = "wind speed"
     varlist2[ii]@units = "m s-1"
-    ; tc2 = wind_speed(uu10, vv10)
-    ; tc2@long_name = "wind speed"
-    ; tc2@units = "m s-1"
   else if (NCLvarnames(ii) .eq. "wind_d") then
     uu10  = short2flt(aaa->u)
     vv10  = short2flt(aaa->v)
     ListAppend(varlist2, wind_direction(uu10, vv10, 0))
     varlist2[ii]@description = "wind direction"
     varlist2[ii]@units = "Degrees from north"
-    ; tc2 = wind_direction(uu10, vv10, 0)
-    ; tc2@long_name = "wind direction"
-    ; tc2@units = "Degrees from north"
-  ; else if (NCLvarnames(ii) .eq. "z") then
-  ;   print("Note:")
-  ;   print("z (geopotential - unit: m**2 s**-2) has been converted to geopotential-height (unit: decameter)")
-  ;   print("you can put z in polynomials which is treated as its original variable with unit: m**2 s**-2")
-  ;   print("")
-  ;   tc0 = short2flt(aaa->z)
-  ;   tc2 = tc0/98.1 ;convert to hectopascal
-  ;   copy_VarCoords(tc0, tc2)
-  ;   copy_VarAtts(tc0, tc2)
-  ;   delete(tc0)
-  ;   tc2@units = "Decameter"
   else
-  ; tc2 = short2flt(aaa->$NCLvarnames(ii)$)
   ListAppend(varlist2, short2flt(aaa->$NCLvarnames(ii)$))
   end if
   end if
-  ; end if
 end do
 delete(NCLvarnames)
 
@@ -163,19 +118,13 @@ varlist = NewList("lifo") ;;main list and checking the dims
     if (dimsizes(dimsizes(varlist2[ii])).eq.3) then
         ListAppend(varlist,varlist2[ii])
     else ;if dimsize equals 4
-        ; if (NCLPLEV3(ii).eq.0) then ;surface pressure
             ListAppend(varlist, varlist2[ii](:, levdim, :, :))
-          ; else
-            ; ListAppend(varlist, varlist2[ii](:, {NCLPLEV3(ii)}, :, :))
-        ; end if
     end if
   end do ;;code docheck22
 
 lat = NCLloclats
 lon = NCLloclons
 LocNum = dimsizes(lat)
-; vardims = dimsizes(dimsizes(tc2))
-
 
         ;;shell script333
 r = varlist[1]  ;;;added_new_line_by_sed
@@ -184,43 +133,25 @@ t = varlist[0]  ;;;added_new_line_by_sed
   ;equation from namelist.wrf333
 tc2 = t*r  ;;;added_new_line_by_sed
 
-; copy_VarCoords(varlist[0], tc_plane33)
-
 system("cd $postwrf_dir/modules_era && ./extract_getinput.sh")
-; system("ln -sf $postwrf_dir/modules_era/eqname $postwrf_dir")
 system("ln -sf $postwrf_dir/modules_era/eqname .")
 eqname3 = asciiread("eqname", -1, "string")
-; system("ln -sf $postwrf_dir/modules_era/equnit $postwrf_dir")
 system("ln -sf $postwrf_dir/modules_era/equnit .")
 equnit3 = asciiread("equnit", -1, "string")
-; if (ncl_CNLEV3_num.gt.1) then
-  ; tc_plane33@long_name = eqname3 + " at multi atm levels"
-  tc2@long_name = eqname3
-  ; else
-  ; tc_plane33@long_name = eqname3 + " at " + varlist[0]@level + " hpa"
-; end if
+tc2@long_name = eqname3
 tc2@units = equnit3
 delete(varlist)
 delete(varlist2)
 
 if (NCLaverage_onoff.ne.1) then  ;average_OFF code qwe
-    ; if (vardims .eq. 3) then
-        xTemp = linint2_points_Wrap(mylon, mylat, tc2(time_first:time_last, ::-1, :), False, lon, lat, 0)
-      ; else if (vardims .eq. 4) then
-        ; xTemp = linint2_points_Wrap(mylon, mylat, tc2(time_first:time_last, levdim, ::-1, :), False, lon, lat, 0)
-      ; end if
-    ; end if
-
+      xTemp = linint2_points_Wrap(mylon, mylat, tc2(time_first:time_last, ::-1, :), False, lon, lat, 0)
       header=(/"----------------------------------------------------------------------------", \
-              ; " ERA5 output variable: " + NCLvarnames(ii) + " (" + tc2@long_name + ") - " +  "unit_scale: " + tc2@units + "",\
               " ERA5 output variable: " + tc2@long_name + " - unit_scale: " + tc2@units + "  -  on " + lowestPressureLev + "hpa",\
               "----------------------------------------------------------------------------"/)
     hlist=[/header/]
-    ; tablename="values-"+NCLvarnames(ii) ;+"-"+interpolvar
     tablename = "values-" + tc2@long_name
       write_table( tablename, "w", hlist, "%s" ) ; Write header on the table
       timecap = tostring(all_steps(time_first:time_last))
-
       nameformat="%19s"
 
 else  ;average_ON code qwe
@@ -232,20 +163,7 @@ else  ;average_ON code qwe
   ntimes = totstepsminus - mod(totstepsminus, ncltstep) - ncltstep ;equal to the exact steps, multiple of ncltstep
   xTemp = new((/ (ntimes+ncltstep)/ncltstep, LocNum /), typeof(tc2))
   n=0
-  ; totstepsminus = dimsizes(all_steps)-1
-  ; hourstep = all_steps(1) - all_steps(0)
-  ; NCLaverage_time = tointeger(getenv("averagetime"))
-  ; ncltstep = tointeger(NCLaverage_time/hourstep)
-  ; totstepsminus = totstepsminus - time_first
-  ; ntimes = totstepsminus - mod(totstepsminus, ncltstep) - ncltstep ;equal to the exact steps, multiple of ncltstep
-  ;   xTemp = new((/ (ntimes+ncltstep)/ncltstep, LocNum /), typeof(tc2))
-  ;   n=0
-    ; if (vardims .eq. 3) then
-        xTemp0 = linint2_points_Wrap(mylon, mylat, tc2(:time_last, ::-1, :), False, lon, lat, 0)
-      ; else if (vardims .eq. 4) then
-        ; xTemp0 = linint2_points_Wrap(mylon, mylat, tc2(time_first:time_last, levdim, ::-1, :), False, lon, lat, 0)
-      ; end if
-    ; end if
+  xTemp0 = linint2_points_Wrap(mylon, mylat, tc2(:time_last, ::-1, :), False, lon, lat, 0)
 
     end_timestep = ntimes + time_first
     do while(n.le.(LocNum-1))
@@ -517,28 +435,8 @@ do while(j.lt.totlocs)
 j=j+1
 end do
 delete(j)
-   write_table( tablename, "a", hnamelist, nameformat ) ; Write header on the table
-   write_table( tablename, "a", alist, valueformat ) ; Write main data
-; else
-; print("PostWRF Warning: " + "<" + NCLvarnames(ii) + ">" + " is not among the output variables")
-; end if ;abcdif
+write_table( tablename, "a", hnamelist, nameformat ) ; Write header on the table
+write_table( tablename, "a", alist, valueformat ) ; Write main data
 print("Variable " + eqname3 + " has been extracted")
-
-; else ;;;###########################################
-
-;  homedir = getenv("postwrf_dir")
-;  asciiwrite (homedir+"/modules_era/totalequation.txt" , NCLvarnames(ii))
-;  system("cd $postwrf_dir/modules_era && ./separation.sh") ;;variable.txt
-;  print("XXXXXXXXXXXXXXXXXX")
-;  exit()
-;  system("cd $postwrf_dir/modules_era && ./extract_era_equation.sh") ;;sed
-;  system("ln -sf $postwrf_dir/modules_era/extract_era_equation.ncl .")
-;  system("ln -sf $postwrf_dir/modules_era/variables.txt .")
-;  system("ln -sf $postwrf_dir/modules_era/totalequation.txt .")
-;  system("ncl -Q extract_era_equation.ncl")
-; end if ;sssif
-
-; ii = ii+1
-; end do ;code ttjj
 
 end

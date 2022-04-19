@@ -383,7 +383,7 @@ fi
 
     echo ""
     echo "---------------------------------------------------------"
-    echo "      ERA5 NetCDF Plot             ERA5 NetCDF Plot"
+    echo "      ERA5 NetCDF Data             ERA5 NetCDF Data"
     echo "---------------------------------------------------------"
     echo ""
 

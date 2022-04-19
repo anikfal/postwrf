@@ -65,7 +65,6 @@ do while(i.le.(lines-1))
  NCLloclons2(i) = getenv("nclloclons"+i)
  i=i+1
 end do
-;tofloat(NCLloclons)
 NCLloclons=stringtofloat(NCLloclons2)
 delete(lines)
 delete(i)
@@ -159,11 +158,10 @@ if (NCLaverage_onoff.ne.1) then  ;average_OFF code qwe
     end if
 
       header=(/"----------------------------------------------------------------------------", \
-              ; " ERA5 output variable: " + NCLvarnames(ii) + " (" + tc2@long_name + ") - " +  "unit_scale: " + tc2@units + "",\
               " ERA5 output variable: " + NCLvarnames(ii) + " (" + tc2@long_name + ") - " +  "unit_scale: " + tc2@units + "  -  on " + lowestPressureLev + "hpa",\
               "----------------------------------------------------------------------------"/)
     hlist=[/header/]
-    tablename="values-"+NCLvarnames(ii) ;+"-"+interpolvar
+    tablename="values-"+NCLvarnames(ii)
       write_table( tablename, "w", hlist, "%s" ) ; Write header on the table
       timecap = tostring(all_steps(time_first:time_last))
 
@@ -171,20 +169,16 @@ if (NCLaverage_onoff.ne.1) then  ;average_OFF code qwe
 
 else  ;average_ON code qwe
 
-  ; totstepsminus = dimsizes(all_steps)-1
   hourstep = all_steps(1) - all_steps(0)
   NCLaverage_time = tointeger(getenv("averagetime"))
   ncltstep = tointeger(NCLaverage_time/hourstep)
-  ; totstepsminus = totstepsminus - time_first
   totstepsminus = time_last - time_first
   ntimes = totstepsminus - mod(totstepsminus, ncltstep) - ncltstep ;equal to the exact steps, multiple of ncltstep
     xTemp = new((/ (ntimes+ncltstep)/ncltstep, LocNum /), typeof(tc2))
     n=0
     if (vardims .eq. 3) then
-        ; xTemp0 = linint2_points_Wrap(mylon, mylat, tc2(time_first:time_last, ::-1, :), False, lon, lat, 0)
         xTemp0 = linint2_points_Wrap(mylon, mylat, tc2(:time_last, ::-1, :), False, lon, lat, 0)
       else if (vardims .eq. 4) then
-        ; xTemp0 = linint2_points_Wrap(mylon, mylat, tc2(time_first:time_last, levdim, ::-1, :), False, lon, lat, 0)
         xTemp0 = linint2_points_Wrap(mylon, mylat, tc2(:time_last, levdim, ::-1, :), False, lon, lat, 0)
       end if
     end if
@@ -199,11 +193,10 @@ else  ;average_ON code qwe
     end do
 
       header=(/"---------------------------------------------------------------------------------------------------", \
-              ; " Average (" + NCLaverage_time + " hours) of the ERA5 output variable: " + NCLvarnames(ii) + " (" + tc2@long_name + ") - " +  "unit_scale: " + tc2@units + "",\
               " Average (" + NCLaverage_time + " hours) of the ERA5 output variable: " + NCLvarnames(ii) + " (" + tc2@long_name + ") - " +  "unit_scale: " + tc2@units + "  -  on " + lowestPressureLev + "hpa",\
               "---------------------------------------------------------------------------------------------------"/)
     hlist=[/header/]
-    tablename="average_values-"+NCLvarnames(ii) ;+"-"+interpolvar
+    tablename="average_values-"+NCLvarnames(ii)
       write_table( tablename, "w", hlist, "%s" ) ; Write header on the table
       timecap_start = all_steps(time_first:(ntimes+time_first):ncltstep)
       timecap_end = all_steps((time_first+ncltstep):(ntimes+time_first+ncltstep):ncltstep)
