@@ -239,10 +239,10 @@ end if
         end do ;;code docheck22
 
         ;;shell script333
-vo = varlist[0]  ;;;added_new_line_by_sed333
+z = varlist[0]  ;;;added_new_line_by_sed333
 
   ;equation from namelist.wrf333
-tc_plane33 = vo+1  ;;;added_new_line_by_sed333
+tc_plane33 = z/9.8  ;;;added_new_line_by_sed333
 
 copy_VarCoords(varlist[0], tc_plane33)
 
@@ -493,11 +493,10 @@ else ;;code ifpoly1
   end do ;;code docheck22
 
         ;;shell script111
-t = varlist[1]  ;;;added_new_line_by_sed111
 r = varlist[0]  ;;;added_new_line_by_sed111
 
   ;equation from namelist.wrf111
-tc_plane11 = r+t  ;;;added_new_line_by_sed111
+tc_plane11 = r*2  ;;;added_new_line_by_sed111
 
 copy_VarCoords(varlist[0], tc_plane11)
 
@@ -755,11 +754,10 @@ else ;;code ifpoly2
   end do ;;code docheck22
 
         ;;shell script222
-r = varlist[1]  ;;;added_new_line_by_sed222
 t = varlist[0]  ;;;added_new_line_by_sed222
 
   ;equation from namelist.wrf222
-tc_plane22 = t+r  ;;;added_new_line_by_sed222
+tc_plane22 = t+5  ;;;added_new_line_by_sed222
 
 copy_VarCoords(varlist[0], tc_plane22)
 
@@ -1237,7 +1235,7 @@ end if ;;code ifpoly2
           end if
 
           else ;;Averaging code timeif122
-          pnlres@txString                   = "Average " + tc_plane33@long_name + " (" + tc_plane33@units + ")"
+          ; pnlres@txString                   = "Average " + tc_plane33@long_name + " (" + tc_plane33@units + ")"
 
             do it = time_first, time_last, ncltstep
               if ((it+ncltstep) .gt. time_last) then
@@ -1253,12 +1251,12 @@ end if ;;code ifpoly2
                 opt333@lbTopMarginF = 0.2
                 opt333@lbBottomMarginF = 0.4
                 opts@vcRefAnnoOrthogonalPosF = -0.48  ; 2 titles
-                contour_tc3 = gsn_csm_contour_map(wks, tc_plane33(it,:,:), opt333)
-                opt111@gsnLeftString = tc1@long_name + "~C~" + " "
-                opt111@gsnRightString = tc1@units + "~C~" + " "
-                contour_tc1 = gsn_csm_contour(wks, tc_plane11(it,:,:), opt111)
-                contour_tc2 = gsn_csm_contour(wks, tc_plane22(it,:,:), opt222)
-                vector = gsn_csm_vector(wks, u_plane(it,:,:), v_plane(it,:,:), opts)
+                contour_tc3 = gsn_csm_contour_map(wks, dim_avg_n_Wrap(tc_plane33(it:(it+ncltstep),:,:), 0), opt333)
+                opt111@gsnLeftString = tc_plane11@long_name + "~C~" + " "
+                opt111@gsnRightString = tc_plane11@units + "~C~" + " "
+                contour_tc1 = gsn_csm_contour(wks, dim_avg_n_Wrap(tc_plane11(it:(it+ncltstep),:,:), 0), opt111)
+                contour_tc2 = gsn_csm_contour(wks, dim_avg_n_Wrap(tc_plane22(it:(it+ncltstep),:,:), 0), opt222)
+                vector = gsn_csm_vector(wks, dim_avg_n_Wrap(u_plane(it:(it+ncltstep),:,:),0), dim_avg_n_Wrap(v_plane(it:(it+ncltstep),:,:),0), opts)
                 overlay(contour_tc3, contour_tc1)
                 overlay(contour_tc3, contour_tc2)
                 overlay(contour_tc3, vector)
@@ -1270,11 +1268,11 @@ end if ;;code ifpoly2
                 opt333@lbTopMarginF = 0.1
                 opt333@lbTopMarginF = 0.2
                 opt333@lbBottomMarginF = 0.4
-                contour_tc3 = gsn_csm_contour_map(wks, tc_plane33(it,:,:), opt333)
-                opt111@gsnLeftString = tc1@long_name + "~C~" + " "
-                opt111@gsnRightString = tc1@units + "~C~" + " "
-                contour_tc1 = gsn_csm_contour(wks, tc_plane11(it,:,:), opt111)
-                contour_tc2 = gsn_csm_contour(wks, tc_plane22(it,:,:), opt222)
+                contour_tc3 = gsn_csm_contour_map(wks, dim_avg_n_Wrap(tc_plane33(it:(it+ncltstep),:,:),0), opt333)
+                opt111@gsnLeftString = tc_plane11@long_name + "~C~" + " "
+                opt111@gsnRightString = tc_plane11@units + "~C~" + " "
+                contour_tc1 = gsn_csm_contour(wks, dim_avg_n_Wrap(tc_plane11(it:(it+ncltstep),:,:),0), opt111)
+                contour_tc2 = gsn_csm_contour(wks, dim_avg_n_Wrap(tc_plane22(it:(it+ncltstep),:,:),0), opt222)
                 overlay(contour_tc3, contour_tc1)
                 overlay(contour_tc3, contour_tc2)
                 plot = contour_tc3
@@ -1288,14 +1286,14 @@ end if ;;code ifpoly2
                 opts@vcRefAnnoOrthogonalPosF = -0.465  ; 2 titles
                 contour_tc3 = gsn_csm_contour_map(wks, tc_plane33(it,:,:), opt333)
                 contour_tc1 = gsn_csm_contour(wks, tc_plane11(it,:,:), opt111)
-                vector = gsn_csm_vector(wks, u_plane(it,:,:), v_plane(it,:,:), opts)
+                vector = gsn_csm_vector(wks, dim_avg_n_Wrap(u_plane(it:(it+ncltstep),:,:),0), dim_avg_n_Wrap(v_plane(it:(it+ncltstep),:,:),0), opts)
                 overlay(contour_tc3, contour_tc1)
                 overlay(contour_tc3, vector)
                 plot = contour_tc3       
               else if (NCL3VARONOFF.eq.1 .and. NCL1VARONOFF.eq.1 .and. NCL2VARONOFF.ne.1 .and. NCLwindonoff.ne.1) then
                 opt333@tiMainString = "Average from " + all_steps(it) + " to " + all_steps(it+ncltstep)
-                contour_tc3 = gsn_csm_contour_map(wks, tc_plane33(it,:,:), opt333)
-                contour_tc1 = gsn_csm_contour(wks, tc_plane11(it,:,:), opt111)
+                contour_tc3 = gsn_csm_contour_map(wks, dim_avg_n_Wrap(tc_plane33(it:(it+ncltstep),:,:),0), opt333)
+                contour_tc1 = gsn_csm_contour(wks, dim_avg_n_Wrap(tc_plane11(it:(it+ncltstep),:,:),0), opt111)
                 overlay(contour_tc3, contour_tc1)
                 plot = contour_tc3
               else if (NCL3VARONOFF.eq.1 .and. NCL1VARONOFF.ne.1 .and. NCL2VARONOFF.eq.1 .and. NCLwindonoff.eq.1) then
@@ -1306,9 +1304,9 @@ end if ;;code ifpoly2
                 opt333@lbTopMarginF = 0.2
                 opt333@lbBottomMarginF = 0.4
                 opts@vcRefAnnoOrthogonalPosF = -0.485  ; 2 titles
-                contour_tc3 = gsn_csm_contour_map(wks, tc_plane33(it,:,:), opt333)
-                contour_tc2 = gsn_csm_contour(wks, tc_plane22(it,:,:), opt222)
-                vector = gsn_csm_vector(wks, u_plane(it,:,:), v_plane(it,:,:), opts)
+                contour_tc3 = gsn_csm_contour_map(wks, dim_avg_n_Wrap(tc_plane33(it:(it+ncltstep),:,:),0), opt333)
+                contour_tc2 = gsn_csm_contour(wks, dim_avg_n_Wrap(tc_plane22(it:(it+ncltstep),:,:),0), opt222)
+                vector = gsn_csm_vector(wks, dim_avg_n_Wrap(u_plane(it:(it+ncltstep),:,:),0), dim_avg_n_Wrap(v_plane(it:(it+ncltstep),:,:),0), opts)
                 overlay(contour_tc3, contour_tc2)
                 overlay(contour_tc3, vector)
                 plot = contour_tc3 
@@ -1319,8 +1317,8 @@ end if ;;code ifpoly2
                 opt333@lbTopMarginF = 0.1
                 opt333@lbTopMarginF = 0.2
                 opt333@lbBottomMarginF = 0.4
-                contour_tc3 = gsn_csm_contour_map(wks, tc_plane33(it,:,:), opt333)
-                contour_tc2 = gsn_csm_contour(wks, tc_plane22(it,:,:), opt222)
+                contour_tc3 = gsn_csm_contour_map(wks, dim_avg_n_Wrap(tc_plane33(it:(it+ncltstep),:,:),0), opt333)
+                contour_tc2 = gsn_csm_contour(wks, dim_avg_n_Wrap(tc_plane22(it:(it+ncltstep),:,:),0), opt222)
                 overlay(contour_tc3, contour_tc2)
                 plot = contour_tc3
               else if (NCL3VARONOFF.eq.1 .and. NCL1VARONOFF.ne.1 .and. NCL2VARONOFF.ne.1 .and. NCLwindonoff.eq.1) then
@@ -1332,8 +1330,8 @@ end if ;;code ifpoly2
                 opt333@lbTopMarginF = 0.2
                 opt333@lbBottomMarginF = 0.4
                 opts@vcRefAnnoOrthogonalPosF = -0.48  ; 2 titles
-                contour_tc3 = gsn_csm_contour_map(wks, tc_plane33(it,:,:), opt333)
-                vector = gsn_csm_vector(wks, u_plane(it,:,:), v_plane(it,:,:), opts)
+                contour_tc3 = gsn_csm_contour_map(wks, dim_avg_n_Wrap(tc_plane33(it:(it+ncltstep),:,:),0), opt333)
+                vector = gsn_csm_vector(wks, dim_avg_n_Wrap(u_plane(it:(it+ncltstep),:,:),0), dim_avg_n_Wrap(v_plane(it:(it+ncltstep),:,:),0), opts)
                 overlay(contour_tc3, vector)
                 plot = contour_tc3
               else if (NCL3VARONOFF.eq.1 .and. NCL1VARONOFF.ne.1 .and. NCL2VARONOFF.ne.1 .and. NCLwindonoff.ne.1) then
@@ -1344,48 +1342,48 @@ end if ;;code ifpoly2
                 opt333@lbTopMarginF = 0.1
                 opt333@lbTopMarginF = 0.2
                 opt333@lbBottomMarginF = 0.4
-                plot = gsn_csm_contour_map(wks, tc_plane33(it,:,:), opt333)
+                plot = gsn_csm_contour_map(wks, dim_avg_n_Wrap(tc_plane33(it:(it+ncltstep),:,:),0), opt333)
               else if (NCL3VARONOFF.ne.1 .and. NCL1VARONOFF.eq.1 .and. NCL2VARONOFF.eq.1 .and. NCLwindonoff.eq.1) then
                 opt111@tiMainString = "Average from " + all_steps(it) + " to " + all_steps(it+ncltstep)
                 opts@vcRefAnnoOrthogonalPosF = -0.1  ; 2 titles
                 opt111@gsnMaximize = True
                 contour_tc1 = gsn_csm_contour_map(wks,tc_plane11(it,:,:),opt111)
-                contour_tc2 = gsn_csm_contour(wks, tc_plane22(it,:,:), opt222)
-                vector = gsn_csm_vector(wks, u_plane(it,:,:), v_plane(it,:,:), opts)
+                contour_tc2 = gsn_csm_contour(wks, dim_avg_n_Wrap(tc_plane22(it:(it+ncltstep),:,:),0), opt222)
+                vector = gsn_csm_vector(wks, dim_avg_n_Wrap(u_plane(it:(it+ncltstep),:,:),0), dim_avg_n_Wrap(v_plane(it:(it+ncltstep),:,:),0), opts)
                 overlay(contour_tc1, contour_tc2)
                 overlay(contour_tc1, vector)
                 plot = contour_tc1
               else if (NCL3VARONOFF.ne.1 .and. NCL1VARONOFF.eq.1 .and. NCL2VARONOFF.eq.1 .and. NCLwindonoff.ne.1) then
                 opt111@tiMainString = "Average from " + all_steps(it) + " to " + all_steps(it+ncltstep)
                 opt111@gsnMaximize = True
-                contour_tc1 = gsn_csm_contour_map(wks,tc_plane11(it,:,:),opt111)
-                contour_tc2 = gsn_csm_contour(wks, tc_plane22(it,:,:), opt222)
+                contour_tc1 = gsn_csm_contour_map(wks, dim_avg_n_Wrap(tc_plane11(it:(it+ncltstep),:,:),0), opt111)
+                contour_tc2 = gsn_csm_contour(wks, dim_avg_n_Wrap(tc_plane22(it:(it+ncltstep),:,:), 0), opt222)
                 overlay(contour_tc1, contour_tc2)
                 plot = contour_tc1
               else if (NCL3VARONOFF.ne.1 .and. NCL1VARONOFF.eq.1 .and. NCL2VARONOFF.ne.1 .and. NCLwindonoff.eq.1) then
                 opt111@tiMainString = "Average from " + all_steps(it) + " to " + all_steps(it+ncltstep)
                 opts@vcRefAnnoOrthogonalPosF = -0.1  ; 1 titles
                 opt111@gsnMaximize = True
-                contour_tc1 = gsn_csm_contour_map(wks, tc_plane11(it,:,:), opt111)
-                vector = gsn_csm_vector(wks, u_plane(it,:,:), v_plane(it,:,:), opts)
+                contour_tc1 = gsn_csm_contour_map(wks, tc_plane11(it:(it+ncltstep),:,:), opt111)
+                vector = gsn_csm_vector(wks, dim_avg_n_Wrap(u_plane(it:(it+ncltstep),:,:),0), dim_avg_n_Wrap(v_plane(it:(it+ncltstep),:,:),0), opts)
                 overlay(contour_tc1, vector)
                 plot = contour_tc1
               else if (NCL3VARONOFF.ne.1 .and. NCL1VARONOFF.eq.1 .and. NCL2VARONOFF.ne.1 .and. NCLwindonoff.ne.1) then
                 opt111@tiMainString = "Average from " + all_steps(it) + " to " + all_steps(it+ncltstep)
                 opt111@gsnMaximize = True
-                plot = gsn_csm_contour_map(wks, tc_plane11(it,:,:), opt111)
+                plot = gsn_csm_contour_map(wks, dim_avg_n_Wrap(tc_plane11(it:(it+ncltstep),:,:),0), opt111)
               else if (NCL3VARONOFF.ne.1 .and. NCL1VARONOFF.ne.1 .and. NCL2VARONOFF.eq.1 .and. NCLwindonoff.eq.1) then
                 opt222@tiMainString = "Average from " + all_steps(it) + " to " + all_steps(it+ncltstep)
                 opts@vcRefAnnoOrthogonalPosF = -0.1  ; 1 titles
                 opt222@gsnMaximize = True
-                contour_tc2 = gsn_csm_contour_map(wks, tc_plane22(it,:,:), opt222)
-                vector = gsn_csm_vector(wks, u_plane(it,:,:), v_plane(it,:,:), opts)
+                contour_tc2 = gsn_csm_contour_map(wks, dim_avg_n_Wrap(tc_plane22(it:(it+ncltstep),:,:),0), opt222)
+                vector = gsn_csm_vector(wks, dim_avg_n_Wrap(u_plane(it:(it+ncltstep),:,:),0), dim_avg_n_Wrap(v_plane(it:(it+ncltstep),:,:),0), opts)
                 overlay(contour_tc2, vector)
                 plot = contour_tc2
               else if (NCL3VARONOFF.ne.1 .and. NCL1VARONOFF.ne.1 .and. NCL2VARONOFF.eq.1 .and. NCLwindonoff.ne.1) then
                 opt222@tiMainString = "Average from " + all_steps(it) + " to " + all_steps(it+ncltstep)
                 opt222@gsnMaximize = True
-                plot = gsn_csm_contour_map(wks, tc_plane22(it,:,:), opt222)
+                plot = gsn_csm_contour_map(wks, dim_avg_n_Wrap(tc_plane22(it:(it+ncltstep),:,:),0), opt222)
               else if (NCL3VARONOFF.ne.1 .and. NCL1VARONOFF.ne.1 .and. NCL2VARONOFF.ne.1 .and. NCLwindonoff.eq.1) then
                 opts@tiMainString = "Average from " + all_steps(it) + " to " + all_steps(it+ncltstep)
                 opts@vcRefAnnoOrthogonalPosF = -0.19
@@ -1409,7 +1407,7 @@ end if ;;code ifpoly2
                   opts@mpInlandWaterFillColor = "deepskyblue"
                   opts@mpFillDrawOrder        = "PreDraw"
                 end if
-                plot = gsn_csm_vector_map(wks, u_plane(it,:,:), v_plane(it,:,:), opts)
+                plot = gsn_csm_vector_map(wks, dim_avg_n_Wrap(u_plane(it:(it+ncltstep),:,:),0), dim_avg_n_Wrap(v_plane(it:(it+ncltstep),:,:),0), opts)
               end if
               end if
               end if

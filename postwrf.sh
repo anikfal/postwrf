@@ -44,7 +44,7 @@ while getopts hdf:i option; do
         rm .wrfvars
       fi ;;
   i)
-    echo "  PostWRF Version 1.2 (January 2022)"
+    echo "  PostWRF Version 1.3 (January 2022)"
     echo "  Author: Amirhossein Nikfal <ah.nikfal@gmail.com>, <anik@ut.ac.ir>"
     ;;
   esac
@@ -52,7 +52,7 @@ done
 
 if [[ $1 != "-h" && $1 != "-i" && $1 != "-f" && $1 != "-d" && $1 != "-p" ]]; then
   export wrfout=$1
-  export extractonoff=$(awk_read_onoff Extract_On-Off)
+  export extractonoff=$(awk_read_onoff WRF_Extract_ON_OFF)
   export contour_onoff=$(awk_read_onoff CONTOUR_ON_OFF)
   export crossonoff=$(awk_read_onoff CROSSSECTION_ON-OFF)
   export roseonoff=$(awk_read_onoff windrose_On-Off)
@@ -62,17 +62,18 @@ if [[ $1 != "-h" && $1 != "-i" && $1 != "-f" && $1 != "-d" && $1 != "-p" ]]; the
   export GEOTIFF_ONOFF=$(awk_read_onoff Geotiff_ON_OFF)
   export rttov_onoff=$(awk_read_onoff RTTOV_On-Off)
   export era_onoff=$(awk_read_onoff ERA5_ON_OFF)
-  sumopts=$((extractonoff + contour_onoff + crossonoff + roseonoff + skewtonoff + domainonoff + GEOTIFF_ONOFF + statisticalonoff + rttov_onoff + era_onoff))
+  export era_extract_onoff=$(awk_read_onoff ERA5_Extract_ON_OFF)
+  sumopts=$((extractonoff + era_extract_onoff + contour_onoff + crossonoff + roseonoff + skewtonoff + domainonoff + GEOTIFF_ONOFF + statisticalonoff + rttov_onoff + era_onoff))
   if [[ $sumopts -gt 1 ]]; then
     echo ""
-    echo "  More than one section is activated"
-    echo "  Select only one section in namelist.wrf and run again"
+    echo "  More than one task is on"
+    echo "  Select only one task or section in namelist.wrf and run again"
     echo ""
 
   elif [[ $sumopts -eq 0 ]]; then
     echo ""
     echo "  No section is activated"
-    echo "  Select one section in namelist.wrf and run again"
+    echo "  Select one task or section in namelist.wrf and run again"
     echo ""
 
   else
@@ -85,7 +86,7 @@ if [[ $1 != "-h" && $1 != "-i" && $1 != "-f" && $1 != "-d" && $1 != "-p" ]]; the
         exit
       fi
     fi
-    if [[ $era_onoff -ne 1 ]]; then
+    if [[ $era_onoff -ne 1 && $era_extract_onoff -ne 1 ]]; then
       ./modules/main.sh
       rm eqname equnit 2>/dev/null
       cd $postwrf_dir/modules

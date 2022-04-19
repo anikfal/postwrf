@@ -66,11 +66,9 @@ delete(i)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;; Continue
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-  lat2d = wrf_user_getvar(a, "XLAT", 0)
-  lon2d = wrf_user_getvar(a, "XLONG", 0)
-  cr = inttochar(10)
-  mdims = dimsizes(wrf_user_getvar(a, "U", -1)) ; get some dimension sizes for the file
-  nd = dimsizes(mdims)
+lat2d = wrf_user_getvar(a, "XLAT", 0)
+lon2d = wrf_user_getvar(a, "XLONG", 0)
+cr = inttochar(10)
 loc1=new(2,"float")
 loc2=loc1
 loc1(0)=min(lon2d)
@@ -214,11 +212,12 @@ end do ;;code docheck22
 if (validvar) then
 
 ;;;shell script
+pvo = varlist[1]  ;;;added_new_line_by_sed
 rh = varlist[0]  ;;;added_new_line_by_sed
 
 
 ;;;equation from namelist.wrf
-tc2 = (rh/100)  ;;;added_new_line_by_sed
+tc2 = rh+pvo  ;;;added_new_line_by_sed
 system("cd $postwrf_dir/modules && ./extract_getinput.sh")
 system("ln -sf ../modules/eqname .")
  eqname = asciiread("eqname", -1, "string")
@@ -391,7 +390,7 @@ else ;average_ON code qwe
         tstart(it) = start_arr(0)
         tend(it) = end_arr(0)
       end do
-      tseparator = tstart
+      ;tseparator = tstart
       tseparator = " to "
       timecap = tstart + tseparator + tend
 

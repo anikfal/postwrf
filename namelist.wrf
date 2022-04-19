@@ -1,33 +1,34 @@
-======================= DATA EXTRACTION (ON SURFACE) ========================
+================== WRF/ERA5 DATA EXTRACTION (ON SURFACE) ====================
 =============================================================================
-Extract_On-Off                   = 0
+WRF_Extract_ON_OFF               = 1
+ERA5_Extract_ON_OFF              = 0
 
-WRF_variable_name                = pvo
-Location_names                   = Berlin, London
-Location_latitudes               = 30, 30
-Location_longitudes              = 55, 59
+Variable_names                   = t*r
+Location_names                   = Berlin, London, Paris
+Location_latitudes               = 30, 30, 31
+Location_longitudes              = 55, 59, 51
 
 +Vertical_profile_plot_on_off    = 0
  +Vprofile_X_axis_decimals       = 3
 -----------------------------------------------------------------------------
 
 
-=============================== CONTOUR PLOT ================================
+============================= WRF CONTOUR PLOT ==============================
 =============================================================================
 CONTOUR_ON_OFF                  = 0
 
 !!! Variable_1 by line contours !!!
-1st_Variable_on_off             = 0
+1st_Variable_on_off             = 1
  1st_Variable_name              = T2
  1st_Variable_pressure_level    = 0
- 1st_Variable_intervals         = 10
+ 1st_Variable_intervals         = 5
  1st_Variable_line_color        = red
  1st_Variable_line_thickness    = 0.5
  1st_Variable_label_size        = 0.5
 
 !!! Variable_2 by (broken) line contours !!!
 2nd_Variable_on_off             = 0
- 2nd_Variable_name              = tk
+ 2nd_Variable_name              = pvo
  2nd_Variable_pressure_level    = 700
  2nd_Variable_intervals         = 0
  2nd_Variable_line_color        = red
@@ -37,8 +38,8 @@ CONTOUR_ON_OFF                  = 0
 
 !!! Variable_3 by filled (colored) contours !!!
 3rd_Variable_on_off             = 1
- 3rd_Variable_name              = LAI
- 3rd_Variable_pressure_level    = 0,
+ 3rd_Variable_name              = rh
+ 3rd_Variable_pressure_level    = 700,
 
 Wind_Vectors_on_off             = 0
  Wind_Vectors_pressure_level    = 700
@@ -56,7 +57,7 @@ Shapefile_on-off                = 0
 -----------------------------------------------------------------------------
 
 
-============================= CROSS SECTION PLOT ============================
+=========================== WRF CROSS SECTION PLOT ==========================
 =============================================================================
 CROSSSECTION_ON-OFF             = 0
 
@@ -86,7 +87,7 @@ Topographic_map_on_off          = 1
 -----------------------------------------------------------------------------
 
 
-========================== STATISTICAL DIAGRAMS =============================
+======================== WRF STATISTICAL DIAGRAMS ===========================
 =============================================================================
 STATISTICAL_DIAGRAMS_ON_OFF      = 0
 
@@ -102,7 +103,7 @@ Taylor_diagram_ON_OFF            = 0
 -----------------------------------------------------------------------------
 
 
-================================ DOMAIN PLOT ================================
+============================== WRF DOMAIN PLOT ==============================
 =============================================================================
 Domain_On-Off                    = 0
 
@@ -116,7 +117,7 @@ lables_On-Off (schematic)       = 0
 -----------------------------------------------------------------------------
 
 
-============================= WIND ROSE DIAGRAM =============================
+=========================== WRF WIND ROSE DIAGRAM ===========================
 =============================================================================
 windrose_On-Off                  = 0
  wind_location_name              = shiraz
@@ -125,7 +126,7 @@ windrose_On-Off                  = 0
 -----------------------------------------------------------------------------
 
 
-============================== SKEWT DIAGRAM ================================
+============================ WRF SKEWT DIAGRAM ==============================
 =============================================================================
 skewT_On-Off                     = 0
  skewt_location_name             = shiraz
@@ -134,7 +135,7 @@ skewT_On-Off                     = 0
 -----------------------------------------------------------------------------
 
 
-============================ CONVERT TO GEOTIFF =============================
+========================== WRF CONVERT TO GEOTIFF ===========================
 =============================================================================
 Geotiff_ON_OFF                   = 0
  Variable_name_to_Geotiff        = (rh+tk)^0.5
@@ -142,7 +143,7 @@ Geotiff_ON_OFF                   = 0
 -----------------------------------------------------------------------------
 
 
-========================= RTTOV MODEL INPUT/OUTPUT ==========================
+========================== RTTOV-WRF INPUT/OUTPUT ===========================
 =============================================================================
 RTTOV_On-Off                     = 0
 
@@ -160,13 +161,13 @@ RTTOV_OUTPUT_OnOff               = 1
 
 ============================= ERA5 CONTOUR PLOT =============================
 =============================================================================
-ERA5_ON_OFF                      = 1
+ERA5_ON_OFF                      = 0
 
 !!! Variable_1 by line contours !!!
-1st_ERA5_Var_on_off              = 0
+1st_ERA5_Var_on_off              = 1
  1st_ERA5_Var_name               = r
  1st_ERA5_Var_pressure_level     = 500
- 1st_ERA5_Var_intervals          = 5
+ 1st_ERA5_Var_intervals          = 0
  1st_ERA5_Var_line_color         = red
  1st_ERA5_Var_line_thickness     = 0.5
  1st_ERA5_Var_label_size         = 0.3
@@ -182,8 +183,8 @@ ERA5_ON_OFF                      = 1
  2nd_ERA5_Var_brokenline_on_off  = 1
 
 !!! Variable_3 by filled (colored) contours !!!
-3rd_ERA5_Var_on_off              = 1
- 3rd_ERA5_Var_name               = (z-z)/98.1
+3rd_ERA5_Var_on_off              = 0
+ 3rd_ERA5_Var_name               = z
  3rd_ERA5_Var_pressure_level     = 500
 
 Wind_ERA5_on_off                 = 0
@@ -194,7 +195,7 @@ Wind_ERA5_on_off                 = 0
  Wind_ERA5_thickness             = 0.5
 
 ERA5_point_mark_on_off           = 0
- ERA5_labels_on_off              = 1
+ ERA5_labels_on_off              = 0
  ERA5_labels_size                = 0.3
  ERA5_labels_color               = black
 ERA5_Shapefile_on_off            = 0
@@ -211,9 +212,9 @@ ERA5_SubDomain_on_off            = 0
 ============================= GENERAL SETTINGS ==============================
 =============================================================================
 spin-up_time (hours)             = 6
-averaging_on_off                 = 1
+averaging_on_off                 = 0
  average_time (hours)            = 12
-panel_plot__on_off               = 1
+panel_plot__on_off               = 0
  panel_plot__rows_number         = 2
  panel_plot__columns_number      = 3
 smooth_maps_on_off               = 1
