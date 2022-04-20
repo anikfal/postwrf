@@ -1,6 +1,6 @@
-================
-Data extraction
-================
+============================
+WRF and ERA5 Data extraction
+============================
 
 
 The very first step in running PostWRF is modifying namelist.wrf:
@@ -24,7 +24,9 @@ The first section in namelist.wrf corresponds to the data extraction:
 +-------------------------------------------------------------------------------------------------------------------------------+
 | \==================== DATA EXTRACTION \======================= :raw-html:`<br />`                                             |
 | \============================================================ :raw-html:`<br />`                                              |
-| Extract_On-Off |s| |s| |s| |s| |s| |s| |s| |s| |s| |s| |s| |s| |s| |s| = 1 :raw-html:`<br />`                                 |
+| WRF_Extract_On-Off |s| |s| |s| |s| |s| |s| |s| |s| |s| |s| |s| |s| |s| |s| = 1 :raw-html:`<br />`                             |
+| ERA5_Extract_On-Off |s| |s| |s| |s| |s| |s| |s| |s| |s| |s| |s| |s| |s| |s| = 0 :raw-html:`<br />`                            |
+|                                                                                                                               |
 | WRF_variable_name |s| |s| |s| |s| |s| |s| |s| |s| |s| = pvo :raw-html:`<br />`                                                |
 | Location_names |s| |s| |s| |s| |s| |s| |s| |s| |s| |s| |s| |s| |s| = Berlin, London :raw-html:`<br />`                        |
 | Location_latitudes |s| |s| |s| |s| |s| |s| |s| |s| |s| |s| |s| = 52.52, 51.51 :raw-html:`<br />`                              |
@@ -71,8 +73,11 @@ After modifying namelist.wrf, run the software by:
 ..    :file: values-pvo-Bilinear
 ..    :widths: 40, 20, 20
 
-Plotting vertical profiles
-==========================
+.. note::
+   ERA5 data can tbe extracted by the same method. Set *ERA5_Extract_On-Off* to 1, and *WRF_Extract_On-Off* to 0. For ERA5 data, only one method (bilinear) is applied for interpolation. Moreover, unlike the WRF data, for ERA5 data the start and end of time slots can be specified.
+
+Plotting vertical profiles (for WRF outputs)
+============================================
 
 If +Vertical_profile_plot_on_off is set to 1, the vertical profiles of the locations (Berlin and London) 
 will be plotted:

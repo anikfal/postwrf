@@ -1,12 +1,12 @@
 ================== WRF/ERA5 DATA EXTRACTION (ON SURFACE) ====================
 =============================================================================
-WRF_Extract_ON_OFF               = 1
-ERA5_Extract_ON_OFF              = 0
+WRF_Extract_ON_OFF               = 0
+ERA5_Extract_ON_OFF              = 1
 
-Variable_names                   = t*r
-Location_names                   = Berlin, London, Paris
-Location_latitudes               = 30, 30, 31
-Location_longitudes              = 55, 59, 51
+Variable_names                   = t
+Location_names                   = Ashgabat, Mashhad, Tashkent
+Location_latitudes               = 38.27, 36.70, 40.91
+Location_longitudes              = 59.70, 59.47, 70.17
 
 +Vertical_profile_plot_on_off    = 0
  +Vprofile_X_axis_decimals       = 3
