@@ -239,12 +239,19 @@ if (if_polynom .and. if_valid) then ;;if not valid, do not exit, showing message
   system("cd $postwrf_dir/modules_era && ncl -Q contourlvl_era_equation.ncl")
   exit()
 end if
-
 if ( any(yy.eq.NCLCNVAR3) .and. any(yy.eq.NCLCNVAR1) .and. any(yy.eq.NCLCNVAR2) ) then  ;code att2
-      levs = aaa->level
-      levdim = dimsizes(levs)-1
-      highestPressureLev = levs(0)
-      lowestPressureLev = levs(levdim)
+      ; vNames = getfilevarnames(aaa)
+      ; last_ind = dimsizes(vNames)-1
+      ; last_var = f->$vNames(last_ind)$
+      ; if (dimsizes(last_var) .eq. 4) then
+        ;xxxxxxxxx
+      ; end if
+      if (isfilevar(aaa, "level")) then
+        levs = aaa->level
+        levdim = dimsizes(levs)-1
+        highestPressureLev = levs(0)
+        lowestPressureLev = levs(levdim)
+      end if
       if (tointeger(getenv("era_subdom_onoff")) .ne. 1) then
         mylat = aaa->latitude
         mylon = aaa->longitude
@@ -267,14 +274,24 @@ if ( any(yy.eq.NCLCNVAR3) .and. any(yy.eq.NCLCNVAR1) .and. any(yy.eq.NCLCNVAR2) 
         contourcolorpal = getenv("colpal")
        
           if (NCLCNVAR3 .eq. "wind_s") then
+            if (isfilevar(aaa, "level")) then
               uu10  = short2flt(aaa->u)
               vv10  = short2flt(aaa->v)
+              else
+              uu10  = short2flt(aaa->u10)
+              vv10  = short2flt(aaa->v10)
+            end if
               tc3 = wind_speed(uu10, vv10)
               tc3@description = "wind speed"
               tc3@units = "m s-1"
            else if (NCLCNVAR3 .eq. "wind_d") then
-              uu10  = short2flt(aaa->u)
-              vv10  = short2flt(aaa->v)
+            if (isfilevar(aaa, "level")) then
+              uu10  := short2flt(aaa->u)
+              vv10  := short2flt(aaa->v)
+              else
+              uu10  := short2flt(aaa->u10)
+              vv10  := short2flt(aaa->v10)
+            end if
               tc3 = wind_direction(uu10, vv10, 0)
               tc3@description = "wind direction"
               tc3@units = "Degrees from north"
@@ -316,8 +333,9 @@ if ( any(yy.eq.NCLCNVAR3) .and. any(yy.eq.NCLCNVAR1) .and. any(yy.eq.NCLCNVAR2) 
                 tc_plane33 = tc3(:, {NCLPLEV3}, :, :)
             end if
         end if
-        tc3@long_name := tc3@long_name + " at " + tc_plane33@level + " hpa"
-
+        if (isfilevar(aaa, "level")) then
+          tc3@long_name := tc3@long_name + " at " + tc_plane33@level + " hpa"
+        end if
         opt333                   = True
         opt333@gsnDraw           = False  ; do not draw plot yet (need False for paneling)
         opt333@gsnFrame          = False  ; do not frame plot yet (need False for paneling)
@@ -428,14 +446,24 @@ if ( any(yy.eq.NCLCNVAR3) .and. any(yy.eq.NCLCNVAR1) .and. any(yy.eq.NCLCNVAR2) 
         end if
         
         if (NCLCNVAR1 .eq. "wind_s") then
+          if (isfilevar(aaa, "level")) then
             uu10  = short2flt(aaa->u)
             vv10  = short2flt(aaa->v)
+            else
+            uu10  = short2flt(aaa->u10)
+            vv10  = short2flt(aaa->v10)
+          end if
             tc1 = wind_speed(uu10, vv10)
             tc1@description = "wind speed"
             tc1@units = "m s-1"
           else if (NCLCNVAR1 .eq. "wind_d") then
-            uu10  = short2flt(aaa->u)
-            vv10  = short2flt(aaa->v)
+          if (isfilevar(aaa, "level")) then
+            uu10  := short2flt(aaa->u)
+            vv10  := short2flt(aaa->v)
+            else
+            uu10  := short2flt(aaa->u10)
+            vv10  := short2flt(aaa->v10)
+          end if
             tc1 = wind_direction(uu10, vv10, 0)
             tc1@description = "wind direction"
             tc1@units = "Degrees from north"
@@ -546,7 +574,9 @@ if ( any(yy.eq.NCLCNVAR3) .and. any(yy.eq.NCLCNVAR1) .and. any(yy.eq.NCLCNVAR2) 
               tc_plane11 = tc1(:, {NCLPLEV1}, :, :)
           end if
         end if
-        tc1@long_name := tc1@long_name + " at " + tc_plane11@level + " hpa"
+        if (isfilevar(aaa, "level")) then
+          tc1@long_name := tc1@long_name + " at " + tc_plane11@level + " hpa"
+        end if
         opt111@gsnLeftString = tc1@long_name
 
         if (ncl_smooth.eq.1) then
@@ -602,14 +632,24 @@ if ( any(yy.eq.NCLCNVAR3) .and. any(yy.eq.NCLCNVAR1) .and. any(yy.eq.NCLCNVAR2) 
         end if
 
         if (NCLCNVAR2 .eq. "wind_s") then
-            uu10  := short2flt(aaa->u)
-            vv10  := short2flt(aaa->v)
+          if (isfilevar(aaa, "level")) then
+            uu10  = short2flt(aaa->u)
+            vv10  = short2flt(aaa->v)
+            else
+            uu10  = short2flt(aaa->u10)
+            vv10  = short2flt(aaa->v10)
+          end if
             tc2 = wind_speed(uu10, vv10)
             tc2@description = "wind speed"
             tc2@units = "m s-1"
           else if (NCLCNVAR2 .eq. "wind_d") then
+          if (isfilevar(aaa, "level")) then
             uu10  := short2flt(aaa->u)
             vv10  := short2flt(aaa->v)
+            else
+            uu10  := short2flt(aaa->u10)
+            vv10  := short2flt(aaa->v10)
+          end if
             tc2 = wind_direction(uu10, vv10, 0)
             tc2@description = "wind direction"
             tc2@units = "Degrees from north"
@@ -720,7 +760,9 @@ if ( any(yy.eq.NCLCNVAR3) .and. any(yy.eq.NCLCNVAR1) .and. any(yy.eq.NCLCNVAR2) 
               tc_plane22 = tc2(:, {NCLPLEV2}, :, :)
           end if
         end if
-        tc2@long_name := tc2@long_name + " at " + tc_plane22@level + " hpa"
+        if (isfilevar(aaa, "level")) then
+          tc2@long_name := tc2@long_name + " at " + tc_plane22@level + " hpa"
+        end if
         opt222@gsnLeftString = tc2@long_name
 
         if (ncl_smooth.eq.1) then
@@ -759,33 +801,43 @@ if ( any(yy.eq.NCLCNVAR3) .and. any(yy.eq.NCLCNVAR1) .and. any(yy.eq.NCLCNVAR2) 
         NCLwinddens = tofloat(getenv("winddens"))
         NCLwindcolor = getenv("windcolor")
         NCLwindthick = tofloat(getenv("windthick"))
-        uu = short2flt(aaa->u)
-        vv = short2flt(aaa->v)
-        if (NCLwindlev.eq.0) then
-          NCLwindlev = lowestPressureLev
-          u_plane = uu(:, {NCLwindlev}, :, :)
-          v_plane = vv(:, {NCLwindlev}, :, :)
-          else
-              if (NCLwindlev .lt. highestPressureLev) then
-                print("Pressure level has been set to " + highestPressureLev)
-                NCLwindlev = highestPressureLev
-                else if (NCLwindlev .gt. lowestPressureLev) then
-                  print("Pressure level has been set to " + lowestPressureLev)
-                  NCLwindlev = lowestPressureLev
+        opts = True
+        ; uu = short2flt(aaa->u)
+        ; vv = short2flt(aaa->v)
+        if (isfilevar(aaa, "level")) then
+          uu  = short2flt(aaa->u)
+          vv  = short2flt(aaa->v)
+          if (NCLwindlev.eq.0) then
+            NCLwindlev = lowestPressureLev
+            u_plane = uu(:, {NCLwindlev}, :, :)
+            v_plane = vv(:, {NCLwindlev}, :, :)
+            else
+                if (NCLwindlev .lt. highestPressureLev) then
+                  print("Pressure level has been set to " + highestPressureLev)
+                  NCLwindlev = highestPressureLev
+                  else if (NCLwindlev .gt. lowestPressureLev) then
+                    print("Pressure level has been set to " + lowestPressureLev)
+                    NCLwindlev = lowestPressureLev
+                  end if
                 end if
-              end if
-              u_plane = uu(:, {NCLwindlev}, :, :)
-              v_plane = vv(:, {NCLwindlev}, :, :)
+                u_plane = uu(:, {NCLwindlev}, :, :)
+                v_plane = vv(:, {NCLwindlev}, :, :)
+                opts@vcRefAnnoString2 = "at " + u_plane@level + " hpa"
+          end if
+          else
+          ; uu  = short2flt(aaa->u10)
+          ; vv  = short2flt(aaa->v10)
+          u_plane = short2flt(aaa->u10)
+          v_plane = short2flt(aaa->v10)
+          opts@vcRefAnnoString2 = "at 10m"
         end if
         u_plane@long_name = "Wind speed"
-        opts = True
         opts@vcRefMagnitudeF = NCLwindsize
         opts@gsnDraw = False
         opts@gsnFrame = False
         opts@gsnLeftString = ""
         opts@gsnRightString = ""
         opts@vcRefAnnoString1 = opts@vcRefMagnitudeF + " m/s"
-        opts@vcRefAnnoString2 = "at " + u_plane@level + " hpa"
         opts@vcRefLengthF      = 0.01   ; setting for nicely sized vectors
         opts@vcLineArrowColor = NCLwindcolor
         if (NCLwindthick.le.1 .and. NCLwindthick.ge.0) then

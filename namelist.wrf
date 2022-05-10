@@ -1,9 +1,9 @@
 ================== WRF/ERA5 DATA EXTRACTION (ON SURFACE) ====================
 =============================================================================
 WRF_Extract_ON_OFF               = 0
-ERA5_Extract_ON_OFF              = 1
+ERA5_Extract_ON_OFF              = 0
 
-Variable_names                   = t
+Variable_names                   = sp
 Location_names                   = Ashgabat, Mashhad, Tashkent
 Location_latitudes               = 38.27, 36.70, 40.91
 Location_longitudes              = 59.70, 59.47, 70.17
@@ -15,7 +15,7 @@ Location_longitudes              = 59.70, 59.47, 70.17
 
 ============================= WRF CONTOUR PLOT ==============================
 =============================================================================
-CONTOUR_ON_OFF                  = 0
+CONTOUR_ON_OFF                  = 1
 
 !!! Variable_1 by line contours !!!
 1st_Variable_on_off             = 1
@@ -53,7 +53,7 @@ Location_point_mark_on_off      = 1
  Location_labels_size           = 0.2
  Location_labels_color          = black
 Shapefile_on-off                = 0
- Shapefile_path                 = /home/anikfal/sebal/shapefiles/all.shp
+ Shapefile_path                 = /home/anikfal/shapefiles/anazali_swamp.shp
 -----------------------------------------------------------------------------
 
 
@@ -138,7 +138,7 @@ skewT_On-Off                     = 0
 ========================== WRF CONVERT TO GEOTIFF ===========================
 =============================================================================
 Geotiff_ON_OFF                   = 0
- Variable_name_to_Geotiff        = (rh+tk)^0.5
+ Variable_name_to_Geotiff        = rh
  Geotiff_pressure_level       	 = 500
 -----------------------------------------------------------------------------
 
@@ -165,33 +165,33 @@ ERA5_ON_OFF                      = 0
 
 !!! Variable_1 by line contours !!!
 1st_ERA5_Var_on_off              = 1
- 1st_ERA5_Var_name               = r
+ 1st_ERA5_Var_name               = z
  1st_ERA5_Var_pressure_level     = 500
- 1st_ERA5_Var_intervals          = 0
- 1st_ERA5_Var_line_color         = red
+ 1st_ERA5_Var_intervals          = 5
+ 1st_ERA5_Var_line_color         = blue
  1st_ERA5_Var_line_thickness     = 0.5
  1st_ERA5_Var_label_size         = 0.3
 
 !!! Variable_2 by (broken) line contours !!!
 2nd_ERA5_Var_on_off              = 0
  2nd_ERA5_Var_name               = t
- 2nd_ERA5_Var_pressure_level     = 333
+ 2nd_ERA5_Var_pressure_level     = 500
  2nd_ERA5_Var_intervals          = 0
  2nd_ERA5_Var_line_color         = red
- 2nd_ERA5_Var_line_thickness     = 0.8
+ 2nd_ERA5_Var_line_thickness     = 0.5
  2nd_ERA5_Var_label_size         = 0.3
- 2nd_ERA5_Var_brokenline_on_off  = 1
+ 2nd_ERA5_Var_brokenline_on_off  = 0
 
 !!! Variable_3 by filled (colored) contours !!!
-3rd_ERA5_Var_on_off              = 0
- 3rd_ERA5_Var_name               = z
- 3rd_ERA5_Var_pressure_level     = 500
+3rd_ERA5_Var_on_off              = 1
+ 3rd_ERA5_Var_name               = t
+ 3rd_ERA5_Var_pressure_level     = 0
 
-Wind_ERA5_on_off                 = 0
+Wind_ERA5_on_off                 = 1
  Wind_ERA5_pressure_level        = 500
  Wind_ERA5_speed (m/s)           = 7
  Wind_ERA5_density               = 0.5
- Wind_ERA5_color                 = yellow
+ Wind_ERA5_color                 = black
  Wind_ERA5_thickness             = 0.5
 
 ERA5_point_mark_on_off           = 0
