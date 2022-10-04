@@ -1,11 +1,12 @@
 # PostWRF
-***Interactive tools for the visualization of the WRF model outputs***
 
-PostWRF is mainly a combination of NCAR Command Language (NCL) and Linux shell scripts which makes it possible to visualize and post-process the WRF model outputs, without being familiar with NCL programming.
+### Visualization and postprocessing of the WRF and ERA5 data
 
-PostWRF is useful for both expert and novice end users. Students can plot the WRF outputs whithout struggling with coding and syntax errors. Expert users can also plot various variables in a complex manner, without working with codes.
+**Plot the WRF and ERA5 data, in the same simple way as you run the WRF model!**
 
-PostWRF can be compared to QGIS without graphical user interphase, but for WRF outputs.
+PostWRF is a bunch of interactive tools, written in NCL and Bash scripts, to visualize and post-process the WRF model outputs (as well as ERA5 and RTTOV data, to some extent).
+
+PostWRF is useful for both the expert and less-experienced users. Students can plot the WRF and ERA5 outputs whithout struggling with coding and syntax errors. Expert users can also carry out common postprocessing tasks in a simple and straightforward way.
 
 Documentations and user guide: https://postwrf.readthedocs.io/en/master
 

@@ -48,7 +48,7 @@ Wind_Vectors_on_off             = 0
  Wind_Vectors_color             = black
  Wind_Vectors_thickness         = 0.5
 
-Location_point_mark_on_off      = 1
+Location_point_mark_on_off      = 0
  Location_labels_on_off         = 1
  Location_labels_size           = 0.2
  Location_labels_color          = black
@@ -211,7 +211,7 @@ ERA5_SubDomain_on_off            = 0
 
 ============================= GENERAL SETTINGS ==============================
 =============================================================================
-spin-up_time (hours)             = 6
+spin-up_time (hours)             = 0
 averaging_on_off                 = 0
  average_time (hours)            = 12
 panel_plot__on_off               = 0
