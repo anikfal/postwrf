@@ -13,9 +13,13 @@ if (ismissing(var)) then
   aaa = addfile(myfilename,"r")
 end if
 
-levs = aaa->level
-levdim = dimsizes(levs)-1
-lowestPressureLev = levs(levdim)
+if (isfilevar(aaa, "level")) then
+  levs = aaa->level
+  levdim = dimsizes(levs)-1
+  lowestPressureLev = levs(levdim)
+else
+lowestPressureLev = "surface"
+end if
 NCLaverage_onoff = tointeger(getenv("average_onoff"))
 NCLaverage_time = tointeger(getenv("averagetime"))
 all_steps = tointeger(cd_calendar(aaa->time, 3))

@@ -240,12 +240,6 @@ if (if_polynom .and. if_valid) then ;;if not valid, do not exit, showing message
   exit()
 end if
 if ( any(yy.eq.NCLCNVAR3) .and. any(yy.eq.NCLCNVAR1) .and. any(yy.eq.NCLCNVAR2) ) then  ;code att2
-      ; vNames = getfilevarnames(aaa)
-      ; last_ind = dimsizes(vNames)-1
-      ; last_var = f->$vNames(last_ind)$
-      ; if (dimsizes(last_var) .eq. 4) then
-        ;xxxxxxxxx
-      ; end if
       if (isfilevar(aaa, "level")) then
         levs = aaa->level
         levdim = dimsizes(levs)-1
@@ -802,8 +796,6 @@ if ( any(yy.eq.NCLCNVAR3) .and. any(yy.eq.NCLCNVAR1) .and. any(yy.eq.NCLCNVAR2) 
         NCLwindcolor = getenv("windcolor")
         NCLwindthick = tofloat(getenv("windthick"))
         opts = True
-        ; uu = short2flt(aaa->u)
-        ; vv = short2flt(aaa->v)
         if (isfilevar(aaa, "level")) then
           uu  = short2flt(aaa->u)
           vv  = short2flt(aaa->v)
@@ -825,8 +817,6 @@ if ( any(yy.eq.NCLCNVAR3) .and. any(yy.eq.NCLCNVAR1) .and. any(yy.eq.NCLCNVAR2) 
                 opts@vcRefAnnoString2 = "at " + u_plane@level + " hpa"
           end if
           else
-          ; uu  = short2flt(aaa->u10)
-          ; vv  = short2flt(aaa->v10)
           u_plane = short2flt(aaa->u10)
           v_plane = short2flt(aaa->v10)
           opts@vcRefAnnoString2 = "at 10m"

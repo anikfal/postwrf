@@ -89,16 +89,12 @@ end if
       totstepsminus = totstepsminus - time_first
     end if
 
-      ; levs = aaa->level
       if (isfilevar(aaa, "level")) then
         levs = aaa->level
         levdim = dimsizes(levs)-1
         highestPressureLev = levs(0)
         lowestPressureLev = levs(levdim)
       end if
-      ; levdim = dimsizes(levs)-1
-      ; highestPressureLev = levs(0)
-      ; lowestPressureLev = levs(levdim)
       if (tointeger(getenv("era_subdom_onoff")) .ne. 1) then
         mylat = aaa->latitude
         mylon = aaa->longitude
@@ -125,8 +121,6 @@ end if
       if (if_polynom3.eq."False")  ;;code ifpoly3
         NCLPLEV3 = tointeger(getenv("CNLEV30")) ;pressure_levelsS
           if (NCLCNVAR3 .eq. "wind_s") then
-              ; uu10  = short2flt(aaa->u)
-              ; vv10  = short2flt(aaa->v)
               if (isfilevar(aaa, "level")) then
                 uu10  = short2flt(aaa->u)
                 vv10  = short2flt(aaa->v)
@@ -138,8 +132,6 @@ end if
               tc3@description = "wind speed"
               tc3@units = "m s-1"
            else if (NCLCNVAR3 .eq. "wind_d") then
-              ; uu10  = short2flt(aaa->u)
-              ; vv10  = short2flt(aaa->v)
               if (isfilevar(aaa, "level")) then
                 uu10  := short2flt(aaa->u)
                 vv10  := short2flt(aaa->v)
@@ -228,8 +220,6 @@ end if
         
         do ii = 0, totvarsnum ;;code do_poly3
           if (NCLvarnames(ii) .eq. "wind_s") then
-              ; uu10  = short2flt(aaa->u)
-              ; vv10  = short2flt(aaa->v)
               if (isfilevar(aaa, "level")) then
                 uu10  = short2flt(aaa->u)
                 vv10  = short2flt(aaa->v)
@@ -241,8 +231,6 @@ end if
               varlist2[ii]@description = "wind speed"
               varlist2[ii]@units = "m s-1"
            else if (NCLvarnames(ii) .eq. "wind_d") then
-              ; uu10  = short2flt(aaa->u)
-              ; vv10  = short2flt(aaa->v)
               if (isfilevar(aaa, "level")) then
                 uu10  := short2flt(aaa->u)
                 vv10  := short2flt(aaa->v)
@@ -414,8 +402,6 @@ delete(varlist2)
       if (if_polynom1.eq."False")  ;;code ifpoly1
         NCLPLEV1 = tointeger(getenv("CNLEV10")) ;pressure_level22
         if (NCLCNVAR1 .eq. "wind_s") then
-            ; uu10  = short2flt(aaa->u)
-            ; vv10  = short2flt(aaa->v)
             if (isfilevar(aaa, "level")) then
               uu10  = short2flt(aaa->u)
               vv10  = short2flt(aaa->v)
@@ -427,8 +413,6 @@ delete(varlist2)
             tc1@description = "wind speed"
             tc1@units = "m s-1"
           else if (NCLCNVAR1 .eq. "wind_d") then
-            ; uu10  = short2flt(aaa->u)
-            ; vv10  = short2flt(aaa->v)
             if (isfilevar(aaa, "level")) then
               uu10  := short2flt(aaa->u)
               vv10  := short2flt(aaa->v)
@@ -477,11 +461,9 @@ delete(varlist2)
               tc_plane11 = tc1(:, {NCLPLEV1}, :, :)
           end if
         end if
-        ; tc1@long_name := tc1@long_name + " at " + NCLPLEV1 + " hpa"
         if (isfilevar(aaa, "level")) then        
         tc_plane11@long_name = tc_plane11@long_name + " at " + tc_plane11@level + " hpa"
         end if
-        ; opt111@gsnLeftString = tc1@long_name
 
 else ;;code ifpoly1
   NCLvarnames = asciiread("variablesCN1.txt", -1, "string")
@@ -517,8 +499,6 @@ else ;;code ifpoly1
   varlist2 = NewList("lifo")
     do ii = 0, totvarsnum ;;code do_poly1
     if (NCLvarnames(ii) .eq. "wind_s") then
-        ; uu10  = short2flt(aaa->u)
-        ; vv10  = short2flt(aaa->v)
         if (isfilevar(aaa, "level")) then
           uu10  = short2flt(aaa->u)
           vv10  = short2flt(aaa->v)
@@ -530,8 +510,6 @@ else ;;code ifpoly1
         varlist2[ii]@description = "wind speed"
         varlist2[ii]@units = "m s-1"
       else if (NCLvarnames(ii) .eq. "wind_d") then
-        ; uu10  = short2flt(aaa->u)
-        ; vv10  = short2flt(aaa->v)
         if (isfilevar(aaa, "level")) then
           uu10  := short2flt(aaa->u)
           vv10  := short2flt(aaa->v)
@@ -713,8 +691,6 @@ end if ;;code ifpoly1
         if (if_polynom2.eq."False")  ;;code ifpoly2
         NCLPLEV2 = tointeger(getenv("CNLEV20"))
         if (NCLCNVAR2 .eq. "wind_s") then
-            ; uu10  := short2flt(aaa->u)
-            ; vv10  := short2flt(aaa->v)
             if (isfilevar(aaa, "level")) then
               uu10  = short2flt(aaa->u)
               vv10  = short2flt(aaa->v)
@@ -726,8 +702,6 @@ end if ;;code ifpoly1
             tc2@description = "wind speed"
             tc2@units = "m s-1"
           else if (NCLCNVAR2 .eq. "wind_d") then
-            ; uu10  := short2flt(aaa->u)
-            ; vv10  := short2flt(aaa->v)
             if (isfilevar(aaa, "level")) then
               uu10  := short2flt(aaa->u)
               vv10  := short2flt(aaa->v)
@@ -812,8 +786,6 @@ else ;;code ifpoly2
   varlist2 = NewList("lifo")
     do ii = 0, totvarsnum ;;code do_poly2
     if (NCLvarnames(ii) .eq. "wind_s") then
-        ; uu10  = short2flt(aaa->u)
-        ; vv10  = short2flt(aaa->v)
         if (isfilevar(aaa, "level")) then
           uu10  = short2flt(aaa->u)
           vv10  = short2flt(aaa->v)
@@ -825,8 +797,6 @@ else ;;code ifpoly2
         varlist2[ii]@description = "wind speed"
         varlist2[ii]@units = "m s-1"
       else if (NCLvarnames(ii) .eq. "wind_d") then
-        ; uu10  = short2flt(aaa->u)
-        ; vv10  = short2flt(aaa->v)
         if (isfilevar(aaa, "level")) then
           uu10  := short2flt(aaa->u)
           vv10  := short2flt(aaa->v)
@@ -990,24 +960,6 @@ end if ;;code ifpoly2
         NCLwinddens = tofloat(getenv("winddens"))
         NCLwindcolor = getenv("windcolor")
         NCLwindthick = tofloat(getenv("windthick"))
-        ; uu = short2flt(aaa->u)
-        ; vv = short2flt(aaa->v)
-        ; if (NCLwindlev.eq.0) then
-        ;   NCLwindlev = lowestPressureLev
-        ;   u_plane = uu(:, {NCLwindlev}, :, :)
-        ;   v_plane = vv(:, {NCLwindlev}, :, :)
-        ;   else
-        ;       if (NCLwindlev .lt. highestPressureLev) then
-        ;         print("Pressure level has been set to " + highestPressureLev)
-        ;         NCLwindlev = highestPressureLev
-        ;         else if (NCLwindlev .gt. lowestPressureLev) then
-        ;           print("Pressure level has been set to " + lowestPressureLev)
-        ;           NCLwindlev = lowestPressureLev
-        ;         end if
-        ;       end if
-        ;       u_plane = uu(:, {NCLwindlev}, :, :)
-        ;       v_plane = vv(:, {NCLwindlev}, :, :)
-        ; end if
         opts = True        
         if (isfilevar(aaa, "level")) then
           uu  = short2flt(aaa->u)
@@ -1030,21 +982,17 @@ end if ;;code ifpoly2
                 opts@vcRefAnnoString2 = "at " + u_plane@level + " hpa"
           end if
           else
-          ; uu  = short2flt(aaa->u10)
-          ; vv  = short2flt(aaa->v10)
           u_plane = short2flt(aaa->u10)
           v_plane = short2flt(aaa->v10)
           opts@vcRefAnnoString2 = "at 10m"
         end if        
         u_plane@long_name = "Wind speed"
-        ; opts = True
         opts@vcRefMagnitudeF = NCLwindsize
         opts@gsnDraw = False
         opts@gsnFrame = False
         opts@gsnLeftString = ""
         opts@gsnRightString = ""
         opts@vcRefAnnoString1 = opts@vcRefMagnitudeF + " m/s"
-        ; opts@vcRefAnnoString2 = "at " + u_plane@level + " hpa"
         opts@vcRefLengthF      = 0.01   ; setting for nicely sized vectors
         opts@vcLineArrowColor = NCLwindcolor
         if (NCLwindthick.le.1 .and. NCLwindthick.ge.0) then
@@ -1370,7 +1318,6 @@ end if ;;code ifpoly2
           end if
 
           else ;;Averaging code timeif122
-          ; pnlres@txString                   = "Average " + tc_plane33@long_name + " (" + tc_plane33@units + ")"
 
             do it = time_first, time_last, ncltstep
               if ((it+ncltstep) .gt. time_last) then
