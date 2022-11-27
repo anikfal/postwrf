@@ -41,7 +41,7 @@ if [[ $geotiff_resume == "True" ]]; then
   mv $postwrf_dir/modules/*.nc . 2>/dev/null
   for myvar in *.nc; do
     tiffile=$(echo $myvar | cut --delimiter="." -f 1)
-    gdal_translate -of GTiff $myvar $tiffile".tiff" &>/dev/null
+    gdal_translate -of GTiff $myvar $tiffile".tiff" -oo IGNORE_XY_AXIS_NAME_CHECKS=YES &>/dev/null
     gdalwarp $tiffile".tiff" $tiffile".tif" -t_srs "+proj=longlat +ellps=WGS84" &>/dev/null
     echo "(1)     Converted to " $tiffile".tif"
     rm $tiffile".tiff" 2>/dev/null
