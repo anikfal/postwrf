@@ -18,13 +18,17 @@ NCLaverage_time = tointeger(getenv("averagetime"))
 ncl_smooth = tointeger(getenv("smooth_onoff"))
 
 all_steps = wrf_user_getvar(a, "XTIME", -1)
-hourstep = (all_steps(1) - all_steps(0))/60
-if (NCLspinup.ge.hourstep) then
- start_timestep = tointeger(NCLspinup/hourstep)
+if (dimsizes(all_steps).eq.1) then
+  start_timestep = 0
 else
- start_timestep = 0
+  hourstep = (all_steps(1) - all_steps(0))/60
+  if (NCLspinup.ge.hourstep) then
+  start_timestep = tointeger(NCLspinup/hourstep)
+  else
+  start_timestep = 0
+  end if
 end if
-homedir = getenv("postwrf_dir")
+  homedir = getenv("postwrf_dir")
 asciiwrite (homedir+"/modules/geo_eq_ok.txt" , True)
 
   times = wrf_user_getvar(a,"times",-1)  ; get all times in the file
@@ -161,21 +165,24 @@ else if (geotiffvar .eq. "dust_total") then
 
  mydim1 = dimsizes(dimsizes(tc))
 
- if (mydim1.eq.3) then
+if (mydim1.eq.3) then
     tc_plane33 = tc
     tc_plane33@PlotLevelID = "surface"
-  else ;if dimsize equals 4
-     if (NCLPLEV3.eq.0) then ;surface pressure
-        tc_plane33 = tc(:,0,:,:)
-        tc_plane33@PlotLevelID = "surface"
-       else
-        p  = wrf_user_getvar(a, "pressure",-1) ; pressure is our vertical coordinate
-        tc_plane33 = wrf_user_intrp3d(tc,p,"h",NCLPLEV3,0.,False)
-     end if
+else ;if dimsize equals 4
+    if (NCLPLEV3.eq.0) then ;surface pressure
+      tc_plane33 = tc(:,0,:,:)
+      tc_plane33@PlotLevelID = "surface"
+      else
+      p  = wrf_user_getvar(a, "pressure",-1) ; pressure is our vertical coordinate
+      tc_plane33 = wrf_user_intrp3d(tc,p,"h",NCLPLEV3,0.,False)
+    end if
 end if
-  if (ncl_smooth.eq.1) then
-    wrf_smooth_2d(tc_plane33,3)
-  end if
+if (dimsizes(dimsizes(tc_plane33)) .eq. 2) then
+  tc_plane33 := reshape(tc_plane33, (/1, dimsizes(tc_plane33(:,0)), dimsizes(tc_plane33(0,:))/) )
+end if
+if (ncl_smooth.eq.1) then
+  wrf_smooth_2d(tc_plane33,3)
+end if
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Time Loop
   jjprov = 0
