@@ -1,0 +1,10 @@
+wrfout_d0*
+*.nc
+outputs*
+modules_era/eq*
+modules_era/polynom*
+modules_era/total*
+modules_era/*.txt
+modules/*.txt
+modules/.AllWRFVariables
+modules_era/.AllWRFVariables
