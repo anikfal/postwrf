@@ -8,8 +8,6 @@ PostWRF is a bunch of interactive tools, written in NCL and Bash scripts, to vis
 
 PostWRF is useful for both the expert and less-experienced users. Students can plot the WRF and ERA5 outputs whithout struggling with coding and syntax errors. Expert users can also carry out common postprocessing tasks in a simple and straightforward way.
 
-Documentations and user guide: https://postwrf.readthedocs.io/en/master
-
 ## Main capabilities:
 - WRF Data extraction
 - WRF horizontal contour plot
@@ -20,3 +18,18 @@ Documentations and user guide: https://postwrf.readthedocs.io/en/master
 - WRF Skew-T and windrose diagrams
 - ERA5 horizontal contour plot
 - ERA5 data extraction
+
+## Installation:
+You just need to install NCL on a Linux machine (e.g. Fedora):
+```bash
+sudo dnf install ncl
+```
+That's all! You're ready to go!
+
+## Documentations:
+HTML documentations with practical examples at: https://postwrf.readthedocs.io/en/master
+
+## Paper:
+For more detailed information about the backend structure of the software, please read https://doi.org/10.1016/j.envsoft.2022.105591
+
+If you find PostWRF a helpful tool, please kindly cite it in your works.

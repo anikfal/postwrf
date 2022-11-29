@@ -8,3 +8,7 @@ modules_era/*.txt
 modules/*.txt
 modules/.AllWRFVariables
 modules_era/.AllWRFVariables
+docs/Makefile
+docs/_build/
+docs/conf.py
+docs/make.bat
