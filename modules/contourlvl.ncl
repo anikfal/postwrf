@@ -67,13 +67,16 @@ load "read_wrfouts.ncl"
  NCLpanelcolumns = tointeger(getenv("panelcolumns"))
 
 all_steps = wrf_user_getvar(a, "XTIME", -1)
-hourstep = (all_steps(1) - all_steps(0))/60
-if (NCLspinup.ge.hourstep) then
- start_timestep = tointeger(NCLspinup/hourstep)
+if (dimsizes(all_steps).eq.1) then
+  start_timestep = 0
 else
- start_timestep = 0
+  hourstep = (all_steps(1) - all_steps(0))/60
+  if (NCLspinup.ge.hourstep) then
+  start_timestep = tointeger(NCLspinup/hourstep)
+  else
+  start_timestep = 0
+  end if
 end if
- 
 i=0
 do while(i.le.(ncl_province_num-1))
  NCLprovince_name(i) = getenv("ncl_province_names"+i)
@@ -356,6 +359,9 @@ else if (NCLCNVAR3 .eq. "dust_total") then
         p  = wrf_user_getvar(a, "pressure",-1) ; pressure is our vertical coordinate
         tc_plane33 = wrf_user_intrp3d(tc,p,"h",NCLPLEV3,0.,False)
      end if
+end if
+if (dimsizes(dimsizes(tc_plane33)) .eq. 2) then
+  tc_plane33 := reshape(tc_plane33, (/1, dimsizes(tc_plane33(:,0)), dimsizes(tc_plane33(0,:))/) )
 end if
 BandW2 = (/"(/0, 0, 0/)","(/0.1, 0.1, 0.1/)","(/0.2, 0.2, 0.2/)","(/0.3, 0.3, 0.3/)","(/0.4, 0.4, 0.4/)","(/0.5, 0.5, 0.5/)","(/0.6, 0.6, 0.6/)",\
            "(/0.7, 0.7, 0.7/)","(/0.8, 0.8, 0.8/)","(/0.9, 0.9, 0.9/)","(/1, 1, 1/)"/)
@@ -698,7 +704,9 @@ if (NCL1VARONOFF.eq.1) then  ;processing VAR2
    tc_plane11 = wrf_user_intrp3d(tc2,p,"h",NCLPLEV1,0.,False)
      end if
   end if
-  
+  if (dimsizes(dimsizes(tc_plane11)) .eq. 2) then
+    tc_plane11 := reshape(tc_plane11, (/1, dimsizes(tc_plane11(:,0)), dimsizes(tc_plane11(0,:))/) )
+  end if
   if (ncl_smooth.eq.1) then
     wrf_smooth_2d(tc_plane11,3)
   end if
@@ -867,7 +875,9 @@ if (NCL2VARONOFF.eq.1) then  ;processing VAR3
         tc_plane22 = wrf_user_intrp3d(tc3,p,"h",NCLPLEV2,0.,False)
      end if
   end if
-  
+  if (dimsizes(dimsizes(tc_plane22)) .eq. 2) then
+    tc_plane22 := reshape(tc_plane22, (/1, dimsizes(tc_plane22(:,0)), dimsizes(tc_plane22(0,:))/) )
+  end if
   if (ncl_smooth.eq.1) then
     wrf_smooth_2d(tc_plane22,3)
   end if
@@ -1099,6 +1109,10 @@ end if
 
           if (NCLwindonoff .eq. 1)
             opts@FieldTitle = "Wind Velocity"
+            if (dimsizes(dimsizes(u_plane)) .eq. 2) then
+              u_plane := reshape(u_plane, (/1, dimsizes(u_plane(:,0)), dimsizes(u_plane(0,:))/) )
+              v_plane := reshape(v_plane, (/1, dimsizes(v_plane(:,0)), dimsizes(v_plane(0,:))/) )
+            end if
             vector = wrf_vector(a[0],wks,u_plane(it,:,:),v_plane(it,:,:),opts)
           end if
 
