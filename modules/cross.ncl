@@ -80,11 +80,15 @@ load "read_wrfouts.ncl"
   crossname = getenv("outname")
 
   all_steps = wrf_user_getvar(a, "XTIME", -1)
-  hourstep = (all_steps(1) - all_steps(0))/60
-  if (NCLspinup.ge.hourstep) then
-    start_timestep = tointeger(NCLspinup/hourstep)
-    else
-    start_timestep = 0
+  if (dimsizes(all_steps).eq.1) then
+  start_timestep = 0
+  else
+    hourstep = (all_steps(1) - all_steps(0))/60
+    if (NCLspinup.ge.hourstep) then
+      start_timestep = tointeger(NCLspinup/hourstep)
+      else
+      start_timestep = 0
+    end if
   end if
   times = wrf_user_getvar(a,"times",-1)  ; get all times in the file
   totstepsminus = dimsizes(times)-1
@@ -364,13 +368,14 @@ else if (NCLCNVAR3 .eq. "dust_total") then
   else ;if dimsize equals 4
 
   if (getenv("crossmode") .eq. "Two-points") then
-  tc_plane33 = wrf_user_vert_cross(tc,z_press,(/nclslon,nclslat,nclelon,nclelat/),optcross)
-  else
-  tc_plane33 = wrf_user_vert_cross(tc,z_press,(/nclplon,nclplat/),optcross)
+    tc_plane33 = wrf_user_vert_cross(tc,z_press,(/nclslon,nclslat,nclelon,nclelat/),optcross)
+    else
+    tc_plane33 = wrf_user_vert_cross(tc,z_press,(/nclplon,nclplat/),optcross)
   end if
-
 end if
-
+if (dimsizes(dimsizes(tc_plane33)) .eq. 2) then
+  tc_plane33 := reshape(tc_plane33, (/1, dimsizes(tc_plane33(:,0)), dimsizes(tc_plane33(0,:))/) )
+end if
 BandW2 = (/"(/0, 0, 0/)","(/0.1, 0.1, 0.1/)","(/0.2, 0.2, 0.2/)","(/0.3, 0.3, 0.3/)","(/0.4, 0.4, 0.4/)","(/0.5, 0.5, 0.5/)","(/0.6, 0.6, 0.6/)",\
            "(/0.7, 0.7, 0.7/)","(/0.8, 0.8, 0.8/)","(/0.9, 0.9, 0.9/)","(/1, 1, 1/)"/)
 
@@ -704,7 +709,9 @@ if (NCL1VARONOFF.eq.1) then  ;processing VAR2
     else
     tc_plane11 = wrf_user_vert_cross(tc11,z_press,(/nclplon,nclplat/),optcross)
   end if
- 
+ end if
+ if (dimsizes(dimsizes(tc_plane11)) .eq. 2) then
+  tc_plane11 := reshape(tc_plane11, (/1, dimsizes(tc_plane11(:,0)), dimsizes(tc_plane11(0,:))/) )
  end if
   
   if (ncl_smooth.eq.1) then
@@ -876,6 +883,9 @@ if (mydim3.eq.3) then
     else
     tc_plane22 = wrf_user_vert_cross(tc22,z_press,(/nclplon,nclplat/),optcross)
   end if
+  end if
+  if (dimsizes(dimsizes(tc_plane22)) .eq. 2) then
+    tc_plane22 := reshape(tc_plane22, (/1, dimsizes(tc_plane22(:,0)), dimsizes(tc_plane22(0,:))/) )
   end if
   
   if (ncl_smooth.eq.1) then
