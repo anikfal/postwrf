@@ -20,11 +20,11 @@ PostWRF is useful for both the expert and less-experienced users. Students can p
 - ERA5 data extraction
 
 ## Installation:
-You just need to install NCL on a Linux machine (e.g. Fedora):
+Install NCL on a Linux machine (e.g. Fedora):
 ```bash
 sudo dnf install ncl
 ```
-That's all! You're ready to go!
+Finished! That's enough for most of the PostWRF's capabilities!
 
 ## Documentations:
 HTML documentations with practical examples at: https://postwrf.readthedocs.io/en/master
@@ -32,4 +32,4 @@ HTML documentations with practical examples at: https://postwrf.readthedocs.io/e
 ## Paper:
 For more detailed information about the backend structure of the software, please read https://doi.org/10.1016/j.envsoft.2022.105591
 
-If you find PostWRF a helpful tool, please kindly cite it in your works.
+If you find PostWRF helpful, please kindly cite it in your works.
