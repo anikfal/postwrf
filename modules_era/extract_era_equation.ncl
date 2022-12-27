@@ -134,7 +134,7 @@ LocNum = dimsizes(lat)
 t2m = varlist[0]  ;;;added_new_line_by_sed
 
   ;equation from namelist.wrf333
-tc2 = t2m-273.15  ;;;added_new_line_by_sed
+tc2 = t2m-200  ;;;added_new_line_by_sed
 
 system("cd $postwrf_dir/modules_era && ./extract_getinput.sh")
 system("ln -sf $postwrf_dir/modules_era/eqname .")
@@ -154,7 +154,9 @@ if (NCLaverage_onoff.ne.1) then  ;average_OFF code qwe
     hlist=[/header/]
     tablename = "values-" + tc2@long_name
       write_table( tablename, "w", hlist, "%s" ) ; Write header on the table
-      timecap = tostring(all_steps(time_first:time_last))
+      ; timecap = tostring(all_steps(time_first:time_last))
+      all_steps_str = tostring(all_steps)
+      timecap = str_get_cols(all_steps_str(time_first:time_last), 0, 3)+"-"+str_get_cols(all_steps_str(time_first:time_last), 4, 5)+"-"+str_get_cols(all_steps_str(time_first:time_last), 6, 7)+"_"+str_get_cols(all_steps_str(time_first:time_last), 8, 9)+":00:00"
       nameformat="%19s"
 
 else  ;average_ON code qwe

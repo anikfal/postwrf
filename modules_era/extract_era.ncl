@@ -23,6 +23,7 @@ end if
 NCLaverage_onoff = tointeger(getenv("average_onoff"))
 NCLaverage_time = tointeger(getenv("averagetime"))
 all_steps = tointeger(cd_calendar(aaa->time, 3))
+;all_steps = tostring(tointeger(cd_calendar(aaa->time, 3)))
 time_last = getenv("tlast_ind")
 time_first = tointeger(getenv("tfirst_ind")) - 1
 if (time_last .eq. "last_index_era") then
@@ -162,13 +163,13 @@ if (NCLaverage_onoff.ne.1) then  ;average_OFF code qwe
     end if
 
       header=(/"----------------------------------------------------------------------------", \
-              " ERA5 output variable: " + NCLvarnames(ii) + " (" + tc2@long_name + ") - " +  "unit_scale: " + tc2@units + "  -  on " + lowestPressureLev + "hpa",\
+              " ERA5 output variable: " + NCLvarnames(ii) + " (" + tc2@long_name + ") - " +  "unit_scale: " + tc2@units + "  -  on " + lowestPressureLev + " hpa",\
               "----------------------------------------------------------------------------"/)
     hlist=[/header/]
     tablename="values-"+NCLvarnames(ii)
       write_table( tablename, "w", hlist, "%s" ) ; Write header on the table
-      timecap = tostring(all_steps(time_first:time_last))
-
+      all_steps_str = tostring(all_steps)
+      timecap = str_get_cols(all_steps_str(time_first:time_last), 0, 3)+"-"+str_get_cols(all_steps_str(time_first:time_last), 4, 5)+"-"+str_get_cols(all_steps_str(time_first:time_last), 6, 7)+"_"+str_get_cols(all_steps_str(time_first:time_last), 8, 9)+":00:00"
       nameformat="%19s"
 
 else  ;average_ON code qwe
@@ -197,7 +198,7 @@ else  ;average_ON code qwe
     end do
 
       header=(/"---------------------------------------------------------------------------------------------------", \
-              " Average (" + NCLaverage_time + " hours) of the ERA5 output variable: " + NCLvarnames(ii) + " (" + tc2@long_name + ") - " +  "unit_scale: " + tc2@units + "  -  on " + lowestPressureLev + "hpa",\
+              " Average (" + NCLaverage_time + " hours) of the ERA5 output variable: " + NCLvarnames(ii) + " (" + tc2@long_name + ") - " +  "unit_scale: " + tc2@units + "  -  on " + lowestPressureLev + " hpa",\
               "---------------------------------------------------------------------------------------------------"/)
     hlist=[/header/]
     tablename="average_values-"+NCLvarnames(ii)
