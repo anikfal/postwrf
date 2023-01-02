@@ -144,6 +144,10 @@ if [ $scatter_onoff == 1 ]; then
 fi
 
 if [ $taylor_onoff == 1 ]; then
+  if [[ $value_files_count -gt 3 ]] 2>/dev/null; then
+    echo -e "\nTaylor Diagram: for the sake of clear visualization, number of the pairs of values/observations cannot be more than 3\n"
+    exit
+  fi
   ln -sf $postwrf_dir/modules/taylor_diagram.ncl $outputsdir
   pairnumber=0
   COUNTER=0
