@@ -29,7 +29,7 @@ Finished! That's enough for most of the PostWRF's capabilities!
 ## Run PostWRF:
 1. ``` git clone git@github.com:anikfal/PostWRF.git ```
 2. ``` cd PostWRF ```
-3. ``` chmode +x postwrf.sh module/\*.sh module\_era/\*.sh ```
+3. ``` chmod +x postwrf.sh modules/*.sh modules_era/*.sh ```
 4. Copy or link your WRF or ERA5 files in the PostWRF directory
 5. ``` ./postwrf.sh ```
 6. Follow the instructions and give relevant information to visualize/postprocess your data
