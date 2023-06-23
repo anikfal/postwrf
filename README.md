@@ -35,8 +35,11 @@ Finished! That's enough for most of the PostWRF's capabilities!
 6. Follow the instructions and give relevant information to visualize/postprocess your data
 
 
-## Documentations:
-HTML documentations with practical examples at: https://postwrf.readthedocs.io/en/master
+## HTML Documentations:
+Documentations with practical examples: https://postwrf.readthedocs.io/en/master
+
+## YouTube Training Videos:
+https://youtube.com/playlist?list=PL93HaRiv5QkCOWQ4E_Oeszi9DBOYrdNXD
 
 ## Paper:
 For more detailed information about the backend structure of the software, please read https://doi.org/10.1016/j.envsoft.2022.105591
