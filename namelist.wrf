@@ -36,7 +36,7 @@ CONTOUR_ON_OFF                  = 1
  2nd_Variable_label_size        = 0.4
  2nd_Variable_brokenline_on_off = 1
 
-!!! Variable_3 by filled (colored) contours !!!
+!!! Variable_3 by shaded contours !!!
 3rd_Variable_on_off             = 1
  3rd_Variable_name              = rh
  3rd_Variable_pressure_level    = 700,
@@ -81,7 +81,7 @@ Topographic_map_on_off          = 1
  2nd_var_label_size             = 0.5
  2nd_var_brokenline_on_off      = 1
 
-!!! 3D Variable_3 by filled (colored) contours !!!
+!!! 3D Variable_3 by shaded contours !!!
 3rd_var_on_off                  = 1
  3rd_var_name                   = QCLOUD
 -----------------------------------------------------------------------------
@@ -182,7 +182,7 @@ ERA5_ON_OFF                      = 0
  2nd_ERA5_Var_label_size         = 0.3
  2nd_ERA5_Var_brokenline_on_off  = 0
 
-!!! Variable_3 by filled (colored) contours !!!
+!!! Variable_3 by shaded contours !!!
 3rd_ERA5_Var_on_off              = 1
  3rd_ERA5_Var_name               = t
  3rd_ERA5_Var_pressure_level     = 0
