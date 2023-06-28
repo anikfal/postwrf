@@ -1,3 +1,4 @@
+#!/bin/bash
 #Global settigns. To be added to main_era.sh
 myvar="spin-up_time"
 spinup=$(sed -n "/$myvar/p" namelist.wrf | awk -F"=" '{print $NF}' | cut -d, -f1) #only one var is read

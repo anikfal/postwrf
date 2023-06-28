@@ -1,3 +1,4 @@
+#!/bin/bash
 filename="contourlvl_era_equation.ncl"
 filename_copy=$filename"_copy"
 

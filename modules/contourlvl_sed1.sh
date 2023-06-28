@@ -1,3 +1,4 @@
+#!/bin/bash
 if [[ $contour_onoff == 1 ]]; then
     filename="contourlvl_equation.ncl"
 else

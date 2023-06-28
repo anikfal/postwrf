@@ -1,3 +1,4 @@
+#!/bin/bash
 trap 'my_exit; exit' SIGINT SIGQUIT
 my_exit() {
   rm $outputdir/*.ncl $outputdir/postwrf_wrfout* $outputdir/.AllWRFVariables $outputdir/eqname 2>/dev/null

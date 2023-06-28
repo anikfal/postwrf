@@ -1,3 +1,4 @@
+#!/bin/bash
 #PostWRF Version 1.3 (January 2022)
 #Author: Amirhossein Nikfal <ah.nikfal@gmail.com>, <https://github.com/anikfal>
 

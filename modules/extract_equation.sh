@@ -1,3 +1,4 @@
+#!/bin/bash
 if [[ $verticalplotonoff != 1 ]]; then
     filename="extract_equation.ncl"
 else
