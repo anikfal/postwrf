@@ -18,12 +18,12 @@ awk_read_onoff () {
         awk -v pat=$1 '$0~pat {print $3}' namelist.wrf
 }
 
-while getopts hdf:i option; do
+while getopts hdfo:i option; do
   case $option in
   h)
-    echo -e "  Some options are as follows:"
     echo "    -d,  print the choosable diagnostic variables which are not inside the WRF file"
     echo "    -f,  print the choosable variables inside the WRF file (need WRF file as argument)"
+    echo "    -o,  make sample observation files from value files to be used by the statistical section (need outputs_postwrf directory as argument)"
     echo "    -h,  display this help"
     echo "    -i,  PostWRF version and basic informations"
     ;;
@@ -44,6 +44,14 @@ while getopts hdf:i option; do
         echo $var_list | sed 's/ /,  /g'
         rm .wrfvars
       fi ;;
+  o) if [[ $(echo $2 | cut -d "_" -f 1-2) == "outputs_postwrf" ]]; then
+	  ln -sf ../modules/pandas_value_observations.py $2
+	  echo Making sample observation files for each value files in $2
+	  cd $2 && python pandas_value_observations.py && rm pandas_value_observations.py
+          else
+		  echo Error: $2 is wrong.
+		  echo It should be a directory starting with "outputs_postwrf", containing value files.
+     fi ;;
   i)
     echo "  PostWRF Version 1.3 (January 2022)"
     echo "  Author: Amirhossein Nikfal <ah.nikfal@gmail.com>, <anik@ut.ac.ir>"
@@ -51,7 +59,7 @@ while getopts hdf:i option; do
   esac
 done
 
-if [[ $1 != "-h" && $1 != "-i" && $1 != "-f" && $1 != "-d" && $1 != "-p" ]]; then
+if [[ $1 != "-h" && $1 != "-i" && $1 != "-f" && $1 != "-d" && $1 != "-o" ]]; then
   export wrfout=$1
   export extractonoff=$(awk_read_onoff WRF_Extract_ON_OFF)
   export contour_onoff=$(awk_read_onoff CONTOUR_ON_OFF)
