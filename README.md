@@ -19,6 +19,10 @@ PostWRF is useful for both the expert and less-experienced users. Students can p
 - ERA5 horizontal contour plot
 - ERA5 data extraction
 
+## Sample visualizations and postprocessing
+![github_postwrf](https://github.com/anikfal/PostWRF/assets/11738727/16be89c3-1bb1-4245-a430-1d07876563dd)
+
+
 ## Installation:
 Install NCL on a Linux machine (e.g. Fedora):
 ```bash
