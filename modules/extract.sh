@@ -12,7 +12,6 @@ my_exit() {
 
 wrftemp=($(ls $postwrf_dir/postwrf_wrfout*))
 wrfout2=$(basename ${wrftemp[0]}) #In case of mulitfiles, pick the first file for naming
-# wrfout2=$(echo $wrfout | awk -F/ '{print $NF}') #For naming, NCL must be run by wrfout, not wrfout2
 
 if [[ $verticalplotonoff != 1 ]]; then
        echo -e "\n---------------------------------------------------------------"
