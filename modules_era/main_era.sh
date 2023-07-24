@@ -32,8 +32,8 @@ my_exit() {
 
 function countline() {
   numlinevars=$(sed -n "/$myvar/p" namelist.wrf | awk -F"=" '{print $NF}' | awk -F',' '{ print NF }')
-  ifendcomma=$(sed -n "/$myvar/p" namelist.wrf | rev | cut -c1)
-  if [[ $ifendcomma == "," ]]; then
+  ifendcomma=$(sed -n "/$myvar/p" namelist.wrf | awk -F"=" '{print $NF}' | awk -F "," '{print $NF}' | tr -d " ")
+  if [[ $ifendcomma == "" ]]; then
     numlinevars=$((numlinevars - 1))
   fi
 }
