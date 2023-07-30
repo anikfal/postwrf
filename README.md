@@ -1,5 +1,7 @@
 # PostWRF
 
+[![DOI](https://zenodo.org/badge/doi/10.5281/zenodo.8191714.svg)](https://zenodo.org/record/8191714)
+
 ### Visualization and postprocessing of the WRF and ERA5 data
 
 **Plot the WRF and ERA5 data, in the same simple way as you run the WRF model!**
