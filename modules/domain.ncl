@@ -10,6 +10,7 @@ begin
  nclfontsize = getenv("fontsz")
  nclfontsize = tofloat(nclfontsize)
  lables_onoff = tointeger(lables_onoff)
+ nclborderonoff = getenv("border_onoff")
   type = nclimgtype
   wks = gsn_open_wks(type,nclfilename)
   ;filename = "/home/ah/WRF3.9.1/WPS/namelist.wps"
@@ -69,6 +70,9 @@ delete(i)
 ; Set some map information ; line and text information
   mpres = True
   mpres@mpOutlineBoundarySets = "AllBoundaries"
+  if (nclborderonoff.eq.0) then
+    mpres@mpOutlineBoundarySets = "NoBoundaries"
+  end if
   if (ocean_onoff.eq.1) then
     mpres@mpFillOn = True
     mpres@mpFillColors = (/"background","DeepSkyBlue",domcolor,"DeepSkyBlue", "transparent"/)

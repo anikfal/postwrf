@@ -15,7 +15,7 @@ Location_longitudes              = 59.70, 59.47, 70.17
 
 ============================= WRF CONTOUR PLOT ==============================
 =============================================================================
-CONTOUR_ON_OFF                  = 1
+CONTOUR_ON_OFF                  = 0
 
 !!! Variable_1 by line contours !!!
 1st_Variable_on_off             = 1
@@ -105,14 +105,14 @@ Taylor_diagram_ON_OFF            = 0
 
 ============================== WRF DOMAIN PLOT ==============================
 =============================================================================
-Domain_On-Off                    = 0
+Domain_On-Off                    = 1
 
-namelist.wps_path (schematic)   = /home/anikfal/WRF4.2.2/WPS/namelist.wps
+namelist.wps_path (schematic)   = /home/anikfal/WRFTEST/WPS/namelist.wps
 background_color (schematic)    = forestgreen
 lables_On-Off (schematic)       = 0
 
 +Domain_on_off (topography)      = 1
- +number_of_domains (topography) = 2
+ +number_of_domains (topography) = 1
  +box_color                      = white
 -----------------------------------------------------------------------------
 
@@ -218,8 +218,9 @@ panel_plot__on_off               = 0
  panel_plot__rows_number         = 2
  panel_plot__columns_number      = 3
 smooth_maps_on_off               = 1
-map_borderline_color             = black
-map_borderline_thickness         = 0.5
+borderline_on_off                = 0
+ map_borderline_color            = black
+ map_borderline_thickness        = 0.5
 map_filled_ocean_on_off          = 1
 map_gridlines_on_off             = 0
 plot_titles_on_off               = 1

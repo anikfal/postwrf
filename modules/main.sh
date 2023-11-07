@@ -73,6 +73,12 @@ export oceanfill_onoff=$(echo ${oceanfill_onoff}) #Remove spaces
 unset myvar
 
 ##------------------------------------------------------------------------------------------------
+myvar="borderline_on_off"
+border_onoff=$(sed -n "/$myvar/p" namelist.wrf | awk -F"=" '{print $NF}')
+export border_onoff=$(echo ${border_onoff}) #Remove spaces
+unset myvar
+
+##------------------------------------------------------------------------------------------------
 myvar="map_borderline_color"
 border_color=$(sed -n "/$myvar/p" namelist.wrf | awk -F"=" '{print $NF}' | cut -d, -f1) #only one var is read
 export border_color=$(echo $border_color)                                               #Remove spaces

@@ -14,6 +14,7 @@ if (nclborder_thick.le.1 .and. nclborder_thick.ge.0) then
 else
   nclborder_thick = 2
 end if
+nclborderonoff = getenv("border_onoff")
 ocean_onoff = tointeger(getenv("oceanfill_onoff"))
 gridline_onoff = tointeger(getenv("gridline_onoff"))
 NCLtitle = tointeger(getenv("titile_option"))
@@ -52,6 +53,9 @@ res2 = res
     res@tiMainString                = " WPS Domain Configuration  "
   end if
   res@mpOutlineBoundarySets = "AllBoundaries"
+  if (nclborderonoff.eq.0) then
+    res@mpOutlineBoundarySets = "NoBoundaries"
+  end if
   res@mpGeophysicalLineThicknessF = nclborder_thick
   res@mpNationalLineThicknessF    = nclborder_thick
   res@mpUSStateLineThicknessF   = nclborder_thick

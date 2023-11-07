@@ -44,6 +44,7 @@ load "read_wrfouts.ncl"
  ncl_shape_path = getenv("shape_path")
  ncl_smooth = tointeger(getenv("smooth_onoff"))
  nclborder = getenv("border_color")
+ nclborderonoff = getenv("border_onoff")
  nclborder_thick = tofloat(getenv("borderthick"))
  
   if (nclborder_thick.le.1 .and. nclborder_thick.ge.0) then
@@ -965,7 +966,11 @@ end if
   if (NCLgridline_onoff.eq.0) then
   mpres@mpGridAndLimbOn = False
   end if
+  
   mpres@mpOutlineBoundarySets = "National"
+  if (nclborderonoff.eq.0) then
+    mpres@mpOutlineBoundarySets = "NoBoundaries"
+  end if
   mpres@mpGeophysicalLineColor      = nclborder 
   mpres@mpNationalLineColor         = nclborder
   mpres@mpUSStateLineColor          = nclborder
