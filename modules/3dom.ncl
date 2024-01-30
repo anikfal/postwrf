@@ -53,6 +53,8 @@ res2 = res
     res@tiMainString                = " WPS Domain Configuration  "
   end if
   res@mpOutlineBoundarySets = "AllBoundaries"
+  res@mpDataBaseVersion = "Ncarg4_1"
+  res@mpDataSetName = "Earth..4"
   if (nclborderonoff.eq.0) then
     res@mpOutlineBoundarySets = "NoBoundaries"
   end if

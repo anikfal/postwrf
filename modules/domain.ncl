@@ -70,6 +70,8 @@ delete(i)
 ; Set some map information ; line and text information
   mpres = True
   mpres@mpOutlineBoundarySets = "AllBoundaries"
+  mpres@mpDataBaseVersion = "Ncarg4_1"
+  mpres@mpDataSetName = "Earth..4"
   if (nclborderonoff.eq.0) then
     mpres@mpOutlineBoundarySets = "NoBoundaries"
   end if
