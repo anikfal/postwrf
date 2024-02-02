@@ -146,6 +146,12 @@ while [ $varcount -lt $numlinevars ]; do
 done
 unset myvar
 
+##------------------------------------------------------------------------------------------------
+myvar="tiff_resolution"                                                           #nclintv22
+tiffresol=$(sed -n "/$myvar/p" namelist.wrf | awk -F"=" '{print $NF}' | cut -d, -f1) #only one var is read
+export tiffresol=$(echo $tiffresol)                                                   #Remove spaces
+unset myvar
+
 ###################################################################################################
 ###############   1st Section (DATA_EXTRACT)   ####################################################
 ###################################################################################################

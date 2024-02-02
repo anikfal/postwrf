@@ -16,6 +16,7 @@ NCLspinup = tointeger(getenv("spinup"))
 NCLaverage_onoff = tointeger(getenv("average_onoff"))
 NCLaverage_time = tointeger(getenv("averagetime"))
 ncl_smooth = tointeger(getenv("smooth_onoff"))
+tiffresol = tointeger(getenv("tiffresol"))
 
 all_steps = wrf_user_getvar(a, "XTIME", -1)
 if (dimsizes(all_steps).eq.1) then
@@ -46,8 +47,6 @@ asciiwrite (homedir+"/modules/geo_eq_ok.txt" , True)
     .or. .not.ismissing(vardiv) .or. .not.ismissing(varexp) .or. .not.ismissing(varopenp) \
     .or. .not.ismissing(varclosep) ) then ;;if one is filled
     if_polynom = True
-    ; homedir = getenv("postwrf_dir")
-    ; asciiwrite (homedir+"/modules/geo_eq_ok.txt" , True)
     asciiwrite (homedir+"/modules/totalequation.txt" , geotiffvar)
     system("cd $postwrf_dir/modules && ./separation.sh") ;;variable.txt
     system("ln -sf $postwrf_dir/modules/variables.txt .")
@@ -191,12 +190,23 @@ end if
   ntimes = totstepsminus
   lat2d = wrf_user_getvar(a, "XLAT", -1)
   lon2d = wrf_user_getvar(a, "XLONG", -1)
+  if (tiffresol.eq.0) then
+    delY = a[0]@DY/1000
+    delX = a[0]@DX/1000
+  else
+    delY = tiffresol
+    delX = tiffresol
+  end if
+  avg_lat = a[0]@CEN_LAT
+  deg2km = 6371 * cos((3.1416/180)*avg_lat) * 2 * 3.1416 / 360
+  Yratio = deg2km/delY
+  Xratio = deg2km/delX
   minlat2d = min(lat2d)
   maxlat2d = max(lat2d)
-  intvlat2d = tointeger(ceil((maxlat2d - minlat2d)*10))
+  intvlat2d = tointeger(ceil((maxlat2d - minlat2d)*Yratio*1.18))
   minlon2d = min(lon2d)
   maxlon2d = max(lon2d)
-  intvlon2d = tointeger(ceil((maxlon2d - minlon2d)*10))
+  intvlon2d = tointeger(ceil((maxlat2d - minlat2d)*Xratio*1.18)) + 1
   lat = fspan(minlat2d, maxlat2d, intvlat2d)
   lon = fspan(minlon2d, maxlon2d, intvlon2d)
   tc_plane33_rectilinear  = rcm2rgrid(lat2d(0,:,:),lon2d(0,:,:),tc_plane33,lat,lon,0)
