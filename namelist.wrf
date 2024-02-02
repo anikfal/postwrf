@@ -140,6 +140,7 @@ skewT_On-Off                     = 0
 Geotiff_ON_OFF                   = 0
  Variable_name_to_Geotiff        = rh
  Geotiff_pressure_level       	 = 500
+ tiff_resolution (km)            = 10
 -----------------------------------------------------------------------------
 
 
