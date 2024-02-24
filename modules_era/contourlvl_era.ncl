@@ -795,6 +795,7 @@ if ( any(yy.eq.NCLCNVAR3) .and. any(yy.eq.NCLCNVAR1) .and. any(yy.eq.NCLCNVAR2) 
         NCLwinddens = tofloat(getenv("winddens"))
         NCLwindcolor = getenv("windcolor")
         NCLwindthick = tofloat(getenv("windthick"))
+        windbarb = tointeger(getenv("windbarb_era"))
         opts = True
         if (isfilevar(aaa, "level")) then
           uu  = short2flt(aaa->u)
@@ -839,7 +840,20 @@ if ( any(yy.eq.NCLCNVAR3) .and. any(yy.eq.NCLCNVAR1) .and. any(yy.eq.NCLCNVAR2) 
           opts@vcMinDistanceF = 0.03
         end if
           opts@vcRefAnnoOn       = True
-          opts@vcGlyphStyle     = "CurlyVector"
+          if (windbarb.eq.1) then
+            opts@vcGlyphStyle     = "WindBarb"
+            opts@vcWindBarbColor  = NCLwindcolor
+            opts@vcWindBarbScaleFactorF = 2
+            if (NCLwindthick.le.1 .and. NCLwindthick.ge.0) then
+              opts@vcWindBarbLineThicknessF = 0.5 + 4*NCLwindthick ;; No need to else, cuase its default value is 1
+            end if
+            opts@vcRefLengthF     = 0.03
+          else
+            opts@vcGlyphStyle     = "CurlyVector"
+            if (NCLwindthick.le.1 .and. NCLwindthick.ge.0) then
+              opts@vcLineArrowThicknessF = 0.5 + 4*NCLwindthick ;; No need to else, cuase its default value is 1
+            end if
+          end if
       end if
 
       if (ncl_shape_onoff.eq.1 .or. point_onoff.eq.1) then ;code iigg

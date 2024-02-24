@@ -4,9 +4,9 @@ WRF_Extract_ON_OFF               = 0
 ERA5_Extract_ON_OFF              = 0
 
 Variable_names                   = sp
-Location_names                   = Ashgabat, Mashhad, Tashkent
-Location_latitudes               = 38.27, 36.70, 40.91
-Location_longitudes              = 59.70, 59.47, 70.17
+Location_names                   = Anzali, Berlin, Cairo, Houston, Shanghai
+Location_latitudes               = 37.46, 52.52, 30.04, 29.76, 31.23
+Location_longitudes              = 49.48, 13.40, 31.23, -95.37, 121.47
 
 +Vertical_profile_plot_on_off    = 0
  +Vprofile_X_axis_decimals       = 3
@@ -45,8 +45,9 @@ Wind_Vectors_on_off             = 0
  Wind_Vectors_pressure_level    = 700
  Wind_Vectors_speed (m/s)       = 5
  Wind_Vectors_density           = 0.5
- Wind_Vectors_color             = black
+ Wind_Vectors_color             = red
  Wind_Vectors_thickness         = 0.5
+ Wind_Barbs_on_off              = 0
 
 Location_point_mark_on_off      = 0
  Location_labels_on_off         = 1
@@ -194,6 +195,7 @@ Wind_ERA5_on_off                 = 1
  Wind_ERA5_density               = 0.5
  Wind_ERA5_color                 = black
  Wind_ERA5_thickness             = 0.5
+ wind_barbs_on_off               = 1
 
 ERA5_point_mark_on_off           = 0
  ERA5_labels_on_off              = 0

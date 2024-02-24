@@ -438,6 +438,12 @@ if [[ $contour_onoff == 1 ]]; then                                              
     unset myvar
 
     ##------------------------------------------------------------------------------------------------
+    myvar="Wind_Barbs_on_off"
+    windbarb_wrf=$(sed -n "/$myvar/p" namelist.wrf | awk -F"=" '{print $NF}' | cut -d, -f1) #only one var is read
+    export windbarb_wrf=$(echo $windbarb_wrf)                                                   #Remove spaces
+    unset myvar
+
+    ##------------------------------------------------------------------------------------------------
     myvar="Wind_Vectors_density"
     winddens=$(sed -n "/$myvar/p" namelist.wrf | awk -F"=" '{print $NF}' | cut -d, -f1) #only one var is read
     export winddens=$(echo $winddens)                                                   #Remove spaces

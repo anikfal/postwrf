@@ -888,12 +888,12 @@ if (NCL1VARONOFF.eq.1) then  ;processing VAR1
         end do ;;code docheck22
 
         ;;shell script111
-tk = varlist[0]  ;;;added_new_line_by_sed111
+geopotential = varlist[0]  ;;;added_new_line_by_sed111
 delete(varlist)
 delete(varlist2)
 
   ;equation from namelist.wrf111
-tc_plane1 = tk-273  ;;;added_new_line_by_sed111
+tc_plane1 = geopotential+22  ;;;added_new_line_by_sed111
 
 
 if (dimsizes(NCLPLEV1).eq.1) then
@@ -1313,6 +1313,7 @@ if (NCLwindonoff .eq. 1)
   NCLwinddens = tofloat(getenv("winddens"))
   NCLwindcolor = getenv("windcolor")
   NCLwindthick = tofloat(getenv("windthick"))
+  windbarb = tointeger(getenv("windbarb_wrf"))
   if (NCLwindlev.eq.0) then
     u  = wrf_user_getvar(a,"U10",-1)
     v  = wrf_user_getvar(a,"V10",-1)
@@ -1350,7 +1351,20 @@ if (NCLwindonoff .eq. 1)
   end if
     opts@vcRefAnnoOrthogonalPosF = -0.24         ; Moves reference vector box inside the plot
     opts@vcRefAnnoOn       = True
+    if (windbarb.eq.1) then
+    opts@vcGlyphStyle     = "WindBarb"
+    opts@vcWindBarbColor  = NCLwindcolor
+    opts@vcWindBarbScaleFactorF = 2
+      if (NCLwindthick.le.1 .and. NCLwindthick.ge.0) then
+        opts@vcWindBarbLineThicknessF = 0.5 + 4*NCLwindthick ;; No need to else, cuase its default value is 1
+      end if
+    opts@vcRefLengthF     = 0.03
+    else
     opts@vcGlyphStyle     = "CurlyVector"
+    if (NCLwindthick.le.1 .and. NCLwindthick.ge.0) then
+      opts@vcLineArrowThicknessF = 0.5 + 4*NCLwindthick ;; No need to else, cuase its default value is 1
+    end if
+  end if
 end if
   pltres = True
   pltres@FontHeightF = 0.013 ;;no panel, no average

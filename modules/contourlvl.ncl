@@ -915,6 +915,7 @@ if (NCLwindonoff .eq. 1)
   NCLwinddens = tofloat(getenv("winddens"))
   NCLwindcolor = getenv("windcolor")
   NCLwindthick = tofloat(getenv("windthick"))
+  windbarb = tointeger(getenv("windbarb_wrf"))
   if (NCLwindlev.eq.0) then
     u  = wrf_user_getvar(a,"U10",-1)
     v  = wrf_user_getvar(a,"V10",-1)
@@ -932,27 +933,36 @@ if (NCLwindonoff .eq. 1)
     v_plane  = wrf_user_intrp3d( v,p,"h",NCLwindlev,0.,False)
   end if
 
-    opts = optfirst
-     if (NCLtitle.ne.1) then
-       opts = opt_notitle
-     end if
-    opts@vcRefMagnitudeF   = NCLwindsize
-    opts@vcRefAnnoString1 = opts@vcRefMagnitudeF + " m/s"
-    opts@vcRefLengthF      = 0.01   ; setting for nicely sized vectors
-    opts@vcLineArrowColor = NCLwindcolor
-    if (NCLwindthick.le.1 .and. NCLwindthick.ge.0) then
-     opts@vcLineArrowThicknessF = 0.5 + 3*NCLwindthick ;; No need to else, cuase its default value is 1
-    end if
-
+  opts = optfirst
+  if (NCLtitle.ne.1) then
+    opts = opt_notitle
+  end if
+  opts@vcRefMagnitudeF   = NCLwindsize
+  opts@vcRefAnnoString1 = opts@vcRefMagnitudeF + " m/s"
+  opts@vcRefLengthF      = 0.01   ; setting for nicely sized vectors
+  opts@vcLineArrowColor = NCLwindcolor
 
   if (NCLwinddens.le.1 .and. NCLwinddens.ge.0) then
     opts@vcMinDistanceF = (1-NCLwinddens)*0.1 + 0.01
-  else
+    else
     opts@vcMinDistanceF = 0.03
   end if
-    opts@vcRefAnnoOrthogonalPosF = -0.15  ;-0.24         ; Moves reference vector box inside the 
-    opts@vcRefAnnoOn       = True
+  opts@vcRefAnnoOrthogonalPosF = -0.20  ;-0.24         ; Moves reference vector box inside the 
+  opts@vcRefAnnoOn       = True
+  if (windbarb.eq.1) then
+    opts@vcGlyphStyle     = "WindBarb"
+    opts@vcWindBarbColor  = NCLwindcolor
+    opts@vcWindBarbScaleFactorF = 2
+      if (NCLwindthick.le.1 .and. NCLwindthick.ge.0) then
+        opts@vcWindBarbLineThicknessF = 0.5 + 4*NCLwindthick ;; No need to else, cuase its default value is 1
+      end if
+    opts@vcRefLengthF     = 0.03
+    else
     opts@vcGlyphStyle     = "CurlyVector"
+    if (NCLwindthick.le.1 .and. NCLwindthick.ge.0) then
+      opts@vcLineArrowThicknessF = 0.5 + 4*NCLwindthick ;; No need to else, cuase its default value is 1
+    end if
+  end if
 end if
   pltres = True
   pltres@FontHeightF = 0.013 ;;no panel, no average

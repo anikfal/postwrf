@@ -319,6 +319,12 @@ if [[ $era_onoff == 1 ]]; then                                                  
     unset myvar
 
     ##------------------------------------------------------------------------------------------------
+    myvar="wind_barbs_on_off"
+    windbarb_era=$(sed -n "/$myvar/p" namelist.wrf | awk -F"=" '{print $NF}' | cut -d, -f1) #only one var is read
+    export windbarb_era=$(echo $windbarb_era)                                                   #Remove spaces
+    unset myvar
+
+    ##------------------------------------------------------------------------------------------------
     myvar="Wind_ERA5_density"
     winddens=$(sed -n "/$myvar/p" namelist.wrf | awk -F"=" '{print $NF}' | cut -d, -f1) #only one var is read
     export winddens=$(echo $winddens)                                                   #Remove spaces
