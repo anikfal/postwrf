@@ -42,7 +42,7 @@ CONTOUR_ON_OFF                  = 0
  3rd_Variable_pressure_level    = 700,
 
 Wind_Vectors_on_off             = 0
- Wind_Vectors_pressure_level    = 700
+ Wind_Vectors_pressure_level    = rh
  Wind_Vectors_speed (m/s)       = 5
  Wind_Vectors_density           = 0.5
  Wind_Vectors_color             = red

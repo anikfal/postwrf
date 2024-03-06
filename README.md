@@ -30,7 +30,7 @@ Install NCL on a Linux machine (e.g. Fedora):
 ```bash
 sudo dnf install ncl
 ```
-Finished! That's enough for most of the PostWRF's capabilities!
+That's it! Enough for most of the PostWRF's capabilities!
 
 ## Run PostWRF:
 1. ``` git clone git@github.com:anikfal/PostWRF.git ```
