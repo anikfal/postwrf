@@ -46,6 +46,7 @@ load "read_wrfouts.ncl"
  nclborder = getenv("border_color")
  nclborderonoff = getenv("border_onoff")
  nclborder_thick = tofloat(getenv("borderthick"))
+ highres_onoff = tointeger(getenv("highres_onoff"))
  
   if (nclborder_thick.le.1 .and. nclborder_thick.ge.0) then
     nclborder_thick = 1 + nclborder_thick*3
@@ -992,6 +993,9 @@ end if
   mpres@mpLimbLineThicknessF        = 2.0
   mpres@mpNationalLineThicknessF    = nclborder_thick
   mpres@mpUSStateLineThicknessF     = nclborder_thick
+  if (highres_onoff .eq. 1) then
+    mpres@mpDataBaseVersion    = "HighRes"
+  end if
 if (ncl_shape_onoff.eq.1 .or. ncl_province_onoff.eq.1 .or. point_onoff.eq.1) then ;code iigg
 
   if (point_onoff.eq.1) then

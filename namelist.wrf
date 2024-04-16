@@ -18,7 +18,7 @@ Location_longitudes              = 49.48, 13.40, 31.23, -95.37, 121.47
 CONTOUR_ON_OFF                  = 1
 
 !!! Variable_1 by line contours !!!
-1st_Variable_on_off             = 1
+1st_Variable_on_off             = 0
  1st_Variable_name              = T2
  1st_Variable_pressure_level    = 0
  1st_Variable_intervals         = 5
@@ -38,7 +38,7 @@ CONTOUR_ON_OFF                  = 1
 
 !!! Variable_3 by shaded contours !!!
 3rd_Variable_on_off             = 1
- 3rd_Variable_name              = rh
+ 3rd_Variable_name              = rh/100
  3rd_Variable_pressure_level    = 700,
 
 Wind_Vectors_on_off             = 0
@@ -55,6 +55,8 @@ Location_point_mark_on_off      = 0
  Location_labels_color          = black
 Shapefile_on-off                = 0
  Shapefile_path                 = /home/anikfal/shapefiles/anazali_swamp.shp
+HighRes_coastline_on_off        = 0
+ HighRes_coastline_data_path    = /home/anikfal/PostWRF/highres
 -----------------------------------------------------------------------------
 
 
@@ -113,7 +115,7 @@ background_color (schematic)    = forestgreen
 lables_On-Off (schematic)       = 0
 
 +Domain_on_off (topography)      = 1
- +number_of_domains (topography) = 1
+ +number_of_domains (topography) = 2
  +box_color                      = white
 -----------------------------------------------------------------------------
 

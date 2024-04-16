@@ -42,6 +42,7 @@ load "read_wrfouts.ncl"
  nclborder = getenv("border_color")
  nclborder_thick = tofloat(getenv("borderthick"))
  nclborderonoff = getenv("border_onoff")
+ highres_onoff = tointeger(getenv("highres_onoff"))
 
   if (nclborder_thick.le.1 .and. nclborder_thick.ge.0) then
     nclborder_thick = 1 + nclborder_thick*3
@@ -363,13 +364,12 @@ NCLprovince_name_lower = str_lower(NCLprovince_name)
         end do ;;code docheck22
 
         ;;shell script333
-RAINNC = varlist[1]  ;;;added_new_line_by_sed333
-RAINC = varlist[0]  ;;;added_new_line_by_sed333
+rh = varlist[0]  ;;;added_new_line_by_sed333
 delete(varlist)
 delete(varlist2)
 
   ;equation from namelist.wrf333
-tc_plane3 = RAINC+RAINNC  ;;;added_new_line_by_sed333
+tc_plane3 = rh/100  ;;;added_new_line_by_sed333
 
 if (dimsizes(NCLPLEV3).eq.1) then
   if (NCLPLEV3.eq.0) then
@@ -1393,6 +1393,9 @@ end if
   mpres@mpLimbLineThicknessF        = 2.0
   mpres@mpNationalLineThicknessF    = nclborder_thick
   mpres@mpUSStateLineThicknessF     = nclborder_thick
+  if (highres_onoff .eq. 1) then
+    mpres@mpDataBaseVersion    = "HighRes"
+  end if
 if (ncl_shape_onoff.eq.1 .or. ncl_province_onoff.eq.1 .or. point_onoff.eq.1) then
 
   if (point_onoff.eq.1) then

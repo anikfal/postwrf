@@ -477,6 +477,20 @@ if [[ $contour_onoff == 1 ]]; then                                              
   export province_onoff=0
   export province_num=1
   export ncl_province_names0="Anzali"
+
+    ##------------------------------------------------------------------------------------------------
+  myvar="HighRes_coastline_on_off"
+  highres_onoff=$(sed -n "/$myvar/p" namelist.wrf | awk -F"=" '{print $NF}')
+  highres_onoff=$(echo ${highres_onoff}) #Remove spaces
+  export highres_onoff
+  unset myvar
+
+  ##------------------------------------------------------------------------------------------------
+  myvar="HighRes_coastline_data_path"
+  NCARG_RANGS=$(sed -n "/$myvar/p" namelist.wrf | awk -F"=" '{print $NF}')
+  NCARG_RANGS=$(echo ${NCARG_RANGS}) #Remove spaces
+  export NCARG_RANGS
+  unset myvar
 fi
 
 ###################################################################################################
