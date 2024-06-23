@@ -1,6 +1,5 @@
 #!/bin/bash
-#PostWRF Version 1.2 (May 2021)
-#Author: Amirhossein Nikfal <ah.nikfal@gmail.com>, <https://github.com/anikfal>
+#Author: Amirhossein Nikfal <https://github.com/anikfal>
 
 echo -e "\n Specify The Format Of The Images: 1, 2, or 3?"
 select imgfmt in "x11" "pdf" "png"; do
@@ -48,7 +47,7 @@ if [[ ${domtopo_onoff} != 1 ]]; then
     done
   fi
   export fontsz
-  ncl -nQ modules/domain.ncl
+  ncl -nQ modules/domain_new.ncl
 
 else
 

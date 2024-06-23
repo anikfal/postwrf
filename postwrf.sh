@@ -1,6 +1,5 @@
 #!/bin/bash
-#PostWRF Version 1.3 (January 2022)
-#Author: Amirhossein Nikfal <ah.nikfal@gmail.com>, <https://github.com/anikfal>
+#Author: Amirhossein Nikfal <https://github.com/anikfal>
 
 export postwrf_dir=$(pwd)
 trap 'my_exit; exit' SIGINT SIGQUIT
@@ -25,7 +24,7 @@ while getopts hdfo:i option; do
     echo "    -f,  print the choosable variables inside the WRF file (need WRF file as argument)"
     echo "    -o,  make sample observation files from value files to be used by the statistical section (need outputs_postwrf directory as argument)"
     echo "    -h,  display this help"
-    echo "    -i,  PostWRF version and basic informations"
+    echo "    -i,  PostWRF basic informations"
     ;;
   d) cat modules/readme ;;
   f)  if [[ $(echo $2 | awk -F. '{ print $NF }') == "nc" ]]; then
@@ -53,8 +52,8 @@ while getopts hdfo:i option; do
 		  echo It should be a directory starting with "outputs_postwrf", containing value files.
      fi ;;
   i)
-    echo "  PostWRF Version 1.3 (January 2022)"
-    echo "  Author: Amirhossein Nikfal <ah.nikfal@gmail.com>, <anik@ut.ac.ir>"
+    echo "  PostWRF Software Tool"
+    echo "  Author: Amirhossein Nikfal <https://github.com/anikfal>"
     ;;
   esac
 done
