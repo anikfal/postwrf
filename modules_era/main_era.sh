@@ -1,11 +1,10 @@
 #!/bin/bash
-#PostWRF Version 1.3 (May 2021)
-#Author: Amirhossein Nikfal <ah.nikfal@gmail.com>, <https://github.com/anikfal>
+#Author: Amirhossein Nikfal <https://github.com/anikfal>
 
 echo ""
-echo "=================  PostWRF (Version 1.3)  ====================="
+echo "========================  PostWRF  ============================"
 echo "              Run './postwrf.sh -h' to get help                "
-echo "   In case of problems, please contact <ah.nikfal@gmail.com>   "
+echo "     Reference any problems on GitHub <github.com/anikfal>     "
 echo "==============================================================="
 
 curdir=$(pwd)
