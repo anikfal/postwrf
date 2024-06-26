@@ -541,10 +541,10 @@ else ;;code ifpoly1
   end do ;;code docheck22
 
         ;;shell script111
-sp = varlist[0]  ;;;added_new_line_by_sed111
+t = varlist[0]  ;;;added_new_line_by_sed111
 
   ;equation from namelist.wrf111
-tc_plane11 = sp+22  ;;;added_new_line_by_sed111
+tc_plane11 = t+1  ;;;added_new_line_by_sed111
 
 copy_VarCoords(varlist[0], tc_plane11)
 
@@ -660,6 +660,11 @@ end if ;;code ifpoly1
           opt111@cnLevelSpacingF = intv_range2/10
         else
           opt111@cnLevelSpacingF = NCLINTV1
+        end if
+        if (intv_range2 .gt. 3) then
+          upper_bound1 = round(upper_bound1, 1)
+          lower_bound1 = round(lower_bound1, 1)
+          opt111@cnLevelSpacingF = round(opt111@cnLevelSpacingF, 1)
         end if
         opt111@cnMaxLevelValF = upper_bound1
         opt111@cnMinLevelValF = lower_bound1
@@ -828,10 +833,10 @@ else ;;code ifpoly2
   end do ;;code docheck22
 
         ;;shell script222
-t = varlist[0]  ;;;added_new_line_by_sed222
+r = varlist[0]  ;;;added_new_line_by_sed222
 
   ;equation from namelist.wrf222
-tc_plane22 = t+5  ;;;added_new_line_by_sed222
+tc_plane22 = r+1  ;;;added_new_line_by_sed222
 
 copy_VarCoords(varlist[0], tc_plane22)
 
@@ -948,6 +953,11 @@ end if ;;code ifpoly2
           opt222@cnLevelSpacingF = intv_range3/10
         else
           opt222@cnLevelSpacingF = NCLINTV2
+        end if
+        if (intv_range3 .gt. 3) then
+          upper_bound2 = round(upper_bound2, 1)
+          lower_bound2 = round(lower_bound2, 1)
+          opt222@cnLevelSpacingF = round(opt222@cnLevelSpacingF, 1)
         end if
         opt222@cnMaxLevelValF = upper_bound2
         opt222@cnMinLevelValF = lower_bound2

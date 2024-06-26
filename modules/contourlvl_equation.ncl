@@ -888,12 +888,12 @@ if (NCL1VARONOFF.eq.1) then  ;processing VAR1
         end do ;;code docheck22
 
         ;;shell script111
-geopotential = varlist[0]  ;;;added_new_line_by_sed111
+T2 = varlist[0]  ;;;added_new_line_by_sed111
 delete(varlist)
 delete(varlist2)
 
   ;equation from namelist.wrf111
-tc_plane1 = geopotential+22  ;;;added_new_line_by_sed111
+tc_plane1 = T2+1  ;;;added_new_line_by_sed111
 
 
 if (dimsizes(NCLPLEV1).eq.1) then
@@ -945,6 +945,11 @@ tc_plane1@units = equnit1
     opt2@cnLevelSpacingF = intv_range1/10
   else
     opt2@cnLevelSpacingF = NCLINTV1
+  end if
+  if (intv_range1 .gt. 3) then
+    upper_bound1 = round(upper_bound1, 1)
+    lower_bound1 = round(lower_bound1, 1)
+    opt2@cnLevelSpacingF = round(opt2@cnLevelSpacingF, 1)
   end if
    opt2@cnMaxLevelValF = upper_bound1
    opt2@cnMinLevelValF = lower_bound1
@@ -1239,13 +1244,13 @@ if (NCL2VARONOFF.eq.1) then  ;processing VAR2
 
 
         ;;shell script222
-tk = varlist[0]  ;;;added_new_line_by_sed222
+rh = varlist[0]  ;;;added_new_line_by_sed222
 
 delete(varlist)
 delete(varlist2)
 
   ;equation from namelist.wrf222
-tc_plane2 = tk^0.5  ;;;added_new_line_by_sed222
+tc_plane2 = rh+1  ;;;added_new_line_by_sed222
 
 if (dimsizes(NCLPLEV2).eq.1) then
   if (NCLPLEV2.eq.0) then
@@ -1300,6 +1305,11 @@ tc_plane2@units = equnit1
     opt3@cnLevelSpacingF = intv_range3/10
   else
     opt3@cnLevelSpacingF = NCLINTV2
+  end if
+  if (intv_range3 .gt. 3) then
+    upper_bound2 = round(upper_bound2, 1)
+    lower_bound2 = round(lower_bound2, 1)
+    opt3@cnLevelSpacingF = round(opt3@cnLevelSpacingF, 1)
   end if
    opt3@cnMaxLevelValF = upper_bound2
    opt3@cnMinLevelValF = lower_bound2

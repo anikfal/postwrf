@@ -598,6 +598,11 @@ if ( any(yy.eq.NCLCNVAR3) .and. any(yy.eq.NCLCNVAR1) .and. any(yy.eq.NCLCNVAR2) 
         else
           opt111@cnLevelSpacingF = NCLINTV1
         end if
+        if (intv_range2 .gt. 3) then
+          upper_bound1 = round(upper_bound1, 1)
+          lower_bound1 = round(lower_bound1, 1)
+          opt111@cnLevelSpacingF = round(opt111@cnLevelSpacingF, 1)
+        end if
         opt111@cnMaxLevelValF = upper_bound1
         opt111@cnMinLevelValF = lower_bound1
         opt111@cnMaxLevelCount = 255
@@ -783,6 +788,11 @@ if ( any(yy.eq.NCLCNVAR3) .and. any(yy.eq.NCLCNVAR1) .and. any(yy.eq.NCLCNVAR2) 
           opt222@cnLevelSpacingF = intv_range3/10
         else
           opt222@cnLevelSpacingF = NCLINTV2
+        end if
+        if (intv_range3 .gt. 3) then
+          upper_bound2 = round(upper_bound2, 1)
+          lower_bound2 = round(lower_bound2, 1)
+          opt222@cnLevelSpacingF = round(opt222@cnLevelSpacingF, 1)
         end if
         opt222@cnMaxLevelValF = upper_bound2
         opt222@cnMinLevelValF = lower_bound2

@@ -734,6 +734,11 @@ if (NCL1VARONOFF.eq.1) then  ;processing VAR2
   else
     opt2@cnLevelSpacingF = NCLINTV1
   end if
+  if (intv_range2 .gt. 3) then
+    upper_bound1 = round(upper_bound1, 1)
+    lower_bound1 = round(lower_bound1, 1)
+    opt2@cnLevelSpacingF = round(opt2@cnLevelSpacingF, 1)
+  end if
    opt2@cnMaxLevelValF = upper_bound1
    opt2@cnMinLevelValF = lower_bound1
    opt2@cnMaxLevelCount = 255
@@ -904,6 +909,11 @@ if (NCL2VARONOFF.eq.1) then  ;processing VAR3
     opt3@cnLevelSpacingF = intv_range3/10
   else
     opt3@cnLevelSpacingF = NCLINTV2
+  end if
+  if (intv_range3 .gt. 3) then
+    upper_bound2 = round(upper_bound2, 1)
+    lower_bound2 = round(lower_bound2, 1)
+    opt3@cnLevelSpacingF = round(opt3@cnLevelSpacingF, 1)
   end if
    opt3@cnMaxLevelValF = upper_bound2
    opt3@cnMinLevelValF = lower_bound2
