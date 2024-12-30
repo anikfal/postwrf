@@ -127,7 +127,8 @@ if [[ $era_onoff == 1 ]]; then                                                  
 
   myvar="3rd_ERA5_Var_name"                                                         #nclcontourvars11
   CNVAR3=$(sed -n "/$myvar/p" namelist.wrf | awk -F"=" '{print $NF}' | cut -d, -f1) #only one var is read
-  export CNVAR3=$(echo "${CNVAR3// /}")                                             #Remove spaces
+  # export CNVAR3=$(echo "${CNVAR3// /}")                                             #Remove spaces
+  export CNVAR3=$(echo "$CNVAR3" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
   unset myvar
 
   #------------------------------------------------------------------------------------------------
@@ -196,7 +197,8 @@ if [[ $era_onoff == 1 ]]; then                                                  
     ##------------------------------------------------------------------------------------------------
     myvar="1st_ERA5_Var_name"
     CNVAR1=$(sed -n "/$myvar/p" namelist.wrf | awk -F"=" '{print $NF}' | cut -d, -f1) #only one var is read
-    export CNVAR1=$(echo "${CNVAR1// /}")                                             #Remove spaces
+    # export CNVAR1=$(echo "${CNVAR1// /}")                                             #Remove spaces
+    export CNVAR1=$(echo "$CNVAR1" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
     unset myvar
     ##------------------------------------------------------------------------------------------------
 
@@ -246,7 +248,8 @@ if [[ $era_onoff == 1 ]]; then                                                  
     ##------------------------------------------------------------------------------------------------
     myvar="2nd_ERA5_Var_name"                                                         #nclcontourvars33
     CNVAR2=$(sed -n "/$myvar/p" namelist.wrf | awk -F"=" '{print $NF}' | cut -d, -f1) #only one var is read
-    export CNVAR2=$(echo "${CNVAR2// /}")                                             #Remove spaces
+    # export CNVAR2=$(echo "${CNVAR2// /}")                                             #Remove spaces
+    export CNVAR2=$(echo "$CNVAR2" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
     unset myvar
 
     ##------------------------------------------------------------------------------------------------
