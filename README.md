@@ -2,52 +2,78 @@
 
 [![DOI](https://zenodo.org/badge/doi/10.5281/zenodo.8191714.svg)](https://zenodo.org/record/8191714)
 
-### Visualization and postprocessing of the WRF and ERA5 data
+### Visualization and Postprocessing of WRF and ERA5 Data
 
-**Plot the WRF and ERA5 data, in the same simple way as you run the WRF model!**
+**Plot WRF and ERA5 data with a namelist — just like running the WRF model.**
 
-PostWRF is a bunch of interactive tools, written in NCL and Bash scripts, to visualize and post-process the WRF model outputs (as well as ERA5 and RTTOV data, to some extent).
+**PostWRF** is a collection of interactive tools, written in **NCL** and **Bash**, for visualizing and post-processing **WRF model outputs**, as well as **ERA5** and **RTTOV** data (to some extent).
 
-PostWRF is useful for both the expert and less-experienced users. Students can plot the WRF and ERA5 outputs whithout struggling with coding and syntax errors. Expert users can also carry out common postprocessing tasks in a simple and straightforward way.
+It is designed for both **beginners** and **expert users**:
+- **Students** can easily plot WRF or ERA5 outputs without dealing with programming syntax or script debugging.  
+- **Advanced users** can perform routine postprocessing tasks quickly and reproducibly.
 
-## Main capabilities:
-- WRF Data extraction
-- WRF horizontal contour plot
-- WRF cross-section plot
-- WRF statistical diagrams
-- RTTOV input (from WRF) and output data generation
-- WRF data conversion to Geotiff
-- WRF Skew-T and windrose diagrams
-- ERA5 horizontal contour plot
-- ERA5 data extraction
+---
 
-## Sample visualizations and postprocessing
-![github_postwrf](https://github.com/anikfal/PostWRF/assets/11738727/16be89c3-1bb1-4245-a430-1d07876563dd)
+## 🧩 Main Capabilities
+- WRF data extraction  
+- WRF horizontal contour plotting  
+- WRF vertical cross-section plotting  
+- WRF statistical diagrams  
+- RTTOV input (from WRF) and output data generation  
+- WRF data conversion to GeoTIFF  
+- WRF Skew-T and wind rose diagrams  
+- ERA5 horizontal contour plotting  
+- ERA5 data extraction  
 
+---
 
-## Installation:
-Install NCL on a Linux machine (e.g. Fedora):
+## 🖼️ Sample Visualizations
+![PostWRF sample plots](https://github.com/anikfal/PostWRF/assets/11738727/16be89c3-1bb1-4245-a430-1d07876563dd)
+
+---
+
+## ⚙️ Installation
+
+Install **NCL** on a Linux system (example for Fedora):
+
 ```bash
 sudo dnf install ncl
 ```
-That's it! Enough for most of the PostWRF's capabilities!
 
-## Run PostWRF:
-1. ``` git clone git@github.com:anikfal/PostWRF.git ```
-2. ``` cd PostWRF ```
-3. ``` chmod +x postwrf.sh modules/*.sh modules_era/*.sh ```
-4. Copy or link your WRF or ERA5 files in the PostWRF directory
-5. ``` ./postwrf.sh ```
-6. Follow the instructions and give relevant information to visualize/postprocess your data
+That’s it! This is sufficient for most of PostWRF’s features.
 
+---
 
-## HTML Documentations:
-Documentations with practical examples: https://postwrf.readthedocs.io/en/master
+## 🚀 Usage
 
-## YouTube Training Videos:
-https://youtube.com/playlist?list=PL93HaRiv5QkCOWQ4E_Oeszi9DBOYrdNXD
+1. Clone the repository:
+```git clone git@github.com:anikfal/PostWRF.git
+cd PostWRF
+```
 
-## Paper:
-For more detailed information about the backend structure of the software, please read https://doi.org/10.1016/j.envsoft.2022.105591
+2. Make scripts executable:
+```
+chmod +x postwrf.sh modules/*.sh modules_era/*.sh
+```
 
-If you find PostWRF helpful, please kindly cite it in your works.
+3. Copy or link your WRF or ERA5 files into the `postwrf` directory.
+4. Run the main script:
+```
+./postwrf.sh
+```
+
+5. Follow the on-screen instructions to visualize or postprocess your data.
+
+## 📘 Documentation
+Comprehensive documentation with practical examples:<br>
+[https://postwrf.readthedocs.io/en/master](https://postwrf.readthedocs.io/en/master)
+
+## 🎥 YouTube Training Videos
+Watch video tutorials here:\
+[PostWRF YouTube Playlist](https://youtube.com/playlist?list=PL93HaRiv5QkCOWQ4E_Oeszi9DBOYrdNXD)
+
+## 📄 Citation
+If you use PostWRF in your research, please cite the following publication:
+
+Nikfal, A. (2022). PostWRF: An Interactive Visualization and Postprocessing Tool for WRF Outputs. Environmental Modelling & Software, 105591.\
+https://doi.org/10.1016/j.envsoft.2022.105591
