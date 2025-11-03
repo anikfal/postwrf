@@ -100,7 +100,7 @@ delete(i)
   mpres@mpUSStateLineThicknessF     = nclborder_thick
 
   lnres = True 
-  lnres@gsLineThicknessF = 8  ;domain line thickness
+  lnres@gsLineThicknessF = 6.5  ;domain line thickness
   lnres@domLineColors    = (/ "white", "Red" , "Red" , "Blue" /)
   if (str_lower(domcolor) .eq. "white") then
     lnres@domLineColors    = (/ "black", "black" , "black" , "black" /)

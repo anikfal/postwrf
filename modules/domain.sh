@@ -47,7 +47,8 @@ if [[ ${domtopo_onoff} != 1 ]]; then
     done
   fi
   export fontsz
-  ncl -nQ modules/domain_new.ncl
+  #ncl -nQ modules/domain_new.ncl
+  ncl -nQ modules/domain.ncl
 
 else
 

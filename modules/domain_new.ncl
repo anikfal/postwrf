@@ -104,8 +104,9 @@ delete(i)
   mpres@tiMainString                = " WPS Domain Configuration  "
 
   lnres = True 
-  lnres@gsLineThicknessF = 2.5
-  lnres@domLineColors    = (/ "white", "Red" , "Red" , "Blue" /)
+  lnres@gsLineThicknessF = 6.5
+  ;lnres@domLineColors    = (/ "white", "Red" , "Red" , "Blue" /)
+  lnres@domLineColors    = (/ "white", "white" , "white" , "white" /)
   if (str_lower(domcolor) .eq. "white") then
     lnres@domLineColors    = (/ "black", "black" , "black" , "black" /)
   end if
